@@ -1,5 +1,9 @@
+
+use crate::components::frontpage::FrontPage;
+use crate::components::notfound::NotFound;
+
 use sycamore::prelude::*;
-use sycamore_router::{Route, Router, RouterProps};
+use sycamore_router::{Route, Router, RouterProps, HistoryIntegration};
 
 mod components;
 
@@ -13,8 +17,23 @@ enum AppRoutes {
 
 fn main() {
     sycamore::render(|cx| view! { cx,
-        div {
-            h1 { "Welcome to my blog!" }
+            Router(
+                integration=HistoryIntegration::new(),
+                view=|cx,route: &ReadSignal<AppRoutes>| {
+                    view! { cx,
+                        div(class="app") {
+                            (match route.get().as_ref() {
+                                AppRoutes::FrontPage => view! { cx,
+                                    "This is the front page!"
+                                },
+                                AppRoutes::NotFound => view! { cx,
+                                    "404 not found !"
+                                },
+                            })
+                        }
+                    }
+                }
+            )   
         }
-    });
+    )
 }
