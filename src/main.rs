@@ -1,11 +1,9 @@
 
-use crate::components::frontpage::FrontPage;
-use crate::components::notfound::NotFound;
-
 use sycamore::prelude::*;
 use sycamore_router::{Route, Router, RouterProps, HistoryIntegration};
+use views::{FrontPage::FrontPage, NotFound::NotFound};
 
-mod components;
+mod views;
 
 #[derive(Route)]
 enum AppRoutes {
@@ -24,10 +22,10 @@ fn main() {
                         div(class="app") {
                             (match route.get().as_ref() {
                                 AppRoutes::FrontPage => view! { cx,
-                                    "This is the front page!"
+                                    FrontPage
                                 },
                                 AppRoutes::NotFound => view! { cx,
-                                    "404 not found !"
+                                    NotFound
                                 },
                             })
                         }
