@@ -1,7 +1,7 @@
 
 use sycamore::prelude::*;
 use sycamore_router::{Route, Router, RouterProps, HistoryIntegration};
-use views::{FrontPage::FrontPage, NotFound::NotFound};
+use views::{front_page::FrontPage, not_found::NotFound};
 
 mod views;
 

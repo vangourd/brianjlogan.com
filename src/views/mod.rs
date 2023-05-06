@@ -1,2 +1,2 @@
-pub mod FrontPage;
-pub mod NotFound;
+pub mod front_page;
+pub mod not_found;
