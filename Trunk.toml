@@ -1,0 +1,9 @@
+[global]
+name = "brianjlogan.com"
+output = "dist"
+
+[dev]
+optimize = false
+
+[build]
+optimize = true

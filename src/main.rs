@@ -7,7 +7,7 @@ mod views;
 
 #[derive(Route)]
 enum AppRoutes {
-    #[to("/")]
+    #[to("/index.html")]
     FrontPage,
     #[not_found]
     NotFound,
