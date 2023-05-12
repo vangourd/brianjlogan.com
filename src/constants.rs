@@ -1,0 +1,1 @@
+pub const API_BASE_URL: &str = "localhost:3000/posts/";

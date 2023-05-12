@@ -1,8 +1,10 @@
 use serde::{Deserialize, Serialize};
+use wasm_bindgen::__rt::IntoJsResult;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
 use web_sys::{Request, RequestInit, RequestMode, Response};
+use crate::constants::API_BASE_URL;
 
 #[derive(Serialize, Deserialize)]
 pub struct Post {
@@ -12,13 +14,17 @@ pub struct Post {
     pub author: String,
 }
 
+
 #[wasm_bindgen]
-pub async fn run(url: String) -> Result<(), JsValue> {
+pub async fn get_post(slug: String) -> Result<Post, serde_wasm_bindgen::Error> {
+
     let mut opts = RequestInit::new();
     opts.method("GET");
     opts.mode(RequestMode::Cors);
 
-    let url = (format!("{}", url));
+    let mut url = String::new();
+    url.push_str(API_BASE_URL);
+    url.push_str(&slug);
     let request = Request::new_with_str_and_init(&url, &opts)?;
 
     request
@@ -33,7 +39,8 @@ pub async fn run(url: String) -> Result<(), JsValue> {
 
     let json = JsFuture::from(resp.json()?).await?;
 
-    let posts: Post = serde_wasm_bindgen::from_value(json)?;
+    let post: Post = serde_wasm_bindgen::from_value(json).unwrap();
 
-    Ok(())
+    Ok(post)
+
 }

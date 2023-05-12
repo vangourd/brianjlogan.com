@@ -1,5 +1,5 @@
 use sycamore::prelude::*;
-use brianjlogan::model::fetch;
+use crate::model::posts;
 
 #[component]
 pub fn PostList<G: Html>(cx: Scope) -> View<G> {

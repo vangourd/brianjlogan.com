@@ -1,1 +1,1 @@
-pub mod fetch;
+pub mod posts;
