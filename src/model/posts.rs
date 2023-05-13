@@ -16,7 +16,7 @@ pub struct Post {
 
 
 #[wasm_bindgen]
-pub async fn get_post(slug: String) -> Result<Post, serde_wasm_bindgen::Error> {
+pub async fn get_post(slug: String) -> Result<String, JsValue> {
 
     let mut opts = RequestInit::new();
     opts.method("GET");
@@ -29,7 +29,7 @@ pub async fn get_post(slug: String) -> Result<Post, serde_wasm_bindgen::Error> {
 
     request
         .headers()
-        .set("Accept", "application/json")?;
+        .set("Accept", "text/markdown")?;
 
     let window = web_sys::window().unwrap();
     let resp_value = JsFuture::from(window.fetch_with_request(&request)).await?;
@@ -37,10 +37,8 @@ pub async fn get_post(slug: String) -> Result<Post, serde_wasm_bindgen::Error> {
     assert!(resp_value.is_instance_of::<Response>());
     let resp: Response = resp_value.dyn_into().unwrap();
 
-    let json = JsFuture::from(resp.json()?).await?;
+    let markdown = JsFuture::from(resp.text()?).await?;
 
-    let post: Post = serde_wasm_bindgen::from_value(json).unwrap();
-
-    Ok(post)
+    Ok(markdown.as_string().unwrap())
 
 }
