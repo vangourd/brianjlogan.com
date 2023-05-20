@@ -6,14 +6,6 @@ use wasm_bindgen_futures::JsFuture;
 use web_sys::{Request, RequestInit, RequestMode, Response};
 use crate::constants::API_BASE_URL;
 
-#[derive(Serialize, Deserialize)]
-pub struct Post {
-    pub title: String,
-    pub slug: String,
-    pub body: String,
-    pub author: String,
-}
-
 
 #[wasm_bindgen]
 pub async fn get_post(slug: String) -> Result<String, JsValue> {
