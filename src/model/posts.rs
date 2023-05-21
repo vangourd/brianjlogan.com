@@ -1,5 +1,3 @@
-use serde::{Deserialize, Serialize};
-use wasm_bindgen::__rt::IntoJsResult;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
@@ -17,6 +15,7 @@ pub async fn get_post(slug: String) -> Result<String, JsValue> {
     let mut url = String::new();
     url.push_str(API_BASE_URL);
     url.push_str(&slug);
+    url.push_str(&String::from(".md"));
     let request = Request::new_with_str_and_init(&url, &opts)?;
 
     request

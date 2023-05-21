@@ -1,1 +1,1 @@
-pub const API_BASE_URL: &str = "localhost:3000/posts/";
+pub const API_BASE_URL: &str = "http://localhost:8080/posts/";
