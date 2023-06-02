@@ -2,11 +2,6 @@ use sycamore::prelude::*;
 use mdsycx::{parse,MDSycX};
 use crate::model::posts::{get_post};
 
-async fn fetch_post() {
-    let md_string = get_post(String::from("test.md"));
-
-}
-
 #[component]
 pub async fn PostList<G: Html>(cx: Scope<'_>) -> View<G> {
 
