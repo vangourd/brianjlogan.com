@@ -5,27 +5,39 @@ use crate::model::posts::{get_post};
 #[component]
 pub async fn PostList<G: Html>(cx: Scope<'_>) -> View<G> {
 
+    let post = String::from("test.md");
 
-    let req = get_post(String::from("test.md"));
+    let req = get_post(post);
 
-    let result = req.await;
-
-    match result {
+    match req.await {
         Ok(value) => {
-            let parsed = parse::<()>(create_ref(cx, value)).unwrap();
-
-            view! { cx,
-                div(class="markdown-container") {
-                    MDSycX(body=parsed.body)
+            match parse::<()>(create_ref(cx, value)) {
+                Ok(parsed) => {
+                    view! { cx,
+                        p { "Posts here: "}
+                        div(class="markdown-container") {
+                            MDSycX(body=parsed.body)
+                        }
+                    }
                 }
-            }
+                Err(error) => {
+                    println!("{error:?}");
+                    view! { cx,
+                        table {
+                            tbody {
+                                (format!("Unable to render post."))
+                            }
+                        }
+                    }
+                }
+            } 
         }
         Err(error) => {
             println!("{error:?}");
             view! { cx,
                 table {
                     tbody {
-                        (format!("Unable to render post. {error:?}"))
+                        (format!("Unable to fetch post."))
                     }
                 }
             }
