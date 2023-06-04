@@ -12,11 +12,11 @@ pub async fn PostList<G: Html>(cx: Scope<'_>) -> View<G> {
 
     match result {
         Ok(value) => {
-            let parsed = parse::<()>(&value).unwrap();
+            let parsed = parse::<()>(create_ref(cx, value)).unwrap();
 
             view! { cx,
                 div(class="markdown-container") {
-                    MDSycX(cx, props)
+                    MDSycX(body=parsed.body)
                 }
             }
         }
