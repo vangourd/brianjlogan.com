@@ -14,8 +14,7 @@ pub async fn PostList<G: Html>(cx: Scope<'_>) -> View<G> {
             match parse::<()>(create_ref(cx, value)) {
                 Ok(parsed) => {
                     view! { cx,
-                        p { "Posts here: "}
-                        div(class="markdown-container") {
+                        div (class="markdown-content") {
                             MDSycX(body=parsed.body)
                         }
                     }

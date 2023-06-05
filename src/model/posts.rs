@@ -2,6 +2,7 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
 use web_sys::{Request, RequestInit, RequestMode, Response};
+use crate::API_BASE_URL;
 
 
 #[wasm_bindgen]
@@ -12,6 +13,7 @@ pub async fn get_post(slug: String) -> Result<String, JsValue> {
     opts.mode(RequestMode::Cors);
 
     let mut url = String::new();
+    url.push_str(API_BASE_URL);
     url.push_str(&slug);
     let request = Request::new_with_str_and_init(&url, &opts)?;
 
