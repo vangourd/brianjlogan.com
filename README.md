@@ -6,7 +6,7 @@
 
 `trunk build` to build the site for deployment
 
-`cargo run -p search-index` to run the search indexer for posts
+`cargo run -p search-index posts/ index/` to run the search indexer for posts
 
 ## To Do 
 
