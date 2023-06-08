@@ -10,14 +10,22 @@ use serde_json::Result;
 
 fn main() -> std::io::Result<()> {
     let args: Vec<String> = env::args().collect();
-    // Grab posts from posts dir
-    let paths = fs::read_dir(&args[1]).unwrap();
+
+    let names_from_dir = fs::read_dir(&args[1])
+        .expect("Problem getting post names from directory");
+    
     let mut inverted_index = HashMap::new();
 
-    for path in paths {
+    // get_posts
+    // file_to_tokens
+    // add to inverted_index
+    // write index to file
 
-        let path_str = path.unwrap().path().display().to_string();
+    for path in names_from_dir  {
+
+        let path_str = path?.path().display().to_string();
         let data = fs::read_to_string(&path_str).expect("Unable to read file");
+
         // Split into tokens for indexing
         let tokens = str::split_whitespace(&data);
         println!("Tokens for :{}",&path_str);
