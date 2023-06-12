@@ -9,12 +9,13 @@ use std::collections::{HashMap,HashSet};
 use serde::{Serialize, Deserialize};
 use serde_json::Result;
 
-fn tokens_from_file(path: DirEntry, stop_words: HashSet<&str>) -> Result<Vec<&str>> {
+fn tokens_from_file(path: DirEntry, stop_words: HashSet<&str>) -> Result<Vec<String>> {
     let path_str = path.path().display().to_string();
     let tokens = fs::read_to_string(&path_str)
         .expect("Unable to read file")
         .split_whitespace()
         .filter(|t| stop_words.contains(t))
+        .map(|s| s.to_string())
         .collect();
     return Ok(tokens)
 }
