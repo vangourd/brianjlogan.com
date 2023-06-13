@@ -4,8 +4,80 @@ $primary-color: #222222;
 body {
     font-family: $fonts;
     background-color: $primary-color;
-    color: white;
-    display: flex;
+    background-image: url("images/background.jfif");
+    background-size: contain;
+    background-attachment: fixed;
+    display: block;
     align-items: center;
     justify-content: center;
+}
+
+.container {
+    margin: auto;
+    width: 100%;
+    padding: 0;
+}
+
+.header {
+    width: 80%;
+    margin: auto auto;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: left;
+    align-items: center;
+    @media (max-width: 720px) {
+        justify-content: center;
+      }
+
+    h1 {
+        @media (max-width: 720px) {
+            font-size: 1em;
+          }
+        font-size: 1.5em;
+        margin: 20px;
+        padding: 10px;
+        color: white;
+        background-color: black;
+        font-weight: bolder;
+        border: solid;
+        border-color: black;
+        border-radius: 20px;
+    }
+
+    .profile-photo {
+        width: 20%;
+        height: 20%;
+        border: solid;
+        border-radius: 80%;
+    }
+
+    .sub_header{
+        background-color:#060606;
+        color:white;
+        border-radius: 10px;
+        width: 100%;
+        margin-top: 20px;
+    }
+   
+}
+
+.post {
+    width: 90%;
+    background: rgba(34, 0, 89, 0.902);
+    color: white;
+    border-radius: 10px;
+    margin: 20px auto auto; 
+    padding: 10px;
+}
+
+.footer {
+    width: 100%;
+    color: white;
+    background-color:black;
+    border-radius: 10px;
+    text-align: center;
+    padding-bottom:20px;
+    img {
+        width: 40px;
+    }
 }
