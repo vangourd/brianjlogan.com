@@ -1,80 +1,128 @@
+
 $fonts: 'Poppins', Helvetica, sans-serif;
-$primary-color: #222222;
+$background: rgb(26, 26, 26);
+@font-face {
+    font-family: 'Hussar';
+    src: url('./fonts/HussarBold.woff2') format('woff2'),
+        url('./fonts/HussarBold.woff') format('woff'),
+        url('./fonts/Husser.otf') format('otf');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
 
 body {
+    
     font-family: $fonts;
-    background-color: $primary-color;
-    background-image: url("images/background.jfif");
-    background-size: contain;
-    background-attachment: fixed;
+    background-color: $background;
+    background-image: url("./images/background.jfif");
+    color: white;
     display: block;
     align-items: center;
     justify-content: center;
 }
 
 .container {
-    margin: auto;
+    margin: auto auto;
     width: 100%;
-    padding: 0;
+    background-color: $background;
+    border-radius: 5px;
 }
 
 .header {
-    width: 80%;
-    margin: auto auto;
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: left;
-    align-items: center;
-    @media (max-width: 720px) {
-        justify-content: center;
-      }
 
-    h1 {
-        @media (max-width: 720px) {
-            font-size: 1em;
-          }
-        font-size: 1.5em;
-        margin: 20px;
-        padding: 10px;
-        color: white;
-        background-color: black;
-        font-weight: bolder;
-        border: solid;
-        border-color: black;
-        border-radius: 20px;
-    }
-
-    .profile-photo {
-        width: 20%;
-        height: 20%;
-        border: solid;
-        border-radius: 80%;
-    }
-
-    .sub_header{
-        background-color:#060606;
-        color:white;
-        border-radius: 10px;
+    .top_header {
+        padding-top: 10px;
+        padding-left: 10px;
         width: 100%;
-        padding: 10px;
-        margin-top: 20px;
-        input{
-            background-color: black;
-            color: white;
-            border-style: none;
-            &:active {
-                border-style: none;
-                border: none;
+        font-family: 'Hussar';
+        margin: auto auto;
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        @media (max-width: 720px) {
+            justify-content: center;
+            padding-left: 0;
+        }
+
+        h1 {
+            @media (max-width: 720px) {
+                font-size: 1.5em;
             }
+            font-size: 3em;
+            background-size: cover;
+            background-image: url("./images/background.jfif");
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            -webkit-font-smoothing: antialiased;
+            margin-left: 20px;
+            font-weight: bolder;
+        }
+
+        .profile-photo {
+            @media (max-width: 720px) {
+                width: 20%;
+                height: 20%;
+            }
+            border-color: rgb(75, 50, 111);
+            border-style: solid;
+            border-radius: 50%;
+            border-width: 10px;
+            width: 10%;
+            height: 10%;
         }
     }
+        nav{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: orange;
+            margin-top: 20px;
+            ul {
+                width: 100%;
+                padding: 0;
+                display: flex;
+                
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                li {
+                    @media (max-width: 720px) {
+                        width: 100%;
+                        border: dashed;
+                        border-width: 1px;
+                    }
+                    border-bottom: solid;
+                    word-wrap: none;
+                    text-align: center;
+                    color: orange;
+                    width: 15%;
+                    text-decoration: none;
+                    list-style: none;
+                }
+            }
+
+            input{
+                width: 20%;
+                font-family: 'Hussar';
+                color: white;
+                margin-top: 20px;
+                background-color: $background;
+                border-style: dashed;
+                border-radius: 5px;
+                &:active {
+                    border-style: none;
+                    border: none;
+                }
+            }
+        }
    
 }
 
 .post {
     width: 90%;
-    background: rgba(34, 0, 89, 0.902);
-    color: white;
     border-radius: 10px;
     margin: 20px auto auto; 
     padding: 10px;
@@ -82,8 +130,6 @@ body {
 
 .footer {
     width: 100%;
-    color: white;
-    background-color:black;
     border-radius: 10px;
     text-align: center;
     padding-bottom:20px;
