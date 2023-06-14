@@ -3,9 +3,9 @@ $fonts: 'Poppins', Helvetica, sans-serif;
 $background: rgb(26, 26, 26);
 @font-face {
     font-family: 'Hussar';
-    src: url('./fonts/HussarBold.woff2') format('woff2'),
-        url('./fonts/HussarBold.woff') format('woff'),
-        url('./fonts/Husser.otf') format('otf');
+    src: url('fonts/HussarBold.woff2') format('woff2'),
+        url('fonts/HussarBold.woff') format('woff'),
+        url('fonts/Husser.otf') format('otf');
     font-weight: bold;
     font-style: normal;
     font-display: swap;
@@ -15,7 +15,7 @@ body {
     
     font-family: $fonts;
     background-color: $background;
-    background-image: url("./images/background.jfif");
+    background-image: url("/images/background.jfif");
     color: white;
     display: block;
     align-items: center;
@@ -51,7 +51,7 @@ body {
             }
             font-size: 3em;
             background-size: cover;
-            background-image: url("./images/background.jfif");
+            background-image: url("/images/background.jfif");
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             -webkit-font-smoothing: antialiased;
@@ -88,7 +88,7 @@ body {
                 flex-direction: row;
                 flex-wrap: wrap;
                 justify-content: space-between;
-                li {
+                li,a {
                     @media (max-width: 720px) {
                         width: 100%;
                         border: dashed;

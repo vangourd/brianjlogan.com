@@ -1,7 +1,7 @@
 
 use sycamore::prelude::*;
 use sycamore_router::{Route, Router, HistoryIntegration};
-use views::{front_page::FrontPage, not_found::NotFound};
+use views::{front_page::FrontPage, not_found::NotFound,post::Post};
 
 mod views;
 
@@ -9,6 +9,8 @@ mod views;
 enum AppRoutes {
     #[to("/")]
     FrontPage,
+    #[to("/post/")]
+    Post,
     #[not_found]
     NotFound,
 }
@@ -27,6 +29,9 @@ fn main() {
                                 AppRoutes::NotFound => view! { cx,
                                     NotFound
                                 },
+                                AppRoutes::Post => view! { cx, 
+                                    Post
+                                }
                             })
                         }
                     }
