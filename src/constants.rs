@@ -1,1 +1,2 @@
-pub const API_BASE_URL: &str = "/posts/";
+pub const POST_PREFIX: &str = "/posts/";
+pub const INDEX_PREFIX: &str = "/index/";

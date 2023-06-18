@@ -1,11 +1,9 @@
 use sycamore::prelude::*;
 use mdsycx::{parse,MDSycX};
-use crate::model::{posts::{get_post}, index::get_inverted_index};
+use crate::model::posts::{get_post};
 
 #[component]
-pub async fn PostList<G: Html>(cx: Scope<'_>) -> View<G> {
-
-        let index = get_inverted_index()
+pub async fn Post<G: Html>(cx: Scope<'_>) -> View<G> {
 
         let post = String::from("test.md");
 

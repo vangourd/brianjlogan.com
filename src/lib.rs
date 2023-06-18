@@ -9,4 +9,5 @@ pub use components::{
     base,
 };
 pub use model::posts;
-pub use constants::API_BASE_URL;
+pub use constants::POST_PREFIX;
+pub use constants::INDEX_PREFIX;
