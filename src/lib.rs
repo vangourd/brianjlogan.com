@@ -7,6 +7,7 @@ pub use components::{
     footer,
     post_list,
     post,
+    search,
     base,
 };
 pub use model::posts;

@@ -1,4 +1,5 @@
 use sycamore::prelude::*;
+use crate::components::search::Search;
 
 #[component]
 pub fn Header<G: Html>(cx: Scope) -> View<G> {
@@ -17,9 +18,9 @@ pub fn Header<G: Html>(cx: Scope) -> View<G> {
                     a(href="https://docs.google.com/forms/d/e/1FAIpQLSdB3IfeDbLuTPJk6YsyNZBubMvMOwgtA4fl6qKQJCUyssjD8Q/viewform"){"contact"}
                     li{"resume"}
                 }
-                input(placeholder="🔎"){""}
+                
             }
-
+            Search
         }
     }
 }
