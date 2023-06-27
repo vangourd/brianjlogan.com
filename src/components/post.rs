@@ -3,11 +3,9 @@ use mdsycx::{parse,MDSycX};
 use crate::model::posts::{get_post};
 
 #[component]
-pub async fn Post<G: Html>(cx: Scope<'_>) -> View<G> {
+pub async fn Post<G: Html>(cx: Scope<'_>, slug: String) -> View<G> {
 
-        let post = String::from("test.md");
-
-        let req = get_post(post);
+        let req = get_post(slug);
 
         match req.await {
             Ok(value) => {

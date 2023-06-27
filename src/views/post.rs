@@ -4,13 +4,13 @@ use brianjlogan::header::Header;
 use brianjlogan::footer::Footer;
 
 #[component]
-pub fn Post<G: Html>(cx: Scope) -> View<G> {
+pub fn Post<G: Html>(cx: Scope, slug: String) -> View<G> {
     view! { cx,
         Base{
             Header
-            p{"This is a post"}
+            p{(slug)}
+            Post((slug))
             Footer
         }
-        
     }
 }

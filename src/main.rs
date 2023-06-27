@@ -9,8 +9,8 @@ mod views;
 enum AppRoutes {
     #[to("/")]
     FrontPage,
-    #[to("/post/")]
-    Post,
+    #[to("/post/<slug>")]
+    Post {slug: String},
     #[not_found]
     NotFound,
 }
@@ -24,13 +24,13 @@ fn main() {
                         div(class="app") {
                             (match route.get().as_ref() {
                                 AppRoutes::FrontPage => view! { cx,
-                                    FrontPage
+                                    Post((String::from("frontpage")))
                                 },
                                 AppRoutes::NotFound => view! { cx,
                                     NotFound
                                 },
-                                AppRoutes::Post => view! { cx, 
-                                    Post
+                                AppRoutes::Post{slug} => view! { cx, 
+                                    Post(slug.to_owned())
                                 }
                             })
                         }
