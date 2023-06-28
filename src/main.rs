@@ -25,6 +25,7 @@ fn main() {
                 integration=HistoryIntegration::new(),
                 view=|cx,route: &ReadSignal<AppRoutes>| {
                     view! { cx,
+                        p {"This page is currently undergoing experimental active development"}
                         div(class="app") {
                             (match route.get().as_ref() {
                                 AppRoutes::FrontPage => view! { cx,
