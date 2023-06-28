@@ -17,7 +17,17 @@ pub async fn Search<G: Html>(cx: Scope<'_>) -> View<G> {
         // Run a rank method using the query against the index.
 
         view! { cx,
-            input(placeholder="🔎",bind:value=value){""}
+            div(class="searchbar"){
+                input(placeholder="🔎",bind:value=value){""}
+                div(class="result"){
+                    a(href="/tag/"){"search-result"}
+                    a(href="/tag/"){"search-result"}
+                    a(href="/tag/"){"search-result"}
+                    a(href="/tag/"){"search-result"}
+                    a(href="/tag/"){"search-result"}
+                }
+            }
+            
         }
 
 }
