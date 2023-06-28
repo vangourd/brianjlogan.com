@@ -11,12 +11,12 @@ pub fn Header<G: Html>(cx: Scope) -> View<G> {
             }
             nav{
                 ul{
-                    li{"programming"}
-                    li{"dev-sec-ops"}
-                    li{"food"}
-                    li{"biking"}
+                    a(href="/tag/programming"){"programming"}
+                    a(href="/tag/devops"){"devops"}
+                    a(href="/tag/food"){"food"}
+                    a(href="/tag/biking"){"biking"}
                     a(href="https://docs.google.com/forms/d/e/1FAIpQLSdB3IfeDbLuTPJk6YsyNZBubMvMOwgtA4fl6qKQJCUyssjD8Q/viewform"){"contact"}
-                    li{"resume"}
+                    a(href="/post/resume"){"resume"}
                 }
                 
             }
