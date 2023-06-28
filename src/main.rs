@@ -1,7 +1,11 @@
 
 use sycamore::prelude::*;
 use sycamore_router::{Route, Router, HistoryIntegration};
-use views::{front_page::FrontPage, not_found::NotFound,post::Post};
+use views::{
+    front_page::FrontPage, 
+    not_found::NotFound,
+    vpost::PostView
+};
 
 mod views;
 
@@ -24,13 +28,13 @@ fn main() {
                         div(class="app") {
                             (match route.get().as_ref() {
                                 AppRoutes::FrontPage => view! { cx,
-                                    Post((String::from("frontpage")))
+                                    PostView(String::from("frontpage"))
                                 },
                                 AppRoutes::NotFound => view! { cx,
                                     NotFound
                                 },
                                 AppRoutes::Post{slug} => view! { cx, 
-                                    Post(slug.to_owned())
+                                    PostView(slug.to_owned())
                                 }
                             })
                         }

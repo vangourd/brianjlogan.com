@@ -2,14 +2,14 @@ use sycamore::prelude::*;
 use brianjlogan::base::Base;
 use brianjlogan::header::Header;
 use brianjlogan::footer::Footer;
+use brianjlogan::cpost::PostComponent;
 
 #[component]
-pub fn Post<G: Html>(cx: Scope, slug: String) -> View<G> {
+pub fn PostView<G: Html>(cx: Scope, slug: String) -> View<G> {
     view! { cx,
         Base{
             Header
-            p{(slug)}
-            Post((slug))
+            PostComponent(slug)
             Footer
         }
     }

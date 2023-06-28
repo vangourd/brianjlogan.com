@@ -1,3 +1,3 @@
 pub mod front_page;
-pub mod post;
+pub mod vpost;
 pub mod not_found;

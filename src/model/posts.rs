@@ -15,6 +15,7 @@ pub async fn get_post(slug: String) -> Result<String, JsValue> {
     let mut url = String::new();
     url.push_str(POST_PREFIX);
     url.push_str(&slug);
+    url.push_str(".md");
     let request = Request::new_with_str_and_init(&url, &opts)?;
 
     request

@@ -3,7 +3,7 @@ use mdsycx::{parse,MDSycX};
 use crate::model::posts::{get_post};
 
 #[component]
-pub async fn Post<G: Html>(cx: Scope<'_>, slug: String) -> View<G> {
+pub async fn PostComponent<G: Html>(cx: Scope<'_>, slug: String) -> View<G> {
 
         let req = get_post(slug);
 
