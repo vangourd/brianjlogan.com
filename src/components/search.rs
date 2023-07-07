@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, result};
 use sycamore::prelude::*;
 use mdsycx::{parse,MDSycX};
 use crate::model::{posts::{get_post}, index::get_inverted_index};
@@ -8,6 +8,7 @@ pub async fn Search<G: Html>(cx: Scope<'_>) -> View<G> {
 
         let value = create_signal(cx, String::new());
 
+        let result_class = String::from("hidden");
         // let index = get_inverted_index().await.unwrap();
 
         // let map: HashMap<String, String> = serde_json::from_str(&index).unwrap();
@@ -17,13 +18,13 @@ pub async fn Search<G: Html>(cx: Scope<'_>) -> View<G> {
         // Run a rank method using the query against the index.
 
         view! { cx,
+
             div(class="searchbar"){
                 input(placeholder="🔎",bind:value=value){""}
-                div(class="result"){
-                    a(href="/tag/"){"search-result"}
-                    a(href="/tag/"){"search-result"}
-                    a(href="/tag/"){"search-result"}
-                    a(href="/tag/"){"search-result"}
+            }
+            ul(class="result"){
+                h2{"Results:"}
+                li(href="/tag/"){
                     a(href="/tag/"){"search-result"}
                 }
             }

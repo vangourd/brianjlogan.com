@@ -12,7 +12,7 @@ pub async fn PostComponent<G: Html>(cx: Scope<'_>, slug: String) -> View<G> {
                 match parse::<()>(create_ref(cx, value)) {
                     Ok(parsed) => {
                         view! { cx,
-                            div (class="post") {
+                            div{
                                 MDSycX(body=parsed.body)
                             }
                         }

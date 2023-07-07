@@ -9,7 +9,9 @@ pub fn PostView<G: Html>(cx: Scope, slug: String) -> View<G> {
     view! { cx,
         Base{
             Header
-            PostComponent(slug)
+            div(class="post") {
+                PostComponent(slug)
+            }
             Footer
         }
     }
