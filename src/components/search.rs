@@ -22,10 +22,13 @@ pub async fn Search<G: Html>(cx: Scope<'_>) -> View<G> {
             div(class="searchbar"){
                 input(placeholder="🔎",bind:value=value){""}
             }
-            ul(class="result"){
-                h2{"Results:"}
+            ul(class="result hidden"){
+                h2{"Found x results:"}
+                li(href="/post/"){
+                    a(href="/post/"){"Post: My Resume"}
+                }
                 li(href="/tag/"){
-                    a(href="/tag/"){"search-result"}
+                    a(href="/tag/"){"Posts tagged: Rustlang"}
                 }
             }
             

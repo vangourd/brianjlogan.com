@@ -133,9 +133,10 @@ body {
         flex-direction: column;
         background-color: #313131;
         li {
+            width: 80%;
+            margin: auto auto 10px;
             a {
-                color: black;
-                text-decoration: none;
+                color: white;
             }
 
         }
@@ -162,5 +163,7 @@ body {
 
 
 .hidden {
+    display: none;
     visibility: hidden;
+    height: 0px;
 }
