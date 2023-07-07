@@ -1,13 +1,10 @@
 use std::collections::HashMap;
-
 use sycamore::prelude::*;
 use mdsycx::{parse,MDSycX};
-use crate::model::{posts::{get_post}, index::get_inverted_index};
+use crate::model::posts::{get_post, get_inverted_index};
 
 #[component]
 pub async fn PostList<G: Html>(cx: Scope<'_>) -> View<G> {
-
-        let value = create_signal(cx, String::new());
 
         // let index = get_inverted_index().await.unwrap();
 
