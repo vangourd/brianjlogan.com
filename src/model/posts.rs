@@ -1,5 +1,7 @@
+use std::collections::HashMap;
+
 use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsCast;
+use wasm_bindgen::{JsCast,JsValue};
 use wasm_bindgen_futures::JsFuture;
 use web_sys::{Request, RequestInit, RequestMode, Response};
 use crate::{POST_PREFIX,INDEX_PREFIX};
@@ -34,9 +36,22 @@ pub async fn get_post(slug: String) -> Result<String, JsValue> {
 
 }
 
+pub async fn find(query: String) -> Result<(),JsValue> {
+    // turn index into something useful
+    let r_index = get_inverted_index().await?;
+    let p_index = serde_wasm_bindgen::from_value(r_index)?;
+    let search_results: HashMap<String, String> = HashMap::new();
+    // break query into tokens
+    // implement some kind of rank method
+    // return a list of posts that match and then is ranked
+    // return a list of tags that match and are ranked
+
+    Ok(())
+}
+
 
 #[wasm_bindgen]
-pub async fn get_inverted_index() -> Result<String, JsValue> {
+pub async fn get_inverted_index() -> Result<JsValue, JsValue> {
 
     let mut opts = RequestInit::new();
     opts.method("GET");
@@ -59,6 +74,7 @@ pub async fn get_inverted_index() -> Result<String, JsValue> {
 
     let inverted_index = JsFuture::from(resp.text()?).await?;
 
-    Ok(inverted_index.as_string().unwrap())
+    Ok(inverted_index)
 
 }
+

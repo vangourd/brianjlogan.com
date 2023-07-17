@@ -7,6 +7,7 @@ use crate::model::posts::{get_post, get_inverted_index};
 #[component]
 pub async fn Search<G: Html>(cx: Scope<'_>) -> View<G> {
 
+        let index = get_inverted_index().await.unwrap();
         let search_query = create_signal(cx, String::from(""));
         let search_class = create_signal(cx, String::from("result hidden"));
     
@@ -19,8 +20,6 @@ pub async fn Search<G: Html>(cx: Scope<'_>) -> View<G> {
                 
         });
         
-
-        let index = get_inverted_index().await.unwrap();
 
         view! { cx,
 
