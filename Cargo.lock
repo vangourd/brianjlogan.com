@@ -352,6 +352,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "rust-tfidf"
+version = "1.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ba645a24c2f02d569e5bb4178e3ce8c82fce061888901e939d989ca67f2b4ce6"
+
+[[package]]
 name = "ryu"
 version = "1.0.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -361,6 +367,7 @@ checksum = "f91339c0467de62360649f8d3e185ca8de4224ff281f66000de5eb2a77a79041"
 name = "search-index"
 version = "0.1.0"
 dependencies = [
+ "rust-tfidf",
  "serde",
  "serde_json",
 ]

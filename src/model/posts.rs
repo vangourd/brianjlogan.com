@@ -42,7 +42,8 @@ pub async fn find(query: String) -> Result<(),JsValue> {
     let p_index = serde_wasm_bindgen::from_value(r_index)?;
     let search_results: HashMap<String, String> = HashMap::new();
     // break query into tokens
-    // implement some kind of rank method
+    let query_tokens = query.split_whitespace().map(|s| s.to_string());
+    // values by title versus in body
     // return a list of posts that match and then is ranked
     // return a list of tags that match and are ranked
 

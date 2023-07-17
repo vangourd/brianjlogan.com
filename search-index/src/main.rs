@@ -4,6 +4,7 @@ use std::env;
 use std::io::{Write};
 use std::collections::{HashMap,HashSet};
 use serde_json::Result;
+use tfidf::{TfIdf, TfIdfDefault};
 
 fn tokens_from_file(path: &String, stop_words: HashSet<&str>) -> Result<Vec<String>> {
     let tokens = fs::read_to_string(path)
@@ -23,27 +24,38 @@ fn write_to_file(path: &str, data: String) {
 }
 
 fn main() -> std::io::Result<()> {
+    // Arg Parsing
     let args: Vec<String> = env::args().collect();
     let posts_dir = &args.get(1)
         .expect("Posts dir not specified");
+    // Output file destination
     let mut output_file = String::new();
     output_file.push_str("index/main.json");
+    // Collecting file names of posts
     let names_from_dir = fs::read_dir(&posts_dir)
         .expect("Problem getting post names from directory");
     
+    // Building inverted index shell 
     let mut inverted_index = HashMap::new();
 
+    // Iterating through posts
     for path in names_from_dir {
 
         let current_path = path.unwrap().path().display().to_string();
 
+        // Grabbing tokens from file ommitting stop words
         let tokens = tokens_from_file(
             &current_path,
             HashSet::from(["a","the","an","#","is"])
         
         );
+        // Calculate the 
+        // Inserting tokens into index
         for token in tokens.expect("Problem getting tokens from file"){
-            inverted_index.insert(token, current_path.clone());
+            let mut hm = HashMap::new();
+            let score = TfIdfDefault::tfidf(token, &tokens.unwrap(), hm);
+            hm.insert(current_path.clone(), 0);
+            inverted_index.insert(token.to_lowercase(),hm);
         }
             
     }
