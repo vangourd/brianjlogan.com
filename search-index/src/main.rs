@@ -50,6 +50,7 @@ fn main() -> std::io::Result<()> {
         );
         // TF-IDF Calculation
         // # of times term t appears in doc d
+        // collection, doc, term
         // idf(t)
             // a = 1 + # of all docs
             // b = 1 + # of all documents containing term t
@@ -57,12 +58,18 @@ fn main() -> std::io::Result<()> {
             // how many times t appears in doc d
         // Inserting tokens into index
         for token in tokens.expect("Problem getting tokens from file"){
+            let tf = tokens.expect("Problem getting tokens from file")
+                .clone()
+                .into_iter()
+                .reduce(|a,b| {
+                    
+                });
             // Build a hashmap
-            // 
             let mut hm = HashMap::new();
             let score = 0;
             hm.insert(current_path.clone(), score);
             inverted_index.insert(token.to_lowercase(),hm);
+            
         }
     }
     
