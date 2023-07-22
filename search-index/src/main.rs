@@ -4,7 +4,7 @@ use std::env;
 use std::io::{Write};
 use std::collections::{HashMap,HashSet};
 use serde_json::Result;
-use tfidf::{TfIdf, TfIdfDefault};
+use tfidf::{TfIdf, TfIdfDefault, tf};
 
 fn tokens_from_file(path: &String, stop_words: HashSet<&str>) -> Result<Vec<String>> {
     let tokens = fs::read_to_string(path)
@@ -47,19 +47,18 @@ fn main() -> std::io::Result<()> {
         let tokens = tokens_from_file(
             &current_path,
             HashSet::from(["a","the","an","#","is"])
-        
         );
         // Calculate the 
         // Inserting tokens into index
         for token in tokens.expect("Problem getting tokens from file"){
+            // Build a hashmap
+            // 
             let mut hm = HashMap::new();
-            let score = TfIdfDefault::tfidf(token, &tokens.unwrap(), hm);
-            hm.insert(current_path.clone(), 0);
+            let score = 0;
+            hm.insert(current_path.clone(), score);
             inverted_index.insert(token.to_lowercase(),hm);
         }
-            
     }
-
     
     write_to_file(&output_file,serde_json::to_string_pretty(&inverted_index)
         .expect("Problem converting to json"));
