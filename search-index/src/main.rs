@@ -57,12 +57,16 @@ fn main() -> std::io::Result<()> {
         // tf
             // how many times t appears in doc d
         // Inserting tokens into index
-        for token in tokens.expect("Problem getting tokens from file"){
-            let tf = tokens.expect("Problem getting tokens from file")
+        for token in &tokens.expect("Problem getting tokens from file"){
+            let tf = &tokens.expect("Problem getting tokens from file")
                 .clone()
                 .into_iter()
-                .reduce(|a,b| {
-                    
+                .fold(String::new(),|acc, s| {
+                    if s == token.to_string() {
+                        acc + &s
+                    } else {
+                        acc
+                    }
                 });
             // Build a hashmap
             let mut hm = HashMap::new();
