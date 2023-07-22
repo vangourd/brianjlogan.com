@@ -48,7 +48,13 @@ fn main() -> std::io::Result<()> {
             &current_path,
             HashSet::from(["a","the","an","#","is"])
         );
-        // Calculate the 
+        // TF-IDF Calculation
+        // # of times term t appears in doc d
+        // idf(t)
+            // a = 1 + # of all docs
+            // b = 1 + # of all documents containing term t
+        // tf
+            // how many times t appears in doc d
         // Inserting tokens into index
         for token in tokens.expect("Problem getting tokens from file"){
             // Build a hashmap
