@@ -1,6 +1,7 @@
 use std::fs::{self};
 use std::fs::File;
 use std::env;
+use std::hash::Hash;
 use std::io::{Write};
 use std::collections::{HashMap,HashSet};
 use serde_json::Result;
@@ -32,49 +33,49 @@ fn main() -> std::io::Result<()> {
     let mut output_file = String::new();
     output_file.push_str("index/main.json");
     // Collecting file names of posts
-    let names_from_dir = fs::read_dir(&posts_dir)
-        .expect("Problem getting post names from directory");
     
     // Building inverted index shell 
-    let mut inverted_index = HashMap::new();
+    let mut inverted_index: HashMap<String, HashMap<String, i32>> = HashMap::new();
+
+    let stop_words: HashSet<&str> = HashSet::from(["a","the","an","#","is"]);
+
+    let names_from_dir: Vec<Option<&str>> = vec![];
 
     // Iterating through posts
-    for path in names_from_dir {
+    for path in names_from_dir.clone() {
+        if let Some(current_path) = path {
+            let current_path = current_path.to_string();
+            let tokens = tokens_from_file(
+                &current_path, 
+                stop_words.clone()).expect("Problem getting tokens from file");
 
-        let current_path = path.unwrap().path().display().to_string();
+            // Calculate term frequency (TF) for each term in the document 
+            let tf_map: HashMap<String, i32> = tokens.into_iter().fold(HashMap::new(), |mut acc, token | {
+                *acc.entry(token).or_insert(0) +=1 ;
+                acc
+            });
 
-        // Grabbing tokens from file ommitting stop words
-        let tokens = tokens_from_file(
-            &current_path,
-            HashSet::from(["a","the","an","#","is"])
-        );
-        // TF-IDF Calculation
-        // # of times term t appears in doc d
-        // collection, doc, term
-        // idf(t)
-            // a = 1 + # of all docs
-            // b = 1 + # of all documents containing term t
-        // tf
-            // how many times t appears in doc d
-        // Inserting tokens into index
-        for token in &tokens.expect("Problem getting tokens from file"){
-            let tf = &tokens.expect("Problem getting tokens from file")
-                .clone()
-                .into_iter()
-                .fold(String::new(),|acc, s| {
-                    if s == token.to_string() {
-                        acc + &s
-                    } else {
-                        acc
-                    }
-                });
-            // Build a hashmap
-            let mut hm = HashMap::new();
-            let score = 0;
-            hm.insert(current_path.clone(), score);
-            inverted_index.insert(token.to_lowercase(),hm);
-            
+            // Calculate the document frequency (DF) for each term in the document
+            let df_map: HashMap<String, i32> = tf_map.keys().fold(HashMap::new(), |mut acc, token| {
+                *acc.entry(token.to_lowercase()).or_insert(0) += 1;
+                acc
+            });
+
+            // Calculate the total number of documents in the collection
+            let total_documents = names_from_dir.len() as i32;
+
+            // Calculate the IDF for each term and update the inverted index
+            for (token, tf) in tf_map {
+                let idf = 1.0 + (total_documents as f64 / (1.0 + df_map[&token.to_lowercase()] as f64)).ln();
+                let tf_idf_score = (tf as f64) * idf;
+
+                inverted_index
+                    .entry(token.to_lowercase())
+                    .or_insert_with(HashMap::new)
+                    .insert(current_path.clone(), tf_idf_score as i32);
+            }
         }
+ 
     }
     
     write_to_file(&output_file,serde_json::to_string_pretty(&inverted_index)
