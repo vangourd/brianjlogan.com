@@ -37,21 +37,61 @@ fn main() -> std::io::Result<()> {
     let dir_ls = fs::read_dir(&posts_dir)
         .expect("Problem getting post names from directory");
     // Building inverted index shell 
-    let mut inverted_index: HashMap<String, HashMap<String, i32>> = HashMap::new();
+    let mut inverted_index: HashMap<
+                                String, // token
+                                HashMap<
+                                    String, // file
+                                    HashMap<
+                                        String, // score type
+                                        i32     // score
+                                    >
+                                >
+                            > = HashMap::new();
 
     let stop_words: HashSet<&str> = HashSet::from(["a","the","an","#","is"]);
 
     for file in dir_ls{
 
-        let mut hm: HashMap<String, i32> = HashMap::new();
+        let mut hm: HashMap<String, HashMap<String, i32>> = HashMap::new();
 
-        let t = String::from("token");
+        let path = file?.path().into_os_string().into_string().unwrap();
 
-        let score = 0;
+        let token_list = tokens_from_file(&path, stop_words.clone()).unwrap();
 
-        hm.insert(file?.path().into_os_string().into_string().unwrap(), score);
         
-        inverted_index.insert(t, hm);
+        let mut count = HashMap::new(); 
+
+        let mut scores = HashMap::new();
+
+        for token in token_list {
+
+            // if token already in count += 1
+            if let Some(c) = count.get_mut(&token) {
+                *c += 1;
+            } else {
+                count.insert(token.clone(), 1);
+            }
+
+            // tf 
+            // # of times a token appears in document d, divided by all tokens in document
+            let tf: i32 = count.get(&token).unwrap() / <usize as TryInto<i32>>::try_into(count.len()).unwrap();
+            println!("{}",tf.clone());
+
+            scores.insert("tf".to_string(), tf);
+
+            hm.insert(path.clone(), scores.clone());
+        
+            inverted_index.insert(token.clone(), hm.clone());
+
+
+            
+        }
+        // idf
+        // log(total # of documents / # of documents containing token)
+
+        // multipl the tf and idf for each token to derive the tfidf score
+
+        
 
     }
     
