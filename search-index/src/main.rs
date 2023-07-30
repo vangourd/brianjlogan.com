@@ -36,6 +36,11 @@ fn main() -> std::io::Result<()> {
     // Collecting file names of posts
     let dir_ls = fs::read_dir(&posts_dir)
         .expect("Problem getting post names from directory");
+
+    let doc_entries: Vec<_> = dir_ls.collect();
+
+    let total_doc_count = doc_entries.len();
+
     // Building inverted index shell 
     let mut inverted_index: HashMap<
                                 String, // token
@@ -50,7 +55,7 @@ fn main() -> std::io::Result<()> {
 
     let stop_words: HashSet<&str> = HashSet::from(["a","the","an","#","is"]);
 
-    for file in dir_ls{
+    for file in doc_entries {
 
         let mut hm: HashMap<String, HashMap<String, f32>> = HashMap::new();
 
@@ -58,7 +63,6 @@ fn main() -> std::io::Result<()> {
 
         let token_list = tokens_from_file(&path, stop_words.clone()).unwrap();
 
-        
         let mut count = HashMap::new(); 
 
         let mut scores: HashMap<String, f32> = HashMap::new();
@@ -85,10 +89,13 @@ fn main() -> std::io::Result<()> {
         
             inverted_index.insert(token.clone(), hm.clone());
 
-        }
-        // idf
-        // log(total # of documents / # of documents containing token)
+            
+            let docs_with_token: Option<&HashMap<String, HashMap<String, f32>>> = inverted_index.get(&token);
 
+        }
+        // idf, 
+        // log(total # of documents / # of documents containing token)
+        
         // multipl the tf and idf for each token to derive the tfidf score
 
         
