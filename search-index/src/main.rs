@@ -67,7 +67,7 @@ fn main() -> std::io::Result<()> {
 
         let mut scores: HashMap<String, f32> = HashMap::new();
 
-        for mut token in token_list {
+        for mut token in token_list.clone() {
 
             token = token.to_lowercase();
 
@@ -89,9 +89,19 @@ fn main() -> std::io::Result<()> {
         
             inverted_index.insert(token.clone(), hm.clone());
 
-            
-            let docs_with_token: Option<&HashMap<String, HashMap<String, f32>>> = inverted_index.get(&token);
+        }
 
+        let mut idf_scores = HashMap::new();
+
+        for token in token_list.clone() {
+
+            let docs_with_token = inverted_index.get(&token.clone().to_string()).unwrap().len();
+
+            let idf: f32 = (total_doc_count as f32 / docs_with_token as f32).log(10.0);
+
+            idf_scores.insert(token.clone(), idf);
+
+            println!("token: {}, idf: {}",&token.clone(), idf);
         }
         // idf, 
         // log(total # of documents / # of documents containing token)
