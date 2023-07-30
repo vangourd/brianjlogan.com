@@ -93,9 +93,9 @@ fn main() -> std::io::Result<()> {
 
         let mut idf_scores = HashMap::new();
 
-        for token in token_list.clone() {
+        for token in inverted_index.keys() {
 
-            let docs_with_token = inverted_index.get(&token.clone().to_string()).unwrap().len();
+            let docs_with_token = inverted_index.get(token).unwrap().len();
 
             let idf: f32 = (total_doc_count as f32 / docs_with_token as f32).log(10.0);
 
