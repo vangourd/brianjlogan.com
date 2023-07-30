@@ -43,16 +43,16 @@ fn main() -> std::io::Result<()> {
                                     String, // file
                                     HashMap<
                                         String, // score type
-                                        i32     // score
+                                        f32     // score
                                     >
-                                >
+                                >   
                             > = HashMap::new();
 
     let stop_words: HashSet<&str> = HashSet::from(["a","the","an","#","is"]);
 
     for file in dir_ls{
 
-        let mut hm: HashMap<String, HashMap<String, i32>> = HashMap::new();
+        let mut hm: HashMap<String, HashMap<String, f32>> = HashMap::new();
 
         let path = file?.path().into_os_string().into_string().unwrap();
 
@@ -61,9 +61,11 @@ fn main() -> std::io::Result<()> {
         
         let mut count = HashMap::new(); 
 
-        let mut scores = HashMap::new();
+        let mut scores: HashMap<String, f32> = HashMap::new();
 
-        for token in token_list {
+        for mut token in token_list {
+
+            token = token.to_lowercase();
 
             // if token already in count += 1
             if let Some(c) = count.get_mut(&token) {
@@ -72,10 +74,10 @@ fn main() -> std::io::Result<()> {
                 count.insert(token.clone(), 1);
             }
 
-            // tf 
+            // tf
             // # of times a token appears in document d, divided by all tokens in document
-            let tf: i32 = count.get(&token).unwrap() / <usize as TryInto<i32>>::try_into(count.len()).unwrap();
-            println!("{}",tf.clone());
+            let tf: f32 = (*count.get(&token).unwrap() as f32) / (count.len() as f32);
+            //let tf: f32 = <i16 as TryInto<f32>>::try_into(*count.get(&token).unwrap()).unwrap() / <usize as TryInto<f32>>::try_into(count.len()).unwrap();
 
             scores.insert("tf".to_string(), tf);
 
@@ -83,8 +85,6 @@ fn main() -> std::io::Result<()> {
         
             inverted_index.insert(token.clone(), hm.clone());
 
-
-            
         }
         // idf
         // log(total # of documents / # of documents containing token)
