@@ -101,11 +101,26 @@ fn main() -> std::io::Result<()> {
 
             idf_scores.insert(token.clone(), idf);
 
-            println!("token: {}, idf: {}",&token.clone(), idf);
         }
-        // idf, 
-        // log(total # of documents / # of documents containing token)
+
+        let mut final_index = inverted_index.clone();
         
+        for mut token in inverted_index.keys() {
+            for post in inverted_index.get("key")
+                .expect("Problem accessing token in index").keys() {
+
+                    let f = final_index.get_mut(token)
+                                .expect("Problem getting token of final index")
+                                .get_mut(post)
+                                .expect("Problem getting post of final index");
+                    
+                    let tfidf = f.get("tf").unwrap() * idf_scores.get(token).unwrap();
+
+                    f.insert(String::from("tfidf"), tfidf);
+
+                }
+        }
+
         // multipl the tf and idf for each token to derive the tfidf score
 
         
