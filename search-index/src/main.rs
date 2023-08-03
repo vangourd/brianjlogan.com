@@ -68,7 +68,6 @@ impl Collection  {
 
         // Calculate the term frequency by dividing by total term count of document
         for doc in &self.docs {
-            println!("{:?}",doc.terms);
             for term in &doc.terms {
                 if let Some(val) = hm.get_mut(term){
                     let tf: f32 = val.1 / doc.terms.len() as f32;
