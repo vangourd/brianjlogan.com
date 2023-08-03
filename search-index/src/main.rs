@@ -11,6 +11,7 @@ use colored::Colorize;
 #[derive(Clone)]
 struct Collection {
     docs: Vec<Doc>,
+    stop_words: Option<HashSet<String>>
 }
 
 impl Collection  {
@@ -40,10 +41,38 @@ impl Collection  {
             };
         }
         Self {
-            docs: docs
+            docs: docs,
+            stop_words: Some(HashSet::new())
         }
 
     }
+
+    fn derive_term_frequencies(&self) -> HashMap<String, (String, f32)> {
+        let mut hm: HashMap<String, (String, f32)> = HashMap::new();
+        let sw = self.stop_words.as_ref().unwrap();
+        for doc in &self.docs {
+            for term in &doc.terms {
+                if sw.contains(term) {
+                    continue
+                }
+                if let Some(val) = hm.get_mut(term) {
+                    val.1 += 1.0;
+                } else {
+                    hm.insert(term.clone(), (doc.clone().path, 0.0));
+                }
+            }
+        }
+        hm
+    }
+
+    fn add_stop_words(mut self, stop_words: HashSet<&str>) -> Self
+    {
+        let mut current_stop_words = self.stop_words.take().unwrap_or_else(HashSet::new);
+        current_stop_words.extend(stop_words.iter().map(|s| s.to_string()));
+        self.stop_words = Some(current_stop_words);
+        self
+    }
+
 }
 
 #[derive(Clone)]
@@ -81,12 +110,18 @@ fn main() -> std::io::Result<()> {
     output_file.push_str("index/main.json");
 
     // Building a collection of documents
-    let c = Collection::construct(&posts_dir);
-    println!(
-        "[ {} ] {} Docs Indexed",
-        "SUCCESS".green(),
-        c.docs.len()
-    );
+    let mut c = Collection::construct(&posts_dir);
+
+    // Setting stop words
+    c = c.add_stop_words(HashSet::from(["a","the","an","#","is"]));
+
+    let tf_map = c.derive_term_frequencies();
+    
+    for (key, value)in tf_map.iter() {
+        println!("{}, {}", format!("{}",key).green(),value.1);
+    }
+
+    let index: HashMap<String, Vec<(String,f32)>>;
 
     // let docs: Vec<_> = dir_ls.collect();
 
@@ -106,12 +141,12 @@ fn main() -> std::io::Result<()> {
 
     //         token = token.to_lowercase();
 
-    //         // if token already in count += 1
-    //         if let Some(c) = count.get_mut(&token) {
-    //             *c += 1;
-    //         } else {
-    //             count.insert(token.clone(), 1);
-    //         }
+            // if token already in count += 1
+            // if let Some(c) = count.get_mut(&token) {
+            //     *c += 1;
+            // } else {
+            //     count.insert(token.clone(), 1);
+            // }
 
     //         // tf
     //         // # of times a token appears in document d, divided by all tokens in document
