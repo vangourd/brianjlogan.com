@@ -48,8 +48,11 @@ impl Collection  {
     }
 
     fn derive_term_frequencies(&self) -> HashMap<String, (String, f32)> {
+
+        // Count how many times the term occurs in the document
         let mut hm: HashMap<String, (String, f32)> = HashMap::new();
         let sw = self.stop_words.as_ref().unwrap();
+        let total_docs: f32;
         for doc in &self.docs {
             for term in &doc.terms {
                 if sw.contains(term) {
@@ -58,8 +61,20 @@ impl Collection  {
                 if let Some(val) = hm.get_mut(term) {
                     val.1 += 1.0;
                 } else {
-                    hm.insert(term.clone(), (doc.clone().path, 0.0));
+                    hm.insert(term.clone(), (doc.path.clone(), 0.0));
                 }
+            }
+        }
+
+        // Calculate the term frequency by dividing by total term count of document
+        for doc in &self.docs {
+            println!("{:?}",doc.terms);
+            for term in &doc.terms {
+                if let Some(val) = hm.get_mut(term){
+                    let tf: f32 = val.1 / doc.terms.len() as f32;
+                    val.1 = tf;
+                }
+                
             }
         }
         hm
@@ -81,15 +96,6 @@ struct Doc {
     terms: Vec<String>,
 }
 
-// fn tokens_from_file(path: &String, stop_words: HashSet<&str>) -> Result<Vec<String>> {
-//     let tokens = fs::read_to_string(path)
-//         .expect("Unable to read file")
-//         .split_whitespace()
-//         .filter(|t| !stop_words.contains(t))
-//         .map(|s| s.to_string())
-//         .collect();
-//     return Ok(tokens)
-// }
 
 // fn write_to_file(path: &str, data: String) {
 //     let mut file = File::create(&path)
@@ -123,30 +129,6 @@ fn main() -> std::io::Result<()> {
 
     let index: HashMap<String, Vec<(String,f32)>>;
 
-    // let docs: Vec<_> = dir_ls.collect();
-
-    // let stop_words: HashSet<&str> = HashSet::from(["a","the","an","#","is"]);
-
-    // for doc in docs {
-
-    //     let path = doc?.path().into_os_string().into_string().unwrap();
-
-    //     let token_list = tokens_from_file(&path, stop_words.clone()).unwrap();
-
-    //     let mut count = HashMap::new(); 
-
-    //     let mut tfMap = HashMap::new();
-
-    //     for mut token in token_list.clone() {
-
-    //         token = token.to_lowercase();
-
-            // if token already in count += 1
-            // if let Some(c) = count.get_mut(&token) {
-            //     *c += 1;
-            // } else {
-            //     count.insert(token.clone(), 1);
-            // }
 
     //         // tf
     //         // # of times a token appears in document d, divided by all tokens in document
