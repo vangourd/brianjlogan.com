@@ -1,6 +1,10 @@
 # The URL the site will be built for
 base_url = "https://brianjlogan.com"
 theme = "anatole-zola"
+default_language = "en"
+taxonomies = [
+	{name = "tags"},
+]
 
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = true
@@ -15,3 +19,15 @@ highlight_code = true
 
 [extra]
 # Put all your custom variables here
+
+[languages.en.translations]
+language_name = "English"
+about = "About"
+home = "Home"
+tags = "Tags"
+archive = "Archive"
+links = "Links"
+date_format = "%Y-%m-%d"
+next_page = "Next Page"
+last_page = "Last Page"
+
