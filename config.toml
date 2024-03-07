@@ -5,6 +5,8 @@ default_language = "en"
 taxonomies = [
 	{name = "tags"},
 ]
+title="Brian Logan"
+description="Technologist, Dad"
 
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = true
@@ -19,6 +21,8 @@ highlight_code = true
 
 [extra]
 # Put all your custom variables here
+social.github = "vangourd"
+
 
 [languages.en.translations]
 language_name = "English"
