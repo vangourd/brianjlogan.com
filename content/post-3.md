@@ -10,6 +10,13 @@ summary = "A Nordic themed third wave coffeeshop in the heart of maitland along 
 
 Located on 1792 in Maitland in a shopping center right off of Ventris. 
 
+[Website](https://choosekos.com/)
+[Yelp](https://www.yelp.com/biz/kos-coffee-maitland-maitland)
+[Instagram](https://www.instagram.com/choosekos/)
+[Google Maps](https://maps.app.goo.gl/Jdj5YHkkygAaBfSX9)
+
+
+
 ![](/images/coffee/kos-1.jpg)
 
 It's a Norwegian themed coffee shop. They have a La Marzocco Machine, their own roasting machine in the back, they sell bagged coffee, breakfast food, and espresso drinks. They have a small little store area for drinks and snacks. 
