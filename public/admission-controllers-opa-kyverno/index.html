@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en"  class="theme--light" >
+
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://brianjlogan.com/images/apple-touch-icon-144x144.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="120x120" href="https://brianjlogan.com/images/apple-touch-icon-120x120.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="https://brianjlogan.com/images/apple-touch-icon-72x72.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="57x57" href="https://brianjlogan.com/images/apple-touch-icon-57x57.png" />
+  <link rel="short icon" href="https://brianjlogan.com/images/favicon.png" type="image/x-icon" />
+  <link rel="stylesheet" href="https://brianjlogan.com/style.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
+  <title>Brian Logan • Policy as Code: Stop Bad Configs Before They Hit Your Cluster</title>
+  
+  
+  
+</head>
+
+<body>
+  <div id="sidebar" class="animated fadeInDown">
+    <div class="logo-title">
+      <div class="title">
+        <img src=https://brianjlogan.com/images/logo@2x.png style="width:127px;" alt="logo" />
+        <h3><a href="https://brianjlogan.com/">Brian Logan</a></h3>
+        <div class="description">
+          <p>Technologist, Dad</p>
+        </div>
+      </div>
+    </div>
+    <ul class="social-links"><li><a href="https://github.com/vangourd" aria-label="Go to Github profile page"><i class="fab fa-github"></i></a></li>
+      
+    </ul>
+    <div class="footer">
+      
+      <div class="by_zola"><a href="https://www.getzola.org/" target="_blank">Proudly published with Zola!</a></div>
+      
+    </div>
+  </div>
+  <div id="main">
+    <div class="page-top animated fadeInDown">
+      <div class="nav">
+        
+        
+        
+        
+        <li><a  href="https://brianjlogan.com/">Home</a></li>
+        <li><a  href="https://brianjlogan.com/about/">About</a></li>
+        <li><a  href="https://brianjlogan.com/contact/">Contact</a></li><li><a  href="https://brianjlogan.com/tags">Tags</a></li><li><a 
+            href="https://brianjlogan.com/archive/">Archive</a></li></div>
+      <div class="information">
+        <div class="back_btn">
+          <a onclick="window.history.go(-1)" ><i
+              class="fas fa-chevron-left"></i></a>
+        </div>
+        
+        
+        
+        <div class="avatar"><img src="https://brianjlogan.com/images/avatar.jpg"></div>
+      </div>
+    </div>
+    <div class="autopagerize_page_element">
+      <div class="content">
+        
+<article class="post animated fadeInDown">
+  <h1><a href="https:&#x2F;&#x2F;brianjlogan.com&#x2F;admission-controllers-opa-kyverno&#x2F;">Policy as Code: Stop Bad Configs Before They Hit Your Cluster</a></h1>
+  
+  <div class="post-content"><p>Code review catches bad application logic. But who catches the deployment that requests 100 CPU cores? Or the pod running as root? Or the ingress exposing an internal service to the internet?</p>
+<p>Kubernetes admission controllers. Specifically, policy engines like OPA Gatekeeper and Kyverno that let you define "what's allowed" as code.</p>
+<h1 id="how-admission-controllers-work">How Admission Controllers Work</h1>
+<p>When you <code>kubectl apply</code> something, it goes to the API server. Before the object is persisted, <a href="https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/">admission controllers</a> can:</p>
+<ul>
+<li><strong>Validate:</strong> Accept or reject the request</li>
+<li><strong>Mutate:</strong> Modify the request before persisting</li>
+</ul>
+<p>Policy engines hook into this to enforce whatever rules you define.</p>
+<h1 id="opa-gatekeeper">OPA Gatekeeper</h1>
+<p><a href="https://www.openpolicyagent.org/docs/kubernetes">OPA Gatekeeper</a> is OPA (Open Policy Agent) purpose-built for Kubernetes. You write policies in Rego (OPA's language) and apply them as CRDs.</p>
+<p>From the <a href="https://www.openpolicyagent.org/docs/kubernetes">OPA docs</a>: "Gatekeeper combines OPA with a Kubernetes-native layer that includes CRDs and a cluster admission controller implementation to enforce policies on Kubernetes resources."</p>
+<p>Example: Block privileged containers</p>
+<p>First, a constraint template (the policy logic):</p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#bf616a;">apiVersion</span><span>: </span><span style="color:#a3be8c;">templates.gatekeeper.sh/v1
+</span><span style="color:#bf616a;">kind</span><span>: </span><span style="color:#a3be8c;">ConstraintTemplate
+</span><span style="color:#bf616a;">metadata</span><span>:
+</span><span>  </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">k8spspprivileged
+</span><span style="color:#bf616a;">spec</span><span>:
+</span><span>  </span><span style="color:#bf616a;">crd</span><span>:
+</span><span>    </span><span style="color:#bf616a;">spec</span><span>:
+</span><span>      </span><span style="color:#bf616a;">names</span><span>:
+</span><span>        </span><span style="color:#bf616a;">kind</span><span>: </span><span style="color:#a3be8c;">K8sPSPPrivileged
+</span><span>  </span><span style="color:#bf616a;">targets</span><span>:
+</span><span>    - </span><span style="color:#bf616a;">target</span><span>: </span><span style="color:#a3be8c;">admission.k8s.gatekeeper.sh
+</span><span>      </span><span style="color:#bf616a;">rego</span><span>: </span><span style="color:#b48ead;">|
+</span><span style="color:#a3be8c;">        package k8spspprivileged
+</span><span style="color:#a3be8c;">        violation[{&quot;msg&quot;: msg}] {
+</span><span style="color:#a3be8c;">          c := input.review.object.spec.containers[_]
+</span><span style="color:#a3be8c;">          c.securityContext.privileged
+</span><span style="color:#a3be8c;">          msg := sprintf(&quot;Privileged container not allowed: %v&quot;, [c.name])
+</span><span style="color:#a3be8c;">        }
+</span></code></pre>
+<p>Then a constraint (where to apply it):</p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#bf616a;">apiVersion</span><span>: </span><span style="color:#a3be8c;">constraints.gatekeeper.sh/v1beta1
+</span><span style="color:#bf616a;">kind</span><span>: </span><span style="color:#a3be8c;">K8sPSPPrivileged
+</span><span style="color:#bf616a;">metadata</span><span>:
+</span><span>  </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">no-privileged-containers
+</span><span style="color:#bf616a;">spec</span><span>:
+</span><span>  </span><span style="color:#bf616a;">match</span><span>:
+</span><span>    </span><span style="color:#bf616a;">kinds</span><span>:
+</span><span>      - </span><span style="color:#bf616a;">apiGroups</span><span>: [&quot;&quot;]
+</span><span>        </span><span style="color:#bf616a;">kinds</span><span>: [&quot;</span><span style="color:#a3be8c;">Pod</span><span>&quot;]
+</span></code></pre>
+<p>Now any privileged pod gets rejected with a clear error message.</p>
+<p><strong>Pros:</strong> Very powerful, Rego is flexible, large policy library available
+<strong>Cons:</strong> Rego has a learning curve, more complex to author policies</p>
+<h1 id="kyverno">Kyverno</h1>
+<p><a href="https://kyverno.io/">Kyverno</a> takes a different approach: policies are just YAML. No new language to learn.</p>
+<p>Same example—block privileged containers:</p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#bf616a;">apiVersion</span><span>: </span><span style="color:#a3be8c;">kyverno.io/v1
+</span><span style="color:#bf616a;">kind</span><span>: </span><span style="color:#a3be8c;">ClusterPolicy
+</span><span style="color:#bf616a;">metadata</span><span>:
+</span><span>  </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">disallow-privileged
+</span><span style="color:#bf616a;">spec</span><span>:
+</span><span>  </span><span style="color:#bf616a;">validationFailureAction</span><span>: </span><span style="color:#a3be8c;">enforce
+</span><span>  </span><span style="color:#bf616a;">rules</span><span>:
+</span><span>  - </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">no-privileged
+</span><span>    </span><span style="color:#bf616a;">match</span><span>:
+</span><span>      </span><span style="color:#bf616a;">resources</span><span>:
+</span><span>        </span><span style="color:#bf616a;">kinds</span><span>:
+</span><span>        - </span><span style="color:#a3be8c;">Pod
+</span><span>    </span><span style="color:#bf616a;">validate</span><span>:
+</span><span>      </span><span style="color:#bf616a;">message</span><span>: &quot;</span><span style="color:#a3be8c;">Privileged containers are not allowed</span><span>&quot;
+</span><span>      </span><span style="color:#bf616a;">pattern</span><span>:
+</span><span>        </span><span style="color:#bf616a;">spec</span><span>:
+</span><span>          </span><span style="color:#bf616a;">containers</span><span>:
+</span><span>          - </span><span style="color:#bf616a;">securityContext</span><span>:
+</span><span>              </span><span style="color:#bf616a;">privileged</span><span>: &quot;</span><span style="color:#a3be8c;">!true</span><span>&quot;
+</span></code></pre>
+<p>Much more readable if you know Kubernetes manifests.</p>
+<p>From the <a href="https://kyverno.io/">Kyverno intro</a>: "With Kyverno, policies are managed as Kubernetes resources and no new language is required to write policies."</p>
+<p><strong>Pros:</strong> YAML-native (no new language), easier to get started, mutations are straightforward
+<strong>Cons:</strong> Less flexible for complex logic than Rego</p>
+<h1 id="which-one">Which One?</h1>
+<p>Per <a href="https://dev.to/hkhelil/admission-controllers-in-kubernetes-opa-gatekeeper-kyverno-and-azure-policy-add-on-for-aks-which-one-wins-237d">this comparison</a>:</p>
+<table><thead><tr><th>Aspect</th><th>OPA Gatekeeper</th><th>Kyverno</th></tr></thead><tbody>
+<tr><td>Policy Language</td><td>Rego</td><td>YAML</td></tr>
+<tr><td>Learning Curve</td><td>Steeper</td><td>Gentle</td></tr>
+<tr><td>Flexibility</td><td>Very high</td><td>High</td></tr>
+<tr><td>Kubernetes Native</td><td>Via CRDs</td><td>Fully native</td></tr>
+</tbody></table>
+<p><strong>Choose Gatekeeper if:</strong></p>
+<ul>
+<li>You already use OPA elsewhere</li>
+<li>You need complex policy logic</li>
+<li>Your team is comfortable with Rego</li>
+</ul>
+<p><strong>Choose Kyverno if:</strong></p>
+<ul>
+<li>You want to get started quickly</li>
+<li>Team prefers staying in YAML-land</li>
+<li>Simpler policies are sufficient</li>
+</ul>
+<p>Both are production-ready and actively maintained.</p>
+<h1 id="common-policies-to-implement">Common Policies to Implement</h1>
+<p>Start with these:</p>
+<p><strong>Require resource limits:</strong></p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#65737e;"># Kyverno
+</span><span style="color:#bf616a;">validate</span><span>:
+</span><span>  </span><span style="color:#bf616a;">message</span><span>: &quot;</span><span style="color:#a3be8c;">CPU and memory limits required</span><span>&quot;
+</span><span>  </span><span style="color:#bf616a;">pattern</span><span>:
+</span><span>    </span><span style="color:#bf616a;">spec</span><span>:
+</span><span>      </span><span style="color:#bf616a;">containers</span><span>:
+</span><span>      - </span><span style="color:#bf616a;">resources</span><span>:
+</span><span>          </span><span style="color:#bf616a;">limits</span><span>:
+</span><span>            </span><span style="color:#bf616a;">memory</span><span>: &quot;</span><span style="color:#a3be8c;">?*</span><span>&quot;
+</span><span>            </span><span style="color:#bf616a;">cpu</span><span>: &quot;</span><span style="color:#a3be8c;">?*</span><span>&quot;
+</span></code></pre>
+<p><strong>Block latest tag:</strong></p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#bf616a;">validate</span><span>:
+</span><span>  </span><span style="color:#bf616a;">message</span><span>: &quot;</span><span style="color:#a3be8c;">Using &#39;latest&#39; tag is not allowed</span><span>&quot;
+</span><span>  </span><span style="color:#bf616a;">pattern</span><span>:
+</span><span>    </span><span style="color:#bf616a;">spec</span><span>:
+</span><span>      </span><span style="color:#bf616a;">containers</span><span>:
+</span><span>      - </span><span style="color:#bf616a;">image</span><span>: &quot;</span><span style="color:#a3be8c;">!*:latest</span><span>&quot;
+</span></code></pre>
+<p><strong>Require labels:</strong></p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#bf616a;">validate</span><span>:
+</span><span>  </span><span style="color:#bf616a;">message</span><span>: &quot;</span><span style="color:#a3be8c;">Label &#39;app.kubernetes.io/name&#39; required</span><span>&quot;
+</span><span>  </span><span style="color:#bf616a;">pattern</span><span>:
+</span><span>    </span><span style="color:#bf616a;">metadata</span><span>:
+</span><span>      </span><span style="color:#bf616a;">labels</span><span>:
+</span><span>        </span><span style="color:#bf616a;">app.kubernetes.io/name</span><span>: &quot;</span><span style="color:#a3be8c;">?*</span><span>&quot;
+</span></code></pre>
+<p><strong>Restrict registries:</strong></p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#bf616a;">validate</span><span>:
+</span><span>  </span><span style="color:#bf616a;">message</span><span>: &quot;</span><span style="color:#a3be8c;">Images must come from approved registries</span><span>&quot;
+</span><span>  </span><span style="color:#bf616a;">pattern</span><span>:
+</span><span>    </span><span style="color:#bf616a;">spec</span><span>:
+</span><span>      </span><span style="color:#bf616a;">containers</span><span>:
+</span><span>      - </span><span style="color:#bf616a;">image</span><span>: &quot;</span><span style="color:#a3be8c;">myregistry.com/*</span><span>&quot;
+</span></code></pre>
+<h1 id="mutations-are-powerful-too">Mutations Are Powerful Too</h1>
+<p>Policies can also modify resources automatically:</p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#bf616a;">apiVersion</span><span>: </span><span style="color:#a3be8c;">kyverno.io/v1
+</span><span style="color:#bf616a;">kind</span><span>: </span><span style="color:#a3be8c;">ClusterPolicy
+</span><span style="color:#bf616a;">metadata</span><span>:
+</span><span>  </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">add-default-labels
+</span><span style="color:#bf616a;">spec</span><span>:
+</span><span>  </span><span style="color:#bf616a;">rules</span><span>:
+</span><span>  - </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">add-team-label
+</span><span>    </span><span style="color:#bf616a;">match</span><span>:
+</span><span>      </span><span style="color:#bf616a;">resources</span><span>:
+</span><span>        </span><span style="color:#bf616a;">kinds</span><span>:
+</span><span>        - </span><span style="color:#a3be8c;">Pod
+</span><span>    </span><span style="color:#bf616a;">mutate</span><span>:
+</span><span>      </span><span style="color:#bf616a;">patchStrategicMerge</span><span>:
+</span><span>        </span><span style="color:#bf616a;">metadata</span><span>:
+</span><span>          </span><span style="color:#bf616a;">labels</span><span>:
+</span><span>            </span><span style="color:#bf616a;">managed-by</span><span>: </span><span style="color:#a3be8c;">kubernetes
+</span></code></pre>
+<p>Now every pod gets the label automatically. Great for standardization without bothering developers.</p>
+<h1 id="enforcement-modes">Enforcement Modes</h1>
+<p>Don't go to full enforcement immediately:</p>
+<ol>
+<li><strong>Audit mode:</strong> Log violations but don't block</li>
+<li><strong>Warn mode:</strong> Show warnings but allow</li>
+<li><strong>Enforce mode:</strong> Block violations</li>
+</ol>
+<p>Start in audit, fix existing violations, then move to enforce.</p>
+<h1 id="the-bigger-picture">The Bigger Picture</h1>
+<p>Admission controllers are your last line of defense before bad configs hit the cluster. Combined with:</p>
+<ul>
+<li>RBAC (who can do what)</li>
+<li>Network policies (what can talk to what)</li>
+<li>Pod security standards (how pods can run)</li>
+</ul>
+<p>You get defense in depth. Any one layer might have gaps, but together they make misconfiguration much harder.</p>
+<p><strong>Sources:</strong></p>
+<ul>
+<li><a href="https://www.openpolicyagent.org/docs/kubernetes">OPA for Kubernetes - Open Policy Agent</a></li>
+<li><a href="https://kyverno.io/">Kyverno Documentation</a></li>
+<li><a href="https://dev.to/hkhelil/admission-controllers-in-kubernetes-opa-gatekeeper-kyverno-and-azure-policy-add-on-for-aks-which-one-wins-237d">Admission Controllers Comparison - DEV</a></li>
+<li><a href="https://www.stackgenie.io/analysing-kubernetes-policy-enforcement-using-opa-gatekeeper-and-kyverno/">Kubernetes Policy Enforcement - StackGenie</a></li>
+</ul>
+</div>
+  <div class="post-footer">
+    <div class="meta">
+      <div class="info">
+        
+        <i class="far fa-sun"></i><span class="date">2024-09-12</span>
+        
+        
+        <i class="fas fa-tags"></i>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/kubernetes">&nbsp;kubernetes</a>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/security">&nbsp;security</a>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/opa">&nbsp;opa</a>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/kyverno">&nbsp;kyverno</a>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/policy">&nbsp;policy</a>
+        
+        
+      </div>
+    </div>
+  </div>
+</article>
+<div class="share">
+  <div class="weibo">
+    <a class="fab fa-weibo"
+      href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&title=',e(d.title),'&appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a>
+  </div>
+  <div class="twitter">
+    <a class="fab fa-twitter"
+      href="http://twitter.com/share?text=Policy as Code: Stop Bad Configs Before They Hit Your Cluster&url=https:&#x2F;&#x2F;brianjlogan.com&#x2F;admission-controllers-opa-kyverno&#x2F;&hashtags=kubernetes,security,opa,kyverno,policy"></a>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function showLanguages() {
+      let currentDisplay = document.getElementById("languages").style.display;
+      if (currentDisplay == 'none') {
+        document.getElementById("languages").style.display = 'block';
+      } else {
+        document.getElementById("languages").style.display = 'none';
+      }
+    }
+  </script>
+</body>
+
+</html>

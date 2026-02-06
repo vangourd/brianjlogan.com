@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en"  class="theme--light" >
+
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://brianjlogan.com/images/apple-touch-icon-144x144.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="120x120" href="https://brianjlogan.com/images/apple-touch-icon-120x120.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="https://brianjlogan.com/images/apple-touch-icon-72x72.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="57x57" href="https://brianjlogan.com/images/apple-touch-icon-57x57.png" />
+  <link rel="short icon" href="https://brianjlogan.com/images/favicon.png" type="image/x-icon" />
+  <link rel="stylesheet" href="https://brianjlogan.com/style.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
+  <title>Brian Logan • Stop Deploying Container Images You Haven&#x27;t Scanned</title>
+  
+  
+  
+</head>
+
+<body>
+  <div id="sidebar" class="animated fadeInDown">
+    <div class="logo-title">
+      <div class="title">
+        <img src=https://brianjlogan.com/images/logo@2x.png style="width:127px;" alt="logo" />
+        <h3><a href="https://brianjlogan.com/">Brian Logan</a></h3>
+        <div class="description">
+          <p>Technologist, Dad</p>
+        </div>
+      </div>
+    </div>
+    <ul class="social-links"><li><a href="https://github.com/vangourd" aria-label="Go to Github profile page"><i class="fab fa-github"></i></a></li>
+      
+    </ul>
+    <div class="footer">
+      
+      <div class="by_zola"><a href="https://www.getzola.org/" target="_blank">Proudly published with Zola!</a></div>
+      
+    </div>
+  </div>
+  <div id="main">
+    <div class="page-top animated fadeInDown">
+      <div class="nav">
+        
+        
+        
+        
+        <li><a  href="https://brianjlogan.com/">Home</a></li>
+        <li><a  href="https://brianjlogan.com/about/">About</a></li>
+        <li><a  href="https://brianjlogan.com/contact/">Contact</a></li><li><a  href="https://brianjlogan.com/tags">Tags</a></li><li><a 
+            href="https://brianjlogan.com/archive/">Archive</a></li></div>
+      <div class="information">
+        <div class="back_btn">
+          <a onclick="window.history.go(-1)" ><i
+              class="fas fa-chevron-left"></i></a>
+        </div>
+        
+        
+        
+        <div class="avatar"><img src="https://brianjlogan.com/images/avatar.jpg"></div>
+      </div>
+    </div>
+    <div class="autopagerize_page_element">
+      <div class="content">
+        
+<article class="post animated fadeInDown">
+  <h1><a href="https:&#x2F;&#x2F;brianjlogan.com&#x2F;container-image-security&#x2F;">Stop Deploying Container Images You Haven&#x27;t Scanned</a></h1>
+  
+  <div class="post-content"><p>Found a great image on Docker Hub. Pulled it. Deployed it. Three weeks later, security finds a cryptominer running in production.</p>
+<p>We've all been there. Or we know someone who has. Container images are the new attack vector, and most teams don't treat them with the paranoia they deserve.</p>
+<h1 id="the-supply-chain-problem">The Supply Chain Problem</h1>
+<p>You're not just deploying your code. You're deploying:</p>
+<ul>
+<li>A base image (who maintains that?)</li>
+<li>System packages (when were they updated?)</li>
+<li>Dependencies (npm, pip, cargo... how many CVEs are hiding in there?)</li>
+<li>Build artifacts (was the CI compromised?)</li>
+</ul>
+<p>Any link in that chain can be compromised. And as the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Kubernetes_Security_Cheat_Sheet.html">OWASP Kubernetes Security Cheat Sheet</a> notes, securing your container images during build is critical.</p>
+<h1 id="scan-everything">Scan Everything</h1>
+<p>Image scanning tools analyze layers for known vulnerabilities. The good news: there are solid open-source options.</p>
+<p><strong>Trivy</strong> is my go-to. Fast, comprehensive, easy to integrate:</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#65737e;"># Scan an image
+</span><span style="color:#bf616a;">trivy</span><span> image myapp:latest
+</span><span>
+</span><span style="color:#65737e;"># Scan and fail on high/critical
+</span><span style="color:#bf616a;">trivy</span><span> image</span><span style="color:#bf616a;"> --severity</span><span> HIGH,CRITICAL</span><span style="color:#bf616a;"> --exit-code</span><span> 1 myapp:latest
+</span></code></pre>
+<p>Other solid options: <a href="https://github.com/quay/clair">Clair</a>, <a href="https://github.com/anchore/grype">Grype</a>, <a href="https://snyk.io/product/container-vulnerability-management/">Snyk Container</a>.</p>
+<p>As <a href="https://www.sysdig.com/learn-cloud-native/12-container-image-scanning-best-practices">Sysdig's best practices</a> recommends: "Healthy security practices include regular scans of container images before deployment."</p>
+<h1 id="when-to-scan">When to Scan</h1>
+<ol>
+<li><strong>At build time</strong> - Catch issues before they hit your registry</li>
+<li><strong>In your registry</strong> - Many registries (Harbor, ECR, GCR) scan automatically</li>
+<li><strong>At deploy time</strong> - Admission controllers can block vulnerable images</li>
+<li><strong>Continuously</strong> - New CVEs are discovered daily; rescan regularly</li>
+</ol>
+<h1 id="sign-your-images">Sign Your Images</h1>
+<p>Scanning tells you about known vulnerabilities. Signing tells you the image hasn't been tampered with.</p>
+<p><a href="https://docs.sigstore.dev/cosign/overview/">Cosign</a> (part of Sigstore) makes this straightforward:</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#65737e;"># Sign an image
+</span><span style="color:#bf616a;">cosign</span><span> sign myregistry.com/myapp:v1.0.0
+</span><span>
+</span><span style="color:#65737e;"># Verify before deploying
+</span><span style="color:#bf616a;">cosign</span><span> verify myregistry.com/myapp:v1.0.0
+</span></code></pre>
+<p>Combined with admission controllers, you can enforce that only signed images run in your cluster.</p>
+<h1 id="use-minimal-base-images">Use Minimal Base Images</h1>
+<p>Every package in your image is potential attack surface. The <a href="https://github.com/GoogleContainerTools/distroless">distroless images</a> concept is powerful: no shell, no package manager, just your app and its dependencies.</p>
+<pre data-lang="dockerfile" style="background-color:#2b303b;color:#c0c5ce;" class="language-dockerfile "><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#65737e;"># Instead of this
+</span><span style="color:#b48ead;">FROM</span><span> ubuntu:22.04
+</span><span>
+</span><span style="color:#65737e;"># Try this
+</span><span style="color:#b48ead;">FROM</span><span> gcr.io/distroless/static-debian12
+</span></code></pre>
+<p>As the <a href="https://www.armosec.io/glossary/container-image-scanning/">ARMO guide</a> notes: "Distroless images allow you to package only your application and its dependencies in a lightweight container image, which minimizes the attack surface."</p>
+<p>Can't go full distroless? At least use slim variants and remove unnecessary packages.</p>
+<h1 id="pin-your-images">Pin Your Images</h1>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#65737e;"># Bad - this changes constantly
+</span><span style="color:#bf616a;">image</span><span>: </span><span style="color:#a3be8c;">nginx:latest
+</span><span>
+</span><span style="color:#65737e;"># Better - specific version
+</span><span style="color:#bf616a;">image</span><span>: </span><span style="color:#a3be8c;">nginx:1.25.3
+</span><span>
+</span><span style="color:#65737e;"># Best - immutable digest
+</span><span style="color:#bf616a;">image</span><span>: </span><span style="color:#a3be8c;">nginx@sha256:abc123...
+</span></code></pre>
+<p>Using <code>latest</code> or mutable tags means the image you scanned might not be the one you deploy. Digests guarantee immutability.</p>
+<h1 id="private-registries">Private Registries</h1>
+<p>Stop pulling directly from Docker Hub in production. Set up a private registry and only push vetted images:</p>
+<ul>
+<li>All images scanned before entering</li>
+<li>Signature verification</li>
+<li>Access controls</li>
+<li>Audit logging</li>
+</ul>
+<p><a href="https://goharbor.io/">Harbor</a> is a solid open-source choice. All major cloud providers offer managed registries too.</p>
+<h1 id="admission-control">Admission Control</h1>
+<p>Block bad images before they run. Kubernetes admission controllers can:</p>
+<ul>
+<li>Require images from trusted registries only</li>
+<li>Block images with critical vulnerabilities</li>
+<li>Enforce image signatures</li>
+<li>Prevent <code>latest</code> tags</li>
+</ul>
+<p>Tools like <a href="https://kyverno.io/">Kyverno</a> or <a href="https://open-policy-agent.github.io/gatekeeper/">OPA Gatekeeper</a> make this policy-driven:</p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#bf616a;">apiVersion</span><span>: </span><span style="color:#a3be8c;">kyverno.io/v1
+</span><span style="color:#bf616a;">kind</span><span>: </span><span style="color:#a3be8c;">ClusterPolicy
+</span><span style="color:#bf616a;">metadata</span><span>:
+</span><span>  </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">require-signed-images
+</span><span style="color:#bf616a;">spec</span><span>:
+</span><span>  </span><span style="color:#bf616a;">validationFailureAction</span><span>: </span><span style="color:#a3be8c;">enforce
+</span><span>  </span><span style="color:#bf616a;">rules</span><span>:
+</span><span>  - </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">check-signature
+</span><span>    </span><span style="color:#bf616a;">match</span><span>:
+</span><span>      </span><span style="color:#bf616a;">resources</span><span>:
+</span><span>        </span><span style="color:#bf616a;">kinds</span><span>:
+</span><span>        - </span><span style="color:#a3be8c;">Pod
+</span><span>    </span><span style="color:#bf616a;">verifyImages</span><span>:
+</span><span>    - </span><span style="color:#bf616a;">image</span><span>: &quot;</span><span style="color:#a3be8c;">myregistry.com/*</span><span>&quot;
+</span><span>      </span><span style="color:#bf616a;">key</span><span>: </span><span style="color:#b48ead;">|-
+</span><span style="color:#a3be8c;">        -----BEGIN PUBLIC KEY-----
+</span><span style="color:#a3be8c;">        ...
+</span><span style="color:#a3be8c;">        -----END PUBLIC KEY-----
+</span></code></pre>
+<h1 id="don-t-run-as-root">Don't Run as Root</h1>
+<p>Even with a good image, running as root is asking for trouble:</p>
+<pre data-lang="dockerfile" style="background-color:#2b303b;color:#c0c5ce;" class="language-dockerfile "><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#65737e;"># Create non-root user
+</span><span>RUN adduser --disabled-password --gecos &quot;&quot; appuser
+</span><span>USER appuser
+</span></code></pre>
+<p>And in your Kubernetes manifests:</p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#bf616a;">securityContext</span><span>:
+</span><span>  </span><span style="color:#bf616a;">runAsNonRoot</span><span>: </span><span style="color:#d08770;">true
+</span><span>  </span><span style="color:#bf616a;">runAsUser</span><span>: </span><span style="color:#d08770;">1000
+</span></code></pre>
+<h1 id="the-pipeline">The Pipeline</h1>
+<p>Put it together:</p>
+<ol>
+<li>Build with minimal base image</li>
+<li>Scan at build time, fail on critical vulns</li>
+<li>Sign the image</li>
+<li>Push to private registry (which scans again)</li>
+<li>Admission controller verifies signature and scan status</li>
+<li>Deploy</li>
+</ol>
+<p>It sounds like a lot, but most of this can be automated in CI. The alternative—discovering a compromised image in production—is much more expensive.</p>
+<p><strong>Sources:</strong></p>
+<ul>
+<li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Kubernetes_Security_Cheat_Sheet.html">OWASP Kubernetes Security Cheat Sheet</a></li>
+<li><a href="https://www.sysdig.com/learn-cloud-native/12-container-image-scanning-best-practices">12 Container Image Scanning Best Practices - Sysdig</a></li>
+<li><a href="https://www.armosec.io/glossary/container-image-scanning/">Container Image Scanning - ARMO</a></li>
+<li><a href="https://docs.sigstore.dev/cosign/overview/">Cosign - Sigstore</a></li>
+</ul>
+</div>
+  <div class="post-footer">
+    <div class="meta">
+      <div class="info">
+        
+        <i class="far fa-sun"></i><span class="date">2024-04-10</span>
+        
+        
+        <i class="fas fa-tags"></i>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/kubernetes">&nbsp;kubernetes</a>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/security">&nbsp;security</a>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/containers">&nbsp;containers</a>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/supply-chain">&nbsp;supply-chain</a>
+        
+        
+      </div>
+    </div>
+  </div>
+</article>
+<div class="share">
+  <div class="weibo">
+    <a class="fab fa-weibo"
+      href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&title=',e(d.title),'&appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a>
+  </div>
+  <div class="twitter">
+    <a class="fab fa-twitter"
+      href="http://twitter.com/share?text=Stop Deploying Container Images You Haven&#x27;t Scanned&url=https:&#x2F;&#x2F;brianjlogan.com&#x2F;container-image-security&#x2F;&hashtags=kubernetes,security,containers,supply-chain"></a>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function showLanguages() {
+      let currentDisplay = document.getElementById("languages").style.display;
+      if (currentDisplay == 'none') {
+        document.getElementById("languages").style.display = 'block';
+      } else {
+        document.getElementById("languages").style.display = 'none';
+      }
+    }
+  </script>
+</body>
+
+</html>

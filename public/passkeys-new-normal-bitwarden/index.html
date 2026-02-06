@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en"  class="theme--light" >
+
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://brianjlogan.com/images/apple-touch-icon-144x144.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="120x120" href="https://brianjlogan.com/images/apple-touch-icon-120x120.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="https://brianjlogan.com/images/apple-touch-icon-72x72.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="57x57" href="https://brianjlogan.com/images/apple-touch-icon-57x57.png" />
+  <link rel="short icon" href="https://brianjlogan.com/images/favicon.png" type="image/x-icon" />
+  <link rel="stylesheet" href="https://brianjlogan.com/style.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
+  <title>Brian Logan • Passkeys Should Be the New Normal</title>
+  
+  
+  
+</head>
+
+<body>
+  <div id="sidebar" class="animated fadeInDown">
+    <div class="logo-title">
+      <div class="title">
+        <img src=https://brianjlogan.com/images/logo@2x.png style="width:127px;" alt="logo" />
+        <h3><a href="https://brianjlogan.com/">Brian Logan</a></h3>
+        <div class="description">
+          <p>Technologist, Dad</p>
+        </div>
+      </div>
+    </div>
+    <ul class="social-links"><li><a href="https://github.com/vangourd" aria-label="Go to Github profile page"><i class="fab fa-github"></i></a></li>
+      
+    </ul>
+    <div class="footer">
+      
+      <div class="by_zola"><a href="https://www.getzola.org/" target="_blank">Proudly published with Zola!</a></div>
+      
+    </div>
+  </div>
+  <div id="main">
+    <div class="page-top animated fadeInDown">
+      <div class="nav">
+        
+        
+        
+        
+        <li><a  href="https://brianjlogan.com/">Home</a></li>
+        <li><a  href="https://brianjlogan.com/about/">About</a></li>
+        <li><a  href="https://brianjlogan.com/contact/">Contact</a></li><li><a  href="https://brianjlogan.com/tags">Tags</a></li><li><a 
+            href="https://brianjlogan.com/archive/">Archive</a></li></div>
+      <div class="information">
+        <div class="back_btn">
+          <a onclick="window.history.go(-1)" ><i
+              class="fas fa-chevron-left"></i></a>
+        </div>
+        
+        
+        
+        <div class="avatar"><img src="https://brianjlogan.com/images/avatar.jpg"></div>
+      </div>
+    </div>
+    <div class="autopagerize_page_element">
+      <div class="content">
+        
+<article class="post animated fadeInDown">
+  <h1><a href="https:&#x2F;&#x2F;brianjlogan.com&#x2F;passkeys-new-normal-bitwarden&#x2F;">Passkeys Should Be the New Normal</a></h1>
+  
+  <div class="post-content"><p>I've been using passkeys for about six months now. Every time I sign in to a site that supports them, I'm reminded how terrible passwords are.</p>
+<p>Click login. Touch fingerprint sensor. Done.</p>
+<p>No password to remember. No TOTP code to race against. No phishing possible. It's the future we were promised, and it's actually here.</p>
+<h1 id="how-passkeys-work">How Passkeys Work</h1>
+<p><a href="https://fidoalliance.org/passkeys/">FIDO Alliance explains</a> it simply: passkeys use public key cryptography for authentication.</p>
+<p>When you register:</p>
+<ol>
+<li>Your device generates a key pair</li>
+<li>Private key stays on your device (in secure hardware)</li>
+<li>Public key goes to the service</li>
+</ol>
+<p>When you sign in:</p>
+<ol>
+<li>Service sends a challenge</li>
+<li>Your device signs it with the private key</li>
+<li>Service verifies with your public key</li>
+</ol>
+<p>The private key never leaves your device. It never crosses the network. The service can't leak it because they don't have it. A phishing site can't capture it because authentication is bound to the legitimate domain.</p>
+<h1 id="why-this-beats-everything-else">Why This Beats Everything Else</h1>
+<p><strong>Phishing immunity.</strong> Your passkey for <code>bank.com</code> won't work on <code>bank-secure-login.com</code>. The browser enforces domain binding cryptographically.</p>
+<p><strong>No secrets to steal.</strong> Password databases are attractive targets. Passkey public keys? Useless to attackers.</p>
+<p><strong>Better UX than passwords + 2FA.</strong> One biometric prompt versus typing password + opening authenticator + typing code before it expires.</p>
+<p>As <a href="https://www.webauthn.me/passkeys">WebAuthn.me</a> notes: "Passkeys help prevent remote phishing by replacing phishable methods like passwords, SMS, and email codes."</p>
+<h1 id="the-sync-problem-solved">The Sync Problem (Solved)</h1>
+<p>Original FIDO2 keys were device-bound. Register on your laptop, can't sign in from your phone. Lose your laptop, lose access.</p>
+<p>Synced passkeys fix this. Your passkeys sync across devices like passwords do. Apple, Google, and Microsoft all support this in their ecosystems.</p>
+<p>But what if you use multiple ecosystems? That's where password managers come in.</p>
+<h1 id="bitwarden-makes-it-practical">Bitwarden Makes It Practical</h1>
+<p><a href="https://bitwarden.com/passwordless-passkeys/">Bitwarden supports passkeys</a> for both storing passkeys and logging into Bitwarden itself with a passkey.</p>
+<p>From their <a href="https://bitwarden.com/help/storing-passkeys/">docs</a>: "Passkeys can be stored and used by Bitwarden Password Manager. Using browser extensions and mobile apps, users can log in to their favorite apps and websites that have passkey login capability."</p>
+<p>Setup is simple:</p>
+<ol>
+<li>When a site offers passkey registration, choose Bitwarden as storage</li>
+<li>Bitwarden saves it to your encrypted vault</li>
+<li>On any device with Bitwarden, that passkey is available</li>
+</ol>
+<p>The workflow:</p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>Site: &quot;Sign in with passkey&quot;
+</span><span>Bitwarden: Offers your saved passkey
+</span><span>You: Approve with biometrics
+</span><span>Done.
+</span></code></pre>
+<p>Available to all Bitwarden users, including free tier.</p>
+<h1 id="migration-strategy">Migration Strategy</h1>
+<p>You don't need to switch everything overnight:</p>
+<ol>
+<li>
+<p><strong>Enable passkeys for Bitwarden itself.</strong> <a href="https://bitwarden.com/help/login-with-passkeys/">Protect your vault</a> with a passkey—it's the most critical account.</p>
+</li>
+<li>
+<p><strong>Start with high-value accounts.</strong> Google, Microsoft, Apple, your bank. Where breach damage is worst.</p>
+</li>
+<li>
+<p><strong>Keep password fallbacks initially.</strong> Most sites support both during transition.</p>
+</li>
+<li>
+<p><strong>Use passkeys for new accounts.</strong> Skip passwords entirely when sites offer passkeys.</p>
+</li>
+</ol>
+<p>Check <a href="https://passkeys.directory/">passkeys.directory</a> (or Bitwarden's <a href="https://github.com/bitwarden/passkeys-index">passkey index</a>) to see which services support passkeys.</p>
+<h1 id="enterprise-considerations">Enterprise Considerations</h1>
+<p>For organizations, passkeys solve real problems:</p>
+<p><strong>Phishing resistance at scale.</strong> Even sophisticated spear-phishing can't capture passkeys.</p>
+<p><strong>No credential theft.</strong> Nothing in memory to dump, nothing transmitted to intercept.</p>
+<p><strong>Simpler compliance.</strong> Strong auth without hardware token logistics.</p>
+<p><strong>Reduced helpdesk burden.</strong> No password resets.</p>
+<h1 id="what-about-sites-without-support">What About Sites Without Support?</h1>
+<p>Many services still don't support passkeys. For those:</p>
+<ul>
+<li>Generate random unique passwords</li>
+<li>Store in Bitwarden</li>
+<li>Enable TOTP where available</li>
+</ul>
+<p>Over time, adoption will grow. Major platforms already support passkeys. The long tail will follow.</p>
+<h1 id="getting-started-today">Getting Started Today</h1>
+<ol>
+<li>Update Bitwarden to a recent version</li>
+<li>Enable passkey login for your Bitwarden vault</li>
+<li>Pick 3-5 critical accounts that support passkeys</li>
+<li>Set them up this week</li>
+<li>Make passkeys default for new accounts</li>
+</ol>
+<p>The technology is mature. The UX is superior. The security model is fundamentally stronger.</p>
+<p>I spent years telling people to use password managers and TOTP. Now I tell them: use passkeys wherever possible, Bitwarden for everything else.</p>
+<p><strong>Sources:</strong></p>
+<ul>
+<li><a href="https://fidoalliance.org/passkeys/">FIDO Passkeys - FIDO Alliance</a></li>
+<li><a href="https://www.webauthn.me/passkeys">WebAuthn and Passkeys</a></li>
+<li><a href="https://bitwarden.com/passwordless-passkeys/">Passkey Management - Bitwarden</a></li>
+<li><a href="https://bitwarden.com/help/login-with-passkeys/">Log In With Passkeys - Bitwarden Help</a></li>
+<li><a href="https://bitwarden.com/help/storing-passkeys/">Autofill Passkeys - Bitwarden Help</a></li>
+<li><a href="https://bitwarden.com/resources/passkeys-faq/">Passkeys FAQ - Bitwarden</a></li>
+</ul>
+</div>
+  <div class="post-footer">
+    <div class="meta">
+      <div class="info">
+        
+        <i class="far fa-sun"></i><span class="date">2025-01-03</span>
+        
+        
+        <i class="fas fa-tags"></i>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/security">&nbsp;security</a>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/authentication">&nbsp;authentication</a>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/passkeys">&nbsp;passkeys</a>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/bitwarden">&nbsp;bitwarden</a>
+        
+        
+      </div>
+    </div>
+  </div>
+</article>
+<div class="share">
+  <div class="weibo">
+    <a class="fab fa-weibo"
+      href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&title=',e(d.title),'&appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a>
+  </div>
+  <div class="twitter">
+    <a class="fab fa-twitter"
+      href="http://twitter.com/share?text=Passkeys Should Be the New Normal&url=https:&#x2F;&#x2F;brianjlogan.com&#x2F;passkeys-new-normal-bitwarden&#x2F;&hashtags=security,authentication,passkeys,bitwarden"></a>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function showLanguages() {
+      let currentDisplay = document.getElementById("languages").style.display;
+      if (currentDisplay == 'none') {
+        document.getElementById("languages").style.display = 'block';
+      } else {
+        document.getElementById("languages").style.display = 'none';
+      }
+    }
+  </script>
+</body>
+
+</html>

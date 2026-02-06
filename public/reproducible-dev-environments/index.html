@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en"  class="theme--light" >
+
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://brianjlogan.com/images/apple-touch-icon-144x144.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="120x120" href="https://brianjlogan.com/images/apple-touch-icon-120x120.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="https://brianjlogan.com/images/apple-touch-icon-72x72.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="57x57" href="https://brianjlogan.com/images/apple-touch-icon-57x57.png" />
+  <link rel="short icon" href="https://brianjlogan.com/images/favicon.png" type="image/x-icon" />
+  <link rel="stylesheet" href="https://brianjlogan.com/style.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
+  <title>Brian Logan • Reproducible Dev Environments with Nix (and Why You Should Care)</title>
+  
+  
+  
+</head>
+
+<body>
+  <div id="sidebar" class="animated fadeInDown">
+    <div class="logo-title">
+      <div class="title">
+        <img src=https://brianjlogan.com/images/logo@2x.png style="width:127px;" alt="logo" />
+        <h3><a href="https://brianjlogan.com/">Brian Logan</a></h3>
+        <div class="description">
+          <p>Technologist, Dad</p>
+        </div>
+      </div>
+    </div>
+    <ul class="social-links"><li><a href="https://github.com/vangourd" aria-label="Go to Github profile page"><i class="fab fa-github"></i></a></li>
+      
+    </ul>
+    <div class="footer">
+      
+      <div class="by_zola"><a href="https://www.getzola.org/" target="_blank">Proudly published with Zola!</a></div>
+      
+    </div>
+  </div>
+  <div id="main">
+    <div class="page-top animated fadeInDown">
+      <div class="nav">
+        
+        
+        
+        
+        <li><a  href="https://brianjlogan.com/">Home</a></li>
+        <li><a  href="https://brianjlogan.com/about/">About</a></li>
+        <li><a  href="https://brianjlogan.com/contact/">Contact</a></li><li><a  href="https://brianjlogan.com/tags">Tags</a></li><li><a 
+            href="https://brianjlogan.com/archive/">Archive</a></li></div>
+      <div class="information">
+        <div class="back_btn">
+          <a onclick="window.history.go(-1)" ><i
+              class="fas fa-chevron-left"></i></a>
+        </div>
+        
+        
+        
+        <div class="avatar"><img src="https://brianjlogan.com/images/avatar.jpg"></div>
+      </div>
+    </div>
+    <div class="autopagerize_page_element">
+      <div class="content">
+        
+<article class="post animated fadeInDown">
+  <h1><a href="https:&#x2F;&#x2F;brianjlogan.com&#x2F;reproducible-dev-environments&#x2F;">Reproducible Dev Environments with Nix (and Why You Should Care)</a></h1>
+  
+  <div class="post-content"><p>Every dev team has that experience. Code works fine locally. CI fails. Turns out someone's running Node 18, someone else has Node 20, and the CI uses Node 16. Hours vanish into environment archaeology.</p>
+<p>Or onboarding: "Just follow the README." The README is 6 months out of date. Half the steps don't work. The new hire spends their first day fighting with <code>brew install</code> and version managers.</p>
+<p>Reproducible development environments solve this. Define the environment as code. Anyone who clones the repo gets the exact same tools.</p>
+<h1 id="the-problem">The Problem</h1>
+<p>A typical dev setup requires:</p>
+<ul>
+<li>Language runtime (right version)</li>
+<li>Package manager</li>
+<li>Build tools</li>
+<li>Database clients</li>
+<li>Linters, formatters</li>
+<li>Platform-specific dependencies</li>
+</ul>
+<p>Traditional approach: document in README, hope everyone follows it, use version managers (nvm, pyenv) and hope they're configured right.</p>
+<p>This breaks constantly:</p>
+<ul>
+<li>README gets outdated</li>
+<li>Version managers require setup and shell config</li>
+<li>Global installs conflict between projects</li>
+<li>"It works on my Mac but not on Linux"</li>
+</ul>
+<h1 id="nix-flakes-my-current-favorite">Nix Flakes: My Current Favorite</h1>
+<p><a href="https://nix.dev/concepts/flakes.html">Nix</a> is a package manager focused on reproducibility. Every package is built with explicit dependencies, producing identical outputs regardless of host system.</p>
+<p><a href="https://wiki.nixos.org/wiki/Flakes">Flakes</a> are the modern way to define project environments:</p>
+<pre data-lang="nix" style="background-color:#2b303b;color:#c0c5ce;" class="language-nix "><code class="language-nix" data-lang="nix"><span>{
+</span><span>  </span><span style="color:#d08770;">description </span><span>= &quot;</span><span style="color:#a3be8c;">My project</span><span>&quot;;
+</span><span>
+</span><span>  </span><span style="color:#d08770;">inputs </span><span>= {
+</span><span>    </span><span style="color:#d08770;">nixpkgs</span><span>.</span><span style="color:#d08770;">url </span><span>= &quot;</span><span style="color:#a3be8c;">github:NixOS/nixpkgs/nixos-23.11</span><span>&quot;;
+</span><span>  };
+</span><span>
+</span><span>  </span><span style="color:#d08770;">outputs </span><span>= </span><span style="color:#8fa1b3;">{ </span><span>self, nixpkgs </span><span style="color:#8fa1b3;">}</span><span>:
+</span><span>    </span><span style="color:#b48ead;">let
+</span><span>      </span><span style="color:#d08770;">system </span><span>= &quot;</span><span style="color:#a3be8c;">x86_64-linux</span><span>&quot;;
+</span><span>      </span><span style="color:#d08770;">pkgs </span><span>= </span><span style="color:#bf616a;">nixpkgs</span><span>.</span><span style="color:#bf616a;">legacyPackages</span><span>.</span><span style="font-style:italic;color:#ab7967;">${</span><span style="font-style:italic;color:#bf616a;">system</span><span style="font-style:italic;color:#ab7967;">}</span><span>;
+</span><span>    </span><span style="color:#b48ead;">in </span><span>{
+</span><span>      </span><span style="color:#d08770;">devShells</span><span>.</span><span style="font-style:italic;color:#ab7967;">${</span><span style="font-style:italic;color:#bf616a;">system</span><span style="font-style:italic;color:#ab7967;">}</span><span>.</span><span style="color:#d08770;">default </span><span>= </span><span style="color:#bf616a;">pkgs</span><span>.</span><span style="color:#bf616a;">mkShell </span><span>{
+</span><span>        </span><span style="color:#d08770;">buildInputs </span><span>= </span><span style="color:#b48ead;">with </span><span style="color:#bf616a;">pkgs</span><span>; [
+</span><span>          </span><span style="color:#bf616a;">nodejs_20
+</span><span>          </span><span style="color:#bf616a;">nodePackages</span><span>.</span><span style="color:#bf616a;">pnpm
+</span><span>          </span><span style="color:#bf616a;">python311
+</span><span>          </span><span style="color:#bf616a;">postgresql_15
+</span><span>          </span><span style="color:#bf616a;">jq
+</span><span>        ];
+</span><span>
+</span><span>        </span><span style="color:#d08770;">shellHook </span><span>= &#39;&#39;
+</span><span style="color:#a3be8c;">          echo &quot;Dev environment loaded&quot;
+</span><span style="color:#a3be8c;">          export DATABASE_URL=&quot;postgresql://localhost/myapp&quot;
+</span><span style="color:#a3be8c;">        </span><span>&#39;&#39;;
+</span><span>      };
+</span><span>    };
+</span><span>}
+</span></code></pre>
+<p>Run <code>nix develop</code> and you get Node 20, Python 3.11, PostgreSQL client, jq—all pinned to exact versions from the nixpkgs commit.</p>
+<p>From <a href="https://nixos-and-flakes.thiscute.world/development/dev-environments">NixOS &amp; Flakes Book</a>: "A devShell lets you declare a reproducible shell environment with the tools, libraries, and environment variables you need for the development of a specific project."</p>
+<h1 id="why-nix-works">Why Nix Works</h1>
+<p><strong>True reproducibility.</strong> The <code>flake.lock</code> pins nixpkgs to a specific commit. Same <code>flake.lock</code> = same packages everywhere.</p>
+<p><strong>Isolation.</strong> Projects don't conflict. Node 18 for one project, Node 20 for another—no global pollution.</p>
+<p><strong>Composability.</strong> Flakes can reference other flakes for shared configs.</p>
+<p><strong>No containers.</strong> Native tools, native performance, native debugging.</p>
+<h1 id="dev-containers-the-docker-approach">Dev Containers: The Docker Approach</h1>
+<p>If Nix's learning curve feels steep, <a href="https://containers.dev/">Dev Containers</a> offer another path. Define your environment in <code>.devcontainer/devcontainer.json</code>:</p>
+<pre data-lang="json" style="background-color:#2b303b;color:#c0c5ce;" class="language-json "><code class="language-json" data-lang="json"><span>{
+</span><span>  &quot;</span><span style="color:#a3be8c;">name</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">My Project</span><span>&quot;,
+</span><span>  &quot;</span><span style="color:#a3be8c;">image</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">mcr.microsoft.com/devcontainers/javascript-node:20</span><span>&quot;,
+</span><span>  &quot;</span><span style="color:#a3be8c;">features</span><span>&quot;: {
+</span><span>    &quot;</span><span style="color:#a3be8c;">ghcr.io/devcontainers/features/python:1</span><span>&quot;: {
+</span><span>      &quot;</span><span style="color:#a3be8c;">version</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">3.11</span><span>&quot;
+</span><span>    }
+</span><span>  },
+</span><span>  &quot;</span><span style="color:#a3be8c;">postCreateCommand</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">npm install</span><span>&quot;,
+</span><span>  &quot;</span><span style="color:#a3be8c;">customizations</span><span>&quot;: {
+</span><span>    &quot;</span><span style="color:#a3be8c;">vscode</span><span>&quot;: {
+</span><span>      &quot;</span><span style="color:#a3be8c;">extensions</span><span>&quot;: [&quot;</span><span style="color:#a3be8c;">dbaeumer.vscode-eslint</span><span>&quot;]
+</span><span>    }
+</span><span>  }
+</span><span>}
+</span></code></pre>
+<p>VS Code detects this and offers to reopen in a container. Consistent Linux environment regardless of host OS.</p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li>Lower barrier (most devs have Docker)</li>
+<li>Polished VS Code integration</li>
+<li>Works with GitHub Codespaces</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li>Performance overhead (especially macOS file mounts)</li>
+<li>Requires Docker running</li>
+<li>Container vs host debugging can be awkward</li>
+</ul>
+<h1 id="which-to-choose">Which to Choose?</h1>
+<p><strong>Nix when:</strong></p>
+<ul>
+<li>Team willing to invest in learning</li>
+<li>Native performance matters</li>
+<li>Working on CLI tools or system software</li>
+<li>Already on Linux</li>
+</ul>
+<p><strong>Dev Containers when:</strong></p>
+<ul>
+<li>Team varies in technical depth</li>
+<li>VS Code is standard</li>
+<li>Need Linux-specific tooling on Mac/Windows</li>
+<li>Want GitHub Codespaces integration</li>
+</ul>
+<p>Both beat the alternative of manual setup and crossed fingers.</p>
+<h1 id="practical-migration">Practical Migration</h1>
+<ol>
+<li><strong>Audit current setup</strong>: What tools does the project actually need?</li>
+<li><strong>Start small</strong>: Just the runtime and build tools first</li>
+<li><strong>Add incrementally</strong>: Each time someone hits an environment issue, add that tool to the config</li>
+<li><strong>Version in git</strong>: Environment config lives with the code</li>
+<li><strong>CI uses the same env</strong>: What works locally works in CI</li>
+</ol>
+<h1 id="the-real-win">The Real Win</h1>
+<p>From <a href="https://mtlynch.io/notes/nix-dev-environment/">one Nix user's experience</a>: "A Nix development environment solves problems through: Declarative Configuration (describe what you want), Complete Isolation (each project gets its own environment), Reproducibility (same configuration produces identical environments across machines)."</p>
+<p>The biggest win isn't technical—it's cultural.</p>
+<p>"Read the README" becomes "run one command."</p>
+<p>Environment drift stops being a thing. New contributors are productive in minutes. Maintenance becomes routine version bumps rather than firefighting.</p>
+<p><strong>Sources:</strong></p>
+<ul>
+<li><a href="https://wiki.nixos.org/wiki/Flakes">Flakes - NixOS Wiki</a></li>
+<li><a href="https://nix.dev/concepts/flakes.html">Flakes - nix.dev</a></li>
+<li><a href="https://nixos-and-flakes.thiscute.world/development/dev-environments">Dev Environments - NixOS &amp; Flakes Book</a></li>
+<li><a href="https://mtlynch.io/notes/nix-dev-environment/">Per-Project Development Environments with Nix</a></li>
+<li><a href="https://zero-to-nix.com/concepts/flakes/">Zero to Nix - Flakes</a></li>
+</ul>
+</div>
+  <div class="post-footer">
+    <div class="meta">
+      <div class="info">
+        
+        <i class="far fa-sun"></i><span class="date">2024-11-12</span>
+        
+        
+        <i class="fas fa-tags"></i>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/development">&nbsp;development</a>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/nix">&nbsp;nix</a>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/devcontainers">&nbsp;devcontainers</a>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/tooling">&nbsp;tooling</a>
+        
+        
+      </div>
+    </div>
+  </div>
+</article>
+<div class="share">
+  <div class="weibo">
+    <a class="fab fa-weibo"
+      href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&title=',e(d.title),'&appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a>
+  </div>
+  <div class="twitter">
+    <a class="fab fa-twitter"
+      href="http://twitter.com/share?text=Reproducible Dev Environments with Nix (and Why You Should Care)&url=https:&#x2F;&#x2F;brianjlogan.com&#x2F;reproducible-dev-environments&#x2F;&hashtags=development,nix,devcontainers,tooling"></a>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function showLanguages() {
+      let currentDisplay = document.getElementById("languages").style.display;
+      if (currentDisplay == 'none') {
+        document.getElementById("languages").style.display = 'block';
+      } else {
+        document.getElementById("languages").style.display = 'none';
+      }
+    }
+  </script>
+</body>
+
+</html>

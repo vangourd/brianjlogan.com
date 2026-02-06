@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en"  class="theme--light" >
+
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://brianjlogan.com/images/apple-touch-icon-144x144.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="120x120" href="https://brianjlogan.com/images/apple-touch-icon-120x120.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="https://brianjlogan.com/images/apple-touch-icon-72x72.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="57x57" href="https://brianjlogan.com/images/apple-touch-icon-57x57.png" />
+  <link rel="short icon" href="https://brianjlogan.com/images/favicon.png" type="image/x-icon" />
+  <link rel="stylesheet" href="https://brianjlogan.com/style.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
+  <title>Brian Logan • Kubernetes Audit Logs: Know What Happened Before You Need To</title>
+  
+  
+  
+</head>
+
+<body>
+  <div id="sidebar" class="animated fadeInDown">
+    <div class="logo-title">
+      <div class="title">
+        <img src=https://brianjlogan.com/images/logo@2x.png style="width:127px;" alt="logo" />
+        <h3><a href="https://brianjlogan.com/">Brian Logan</a></h3>
+        <div class="description">
+          <p>Technologist, Dad</p>
+        </div>
+      </div>
+    </div>
+    <ul class="social-links"><li><a href="https://github.com/vangourd" aria-label="Go to Github profile page"><i class="fab fa-github"></i></a></li>
+      
+    </ul>
+    <div class="footer">
+      
+      <div class="by_zola"><a href="https://www.getzola.org/" target="_blank">Proudly published with Zola!</a></div>
+      
+    </div>
+  </div>
+  <div id="main">
+    <div class="page-top animated fadeInDown">
+      <div class="nav">
+        
+        
+        
+        
+        <li><a  href="https://brianjlogan.com/">Home</a></li>
+        <li><a  href="https://brianjlogan.com/about/">About</a></li>
+        <li><a  href="https://brianjlogan.com/contact/">Contact</a></li><li><a  href="https://brianjlogan.com/tags">Tags</a></li><li><a 
+            href="https://brianjlogan.com/archive/">Archive</a></li></div>
+      <div class="information">
+        <div class="back_btn">
+          <a onclick="window.history.go(-1)" ><i
+              class="fas fa-chevron-left"></i></a>
+        </div>
+        
+        
+        
+        <div class="avatar"><img src="https://brianjlogan.com/images/avatar.jpg"></div>
+      </div>
+    </div>
+    <div class="autopagerize_page_element">
+      <div class="content">
+        
+<article class="post animated fadeInDown">
+  <h1><a href="https:&#x2F;&#x2F;brianjlogan.com&#x2F;kubernetes-audit-logging&#x2F;">Kubernetes Audit Logs: Know What Happened Before You Need To</a></h1>
+  
+  <div class="post-content"><p>Someone deleted a ConfigMap in production. The app crashed. Everyone's panicking. "Who did this?"</p>
+<p>Silence. Nobody knows. There are no logs.</p>
+<p>This is why you enable audit logging before you need it.</p>
+<h1 id="what-audit-logs-capture">What Audit Logs Capture</h1>
+<p><a href="https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/">Kubernetes auditing</a> records all requests to the API server. Who did what, when, and how.</p>
+<p>From the docs: "Kubernetes auditing provides a security-relevant, chronological set of records documenting the sequence of actions in a cluster."</p>
+<p>That means:</p>
+<ul>
+<li>User authentication attempts</li>
+<li>Resource creation/modification/deletion</li>
+<li>RBAC permission checks</li>
+<li>Exec into pods</li>
+<li>Secret access</li>
+<li>Everything that touches the API</li>
+</ul>
+<h1 id="setting-it-up-self-managed-clusters">Setting It Up (Self-Managed Clusters)</h1>
+<p>You need two things: an audit policy and API server flags.</p>
+<p><strong>The audit policy</strong> defines what to log:</p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#bf616a;">apiVersion</span><span>: </span><span style="color:#a3be8c;">audit.k8s.io/v1
+</span><span style="color:#bf616a;">kind</span><span>: </span><span style="color:#a3be8c;">Policy
+</span><span style="color:#bf616a;">rules</span><span>:
+</span><span style="color:#65737e;"># Log pod exec and attach at RequestResponse level
+</span><span>- </span><span style="color:#bf616a;">level</span><span>: </span><span style="color:#a3be8c;">RequestResponse
+</span><span>  </span><span style="color:#bf616a;">resources</span><span>:
+</span><span>  - </span><span style="color:#bf616a;">group</span><span>: &quot;&quot;
+</span><span>    </span><span style="color:#bf616a;">resources</span><span>: [&quot;</span><span style="color:#a3be8c;">pods/exec</span><span>&quot;, &quot;</span><span style="color:#a3be8c;">pods/attach</span><span>&quot;]
+</span><span>
+</span><span style="color:#65737e;"># Log secret access at Metadata level (don&#39;t log contents!)
+</span><span>- </span><span style="color:#bf616a;">level</span><span>: </span><span style="color:#a3be8c;">Metadata
+</span><span>  </span><span style="color:#bf616a;">resources</span><span>:
+</span><span>  - </span><span style="color:#bf616a;">group</span><span>: &quot;&quot;
+</span><span>    </span><span style="color:#bf616a;">resources</span><span>: [&quot;</span><span style="color:#a3be8c;">secrets</span><span>&quot;]
+</span><span>
+</span><span style="color:#65737e;"># Log all other requests at Request level
+</span><span>- </span><span style="color:#bf616a;">level</span><span>: </span><span style="color:#a3be8c;">Request
+</span><span>  </span><span style="color:#bf616a;">resources</span><span>:
+</span><span>  - </span><span style="color:#bf616a;">group</span><span>: &quot;&quot;
+</span><span>  - </span><span style="color:#bf616a;">group</span><span>: &quot;</span><span style="color:#a3be8c;">apps</span><span>&quot;
+</span><span>  - </span><span style="color:#bf616a;">group</span><span>: &quot;</span><span style="color:#a3be8c;">batch</span><span>&quot;
+</span></code></pre>
+<p><strong>Audit levels:</strong></p>
+<ul>
+<li><code>None</code>: Don't log</li>
+<li><code>Metadata</code>: Log request metadata (user, timestamp, resource) but not request/response body</li>
+<li><code>Request</code>: Log metadata + request body</li>
+<li><code>RequestResponse</code>: Log everything</li>
+</ul>
+<p><strong>Important:</strong> Never log Secrets at RequestResponse level. You'll have plaintext secrets in your audit logs. Metadata level is enough to know who accessed them.</p>
+<p><strong>API server flags:</strong></p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>--audit-policy-file=/etc/kubernetes/audit-policy.yaml
+</span><span>--audit-log-path=/var/log/kubernetes/audit.log
+</span><span>--audit-log-maxage=30
+</span><span>--audit-log-maxbackup=10
+</span><span>--audit-log-maxsize=100
+</span></code></pre>
+<h1 id="managed-clusters">Managed Clusters</h1>
+<p>Good news: EKS, GKE, and AKS provide audit logging out of the box. You just need to enable it.</p>
+<p><strong>GKE:</strong> Audit logs go to Cloud Logging automatically. <a href="https://cloud.google.com/kubernetes-engine/docs/how-to/audit-logging">GKE audit logging docs</a> explain how to access them.</p>
+<p><strong>EKS:</strong> Enable control plane logging for the "audit" log type. Logs go to CloudWatch.</p>
+<p><strong>AKS:</strong> Enable diagnostic settings to send audit logs to Log Analytics.</p>
+<h1 id="what-to-look-for">What to Look For</h1>
+<p><a href="https://www.datadoghq.com/blog/key-kubernetes-audit-logs-for-monitoring-cluster-security/">Datadog's guide on key audit logs</a> highlights important events:</p>
+<p><strong>Privileged pod creation:</strong></p>
+<pre data-lang="json" style="background-color:#2b303b;color:#c0c5ce;" class="language-json "><code class="language-json" data-lang="json"><span>{
+</span><span>  &quot;</span><span style="color:#a3be8c;">verb</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">create</span><span>&quot;,
+</span><span>  &quot;</span><span style="color:#a3be8c;">objectRef</span><span>&quot;: {&quot;</span><span style="color:#a3be8c;">resource</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">pods</span><span>&quot;},
+</span><span>  &quot;</span><span style="color:#a3be8c;">requestObject</span><span>&quot;: {
+</span><span>    &quot;</span><span style="color:#a3be8c;">spec</span><span>&quot;: {
+</span><span>      &quot;</span><span style="color:#a3be8c;">containers</span><span>&quot;: [{
+</span><span>        &quot;</span><span style="color:#a3be8c;">securityContext</span><span>&quot;: {&quot;</span><span style="color:#a3be8c;">privileged</span><span>&quot;: </span><span style="color:#d08770;">true</span><span>}
+</span><span>      }]
+</span><span>    }
+</span><span>  }
+</span><span>}
+</span></code></pre>
+<p><strong>Exec into pods:</strong></p>
+<pre data-lang="json" style="background-color:#2b303b;color:#c0c5ce;" class="language-json "><code class="language-json" data-lang="json"><span>{
+</span><span>  &quot;</span><span style="color:#a3be8c;">verb</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">create</span><span>&quot;,
+</span><span>  &quot;</span><span style="color:#a3be8c;">objectRef</span><span>&quot;: {&quot;</span><span style="color:#a3be8c;">resource</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">pods</span><span>&quot;, &quot;</span><span style="color:#a3be8c;">subresource</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">exec</span><span>&quot;},
+</span><span>  &quot;</span><span style="color:#a3be8c;">user</span><span>&quot;: {&quot;</span><span style="color:#a3be8c;">username</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">jane@example.com</span><span>&quot;}
+</span><span>}
+</span></code></pre>
+<p><strong>Secret access:</strong></p>
+<pre data-lang="json" style="background-color:#2b303b;color:#c0c5ce;" class="language-json "><code class="language-json" data-lang="json"><span>{
+</span><span>  &quot;</span><span style="color:#a3be8c;">verb</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">get</span><span>&quot;,
+</span><span>  &quot;</span><span style="color:#a3be8c;">objectRef</span><span>&quot;: {&quot;</span><span style="color:#a3be8c;">resource</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">secrets</span><span>&quot;, &quot;</span><span style="color:#a3be8c;">name</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">database-credentials</span><span>&quot;},
+</span><span>  &quot;</span><span style="color:#a3be8c;">user</span><span>&quot;: {&quot;</span><span style="color:#a3be8c;">username</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">unknown-service-account</span><span>&quot;}
+</span><span>}
+</span></code></pre>
+<h1 id="automated-detection">Automated Detection</h1>
+<p>Don't just collect logs—alert on suspicious patterns:</p>
+<ul>
+<li>Service accounts accessing secrets they don't normally access</li>
+<li>Exec into production pods outside maintenance windows</li>
+<li>Creation of privileged pods</li>
+<li>ClusterRoleBinding changes</li>
+<li>Failed authentication attempts</li>
+</ul>
+<p>Tools like <a href="https://falco.org/">Falco</a> can monitor audit logs and alert in real-time:</p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span>- </span><span style="color:#bf616a;">rule</span><span>: </span><span style="color:#a3be8c;">K8s Secret Access
+</span><span>  </span><span style="color:#bf616a;">desc</span><span>: </span><span style="color:#a3be8c;">Detect any access to cluster secrets
+</span><span>  </span><span style="color:#bf616a;">condition</span><span>: </span><span style="color:#b48ead;">&gt;
+</span><span style="color:#a3be8c;">    kevt and secret and
+</span><span style="color:#a3be8c;">    kactivity in (get, list)
+</span><span>  </span><span style="color:#bf616a;">output</span><span>: </span><span style="color:#b48ead;">&gt;
+</span><span style="color:#a3be8c;">    Secret accessed (user=%ka.user.name secret=%ka.target.name)
+</span><span>  </span><span style="color:#bf616a;">priority</span><span>: </span><span style="color:#a3be8c;">WARNING
+</span></code></pre>
+<h1 id="storage-and-retention">Storage and Retention</h1>
+<p>Audit logs grow fast. Plan for:</p>
+<ul>
+<li><strong>Volume:</strong> Busy clusters generate gigabytes daily</li>
+<li><strong>Retention:</strong> Compliance often requires 90+ days</li>
+<li><strong>Search:</strong> You need to actually query these logs</li>
+</ul>
+<p>Send them to a log aggregation system (Elasticsearch, Loki, CloudWatch, etc.) with proper retention policies and alerting.</p>
+<h1 id="the-before-you-need-it-part">The "Before You Need It" Part</h1>
+<p>Here's the thing: you won't realize you need audit logs until something goes wrong. By then it's too late.</p>
+<p>Set it up now:</p>
+<ol>
+<li>Enable audit logging</li>
+<li>Ship logs to a searchable store</li>
+<li>Set up basic alerts for high-risk events</li>
+<li>Test by querying who did what yesterday</li>
+</ol>
+<p>When someone asks "who deleted production?" you'll have the answer.</p>
+<p><strong>Sources:</strong></p>
+<ul>
+<li><a href="https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/">Auditing - Kubernetes Documentation</a></li>
+<li><a href="https://cloud.google.com/kubernetes-engine/docs/how-to/audit-logging">GKE Audit Logging</a></li>
+<li><a href="https://cloud.google.com/kubernetes-engine/docs/concepts/audit-policy">GKE Audit Policy</a></li>
+<li><a href="https://www.datadoghq.com/blog/key-kubernetes-audit-logs-for-monitoring-cluster-security/">Key Kubernetes Audit Logs for Monitoring Cluster Security - Datadog</a></li>
+</ul>
+</div>
+  <div class="post-footer">
+    <div class="meta">
+      <div class="info">
+        
+        <i class="far fa-sun"></i><span class="date">2023-04-05</span>
+        
+        
+        <i class="fas fa-tags"></i>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/kubernetes">&nbsp;kubernetes</a>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/security">&nbsp;security</a>
+        
+        <a class="tag" href="https://brianjlogan.com/tags/observability">&nbsp;observability</a>
+        
+        
+      </div>
+    </div>
+  </div>
+</article>
+<div class="share">
+  <div class="weibo">
+    <a class="fab fa-weibo"
+      href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&title=',e(d.title),'&appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a>
+  </div>
+  <div class="twitter">
+    <a class="fab fa-twitter"
+      href="http://twitter.com/share?text=Kubernetes Audit Logs: Know What Happened Before You Need To&url=https:&#x2F;&#x2F;brianjlogan.com&#x2F;kubernetes-audit-logging&#x2F;&hashtags=kubernetes,security,observability"></a>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function showLanguages() {
+      let currentDisplay = document.getElementById("languages").style.display;
+      if (currentDisplay == 'none') {
+        document.getElementById("languages").style.display = 'block';
+      } else {
+        document.getElementById("languages").style.display = 'none';
+      }
+    }
+  </script>
+</body>
+
+</html>

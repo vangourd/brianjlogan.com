@@ -7,16 +7,78 @@
         <loc>https://brianjlogan.com/about/</loc>
     </url>
     <url>
+        <loc>https://brianjlogan.com/admission-controllers-opa-kyverno/</loc>
+        <lastmod>2024-09-12T11:00:00Z</lastmod>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/app-layer-oidc-not-proxy-auth/</loc>
+        <lastmod>2024-08-15T16:20:00Z</lastmod>
+    </url>
+    <url>
         <loc>https://brianjlogan.com/archive/</loc>
     </url>
     <url>
         <loc>https://brianjlogan.com/contact/</loc>
     </url>
     <url>
+        <loc>https://brianjlogan.com/container-image-security/</loc>
+        <lastmod>2024-04-10T14:20:00Z</lastmod>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/european-coffee-shops/</loc>
+        <lastmod>2024-06-08T11:15:00Z</lastmod>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/european-sodas/</loc>
+        <lastmod>2024-03-22T14:30:00Z</lastmod>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/falco-runtime-security/</loc>
+        <lastmod>2024-07-22T13:15:00Z</lastmod>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/genai-risks-input-sanitization/</loc>
+        <lastmod>2024-05-19T13:45:00Z</lastmod>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/gitops-argocd-kubernetes/</loc>
+        <lastmod>2023-09-27T10:00:00Z</lastmod>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/kubernetes-audit-logging/</loc>
+        <lastmod>2023-04-05T16:30:00Z</lastmod>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/kubernetes-rbac-secure-api-access/</loc>
+        <lastmod>2024-02-22T14:45:00Z</lastmod>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/kubernetes-secrets-management/</loc>
+        <lastmod>2024-01-15T08:30:00Z</lastmod>
+    </url>
+    <url>
         <loc>https://brianjlogan.com/links/</loc>
     </url>
     <url>
+        <loc>https://brianjlogan.com/network-policies-namespace-isolation/</loc>
+        <lastmod>2023-06-14T09:22:00Z</lastmod>
+    </url>
+    <url>
         <loc>https://brianjlogan.com/page/1/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/page/2/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/page/3/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/passkeys-new-normal-bitwarden/</loc>
+        <lastmod>2025-01-03T08:15:00Z</lastmod>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/pod-security-standards/</loc>
+        <lastmod>2023-08-20T10:15:00Z</lastmod>
     </url>
     <url>
         <loc>https://brianjlogan.com/post-1/</loc>
@@ -31,13 +93,93 @@
         <lastmod>2025-01-04T13:04:46Z</lastmod>
     </url>
     <url>
+        <loc>https://brianjlogan.com/reproducible-dev-environments/</loc>
+        <lastmod>2024-11-12T09:30:00Z</lastmod>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/secure-cluster-access-teleport-tailscale/</loc>
+        <lastmod>2023-11-08T11:30:00Z</lastmod>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/securing-etcd/</loc>
+        <lastmod>2023-03-18T10:45:00Z</lastmod>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/service-mesh-mtls/</loc>
+        <lastmod>2024-06-28T09:45:00Z</lastmod>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/soup-is-best-food/</loc>
+        <lastmod>2023-12-15T19:45:00Z</lastmod>
+    </url>
+    <url>
         <loc>https://brianjlogan.com/tags/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/ai/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/architecture/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/argocd/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/authentication/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/bitwarden/</loc>
     </url>
     <url>
         <loc>https://brianjlogan.com/tags/coffee/</loc>
     </url>
     <url>
+        <loc>https://brianjlogan.com/tags/containers/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/cooking/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/devcontainers/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/development/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/devops/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/etcd/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/europe/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/falco/</loc>
+    </url>
+    <url>
         <loc>https://brianjlogan.com/tags/favorite/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/food/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/gitops/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/input-validation/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/istio/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/kubernetes/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/kyverno/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/linkerd/</loc>
     </url>
     <url>
         <loc>https://brianjlogan.com/tags/maitland/</loc>
@@ -46,12 +188,63 @@
         <loc>https://brianjlogan.com/tags/networking/</loc>
     </url>
     <url>
+        <loc>https://brianjlogan.com/tags/nix/</loc>
+    </url>
+    <url>
         <loc>https://brianjlogan.com/tags/north-orlando/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/observability/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/oidc/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/opa/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/opinion/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/passkeys/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/policy/</loc>
     </url>
     <url>
         <loc>https://brianjlogan.com/tags/python/</loc>
     </url>
     <url>
+        <loc>https://brianjlogan.com/tags/rbac/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/runtime/</loc>
+    </url>
+    <url>
         <loc>https://brianjlogan.com/tags/sanford/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/secrets/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/security/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/service-mesh/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/supply-chain/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/tailscale/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/teleport/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/tooling/</loc>
+    </url>
+    <url>
+        <loc>https://brianjlogan.com/tags/travel/</loc>
     </url>
 </urlset>
