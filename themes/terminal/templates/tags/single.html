@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Tag: {{ term.name }} | {{ config.title }}{% endblock %}
+
+{% block content %}
+<h1 style="color: var(--accent-cyan); margin-bottom: 2rem;"># Posts tagged "{{ term.name }}"</h1>
+
+<ul class="post-list">
+{% for page in term.pages %}
+    <li class="post-item">
+        <div class="post-meta">{{ page.date | date(format="%Y-%m-%d") }}</div>
+        <h2 class="post-title">
+            <a href="{{ page.permalink }}">{{ page.title }}</a>
+        </h2>
+        {% if page.summary %}
+        <p class="post-summary">{{ page.summary }}</p>
+        {% elif page.description %}
+        <p class="post-summary">{{ page.description }}</p>
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>
+{% endblock %}

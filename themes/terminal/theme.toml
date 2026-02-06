@@ -1,0 +1,9 @@
+name = "terminal"
+description = "A dark terminal-style theme with coder aesthetics"
+license = "MIT"
+homepage = "https://brianjlogan.com"
+min_version = "0.18.0"
+
+[author]
+name = "Brian Logan"
+homepage = "https://brianjlogan.com"

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}{{ section.title | default(value="Archive") }} | {{ config.title }}{% endblock %}
+
+{% block content %}
+<h1 style="color: var(--accent-cyan); margin-bottom: 2rem;">
+    {% if section.title %}# {{ section.title }}{% else %}# Archive{% endif %}
+</h1>
+
+{% if section.content %}
+<div class="post-content" style="margin-bottom: 2rem;">
+    {{ section.content | safe }}
+</div>
+{% endif %}
+
+<ul class="post-list">
+{% for page in section.pages %}
+    <li class="post-item">
+        <div class="post-meta">{{ page.date | date(format="%Y-%m-%d") }}</div>
+        <h2 class="post-title">
+            <a href="{{ page.permalink }}">{{ page.title }}</a>
+        </h2>
+        {% if page.summary %}
+        <p class="post-summary">{{ page.summary }}</p>
+        {% elif page.description %}
+        <p class="post-summary">{{ page.description }}</p>
+        {% endif %}
+        {% if page.taxonomies.tags %}
+        <div class="tags">
+            {% for tag in page.taxonomies.tags %}
+            <a href="{{ get_taxonomy_url(kind="tags", name=tag) }}" class="tag">{{ tag }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>
+{% endblock %}

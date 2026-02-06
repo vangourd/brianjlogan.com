@@ -1,13 +1,13 @@
 # The URL the site will be built for
 base_url = "https://brianjlogan.com"
-theme = "anatole-zola"
+theme = "terminal"
 default_language = "en"
 taxonomies = [
 	{name = "tags"},
 ]
 title="Brian Logan"
 description="Technologist, Dad"
-#generate_feed = true
+generate_feeds = true
 
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = true

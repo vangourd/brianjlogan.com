@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}{{ section.title }} | {{ config.title }}{% endblock %}
+
+{% block content %}
+<h1 style="color: var(--accent-cyan); margin-bottom: 2rem;">$ whoami</h1>
+
+<div class="post-content">
+    {{ section.content | safe }}
+</div>
+{% endblock %}

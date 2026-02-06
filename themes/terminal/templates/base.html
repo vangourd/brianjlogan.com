@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="{{ lang | default(value="en") }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ config.title }}{% endblock %}</title>
+    <meta name="description" content="{% block description %}{{ config.description }}{% endblock %}">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ get_url(path="style.css") }}">
+
+    <!-- RSS Feed -->
+    {% if config.generate_feeds %}
+    <link rel="alternate" type="application/atom+xml" title="RSS" href="{{ get_url(path="atom.xml", trailing_slash=false) }}">
+    {% endif %}
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <div class="site-brand">
+                <img src="{{ get_url(path="me.svg") }}" alt="Portrait" class="portrait">
+                <a href="{{ get_url(path="/") }}" class="site-title">{{ config.title }}</a>
+            </div>
+            <nav>
+                <a href="{{ get_url(path="/") }}">home</a>
+                <a href="{{ get_url(path="/archive") }}">archive</a>
+                <a href="{{ get_url(path="/tags") }}">tags</a>
+                {% if config.generate_feeds %}
+                <a href="{{ get_url(path="atom.xml", trailing_slash=false) }}">rss</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; {{ now() | date(format="%Y") }} {{ config.title }} | Built with <a href="https://www.getzola.org/">Zola</a></p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

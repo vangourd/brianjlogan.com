@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Search Box -->
+{% if config.build_search_index %}
+<div class="search-container">
+    <input type="text" id="search" placeholder="search posts... (type to filter)">
+</div>
+{% endif %}
+
+<!-- Post List -->
+<ul class="post-list">
+{% for page in paginator.pages %}
+    <li class="post-item">
+        <div class="post-meta">{{ page.date | date(format="%Y-%m-%d") }}</div>
+        <h2 class="post-title">
+            <a href="{{ page.permalink }}">{{ page.title }}</a>
+        </h2>
+        {% if page.summary %}
+        <p class="post-summary">{{ page.summary }}</p>
+        {% elif page.description %}
+        <p class="post-summary">{{ page.description }}</p>
+        {% endif %}
+        {% if page.taxonomies.tags %}
+        <div class="tags">
+            {% for tag in page.taxonomies.tags %}
+            <a href="{{ get_taxonomy_url(kind="tags", name=tag) }}" class="tag">{{ tag }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>
+
+<!-- Pagination -->
+{% if paginator.number_pagers > 1 %}
+<div class="pagination">
+    {% if paginator.previous %}
+    <a href="{{ paginator.previous }}">previous</a>
+    {% endif %}
+
+    <span class="active">{{ paginator.current_index }} / {{ paginator.number_pagers }}</span>
+
+    {% if paginator.next %}
+    <a href="{{ paginator.next }}">next</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% if config.build_search_index %}
+<script src="{{ get_url(path="search.js") }}"></script>
+<script src="{{ get_url(path="search_index.en.js") }}"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const search = document.getElementById('search');
+    const postItems = document.querySelectorAll('.post-item');
+
+    if (search && window.searchIndex) {
+        search.addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+
+            if (query.length === 0) {
+                postItems.forEach(item => item.style.display = 'block');
+                return;
+            }
+
+            postItems.forEach(item => {
+                const title = item.querySelector('.post-title a').textContent.toLowerCase();
+                const summary = item.querySelector('.post-summary')?.textContent.toLowerCase() || '';
+
+                if (title.includes(query) || summary.includes(query)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

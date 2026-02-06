@@ -1,0 +1,413 @@
+// Terminal Theme - Dark Mode
+// Color Palette
+$bg-primary: #0d1117;
+$bg-secondary: #161b22;
+$bg-tertiary: #21262d;
+$text-primary: #c9d1d9;
+$text-secondary: #8b949e;
+$accent-green: #58a6ff;
+$accent-cyan: #39c5cf;
+$accent-yellow: #f0883e;
+$border-color: #30363d;
+
+// Fonts
+$font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+
+// Reset & Base
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: $font-mono;
+  background-color: $bg-primary;
+  color: $text-primary;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+// Links
+a {
+  color: $accent-green;
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $accent-cyan;
+    text-decoration: underline;
+  }
+}
+
+// Container
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+// Header / Nav
+header {
+  background-color: $bg-secondary;
+  border-bottom: 2px solid $border-color;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+
+  .nav-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .site-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .portrait {
+    height: 300px;
+    width: auto;
+    border: 2px solid $accent-green;
+    border-radius: 4px;
+    padding: 4px;
+    background-color: transparent;
+    filter: invert(1);
+    transition: border-color 0.2s ease, filter 0.2s ease;
+
+    &:hover {
+      border-color: $accent-cyan;
+      filter: invert(1) brightness(1.1);
+    }
+  }
+
+  .site-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: $accent-cyan;
+
+    &::before {
+      content: "$ ";
+      color: $accent-green;
+    }
+  }
+
+  nav {
+    display: flex;
+    gap: 1.5rem;
+
+    a {
+      color: $text-secondary;
+      font-size: 0.9rem;
+
+      &:hover {
+        color: $accent-cyan;
+      }
+
+      &::before {
+        content: "--";
+        margin-right: 0.3rem;
+      }
+    }
+  }
+}
+
+// Main Content
+main {
+  min-height: 60vh;
+}
+
+// Post List
+.post-list {
+  list-style: none;
+
+  .post-item {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: $bg-secondary;
+    border: 1px solid $border-color;
+    border-left: 3px solid $accent-green;
+
+    &:hover {
+      border-left-color: $accent-cyan;
+      background-color: $bg-tertiary;
+    }
+
+    .post-meta {
+      color: $text-secondary;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+
+      &::before {
+        content: "[";
+        color: $accent-green;
+      }
+
+      &::after {
+        content: "]";
+        color: $accent-green;
+      }
+    }
+
+    .post-title {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+
+      a {
+        color: $text-primary;
+        font-weight: 600;
+
+        &::before {
+          content: "> ";
+          color: $accent-cyan;
+        }
+      }
+    }
+
+    .post-summary {
+      color: $text-secondary;
+      line-height: 1.5;
+    }
+  }
+}
+
+// Single Post
+article {
+  .post-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid $border-color;
+
+    h1 {
+      font-size: 2rem;
+      color: $accent-cyan;
+      margin-bottom: 0.5rem;
+
+      &::before {
+        content: "# ";
+        color: $accent-green;
+      }
+    }
+
+    .post-meta {
+      color: $text-secondary;
+      font-size: 0.9rem;
+    }
+  }
+
+  .post-content {
+    h2 {
+      color: $accent-cyan;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+
+      &::before {
+        content: "## ";
+        color: $accent-green;
+      }
+    }
+
+    h3 {
+      color: $accent-green;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      font-size: 1.2rem;
+
+      &::before {
+        content: "### ";
+        color: $text-secondary;
+      }
+    }
+
+    p {
+      margin-bottom: 1rem;
+      line-height: 1.7;
+    }
+
+    code {
+      background-color: $bg-tertiary;
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.9em;
+      color: $accent-yellow;
+    }
+
+    pre {
+      background-color: $bg-secondary;
+      border: 1px solid $border-color;
+      border-left: 3px solid $accent-green;
+      padding: 1rem;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+
+      code {
+        background: none;
+        padding: 0;
+        color: $text-primary;
+      }
+    }
+
+    blockquote {
+      border-left: 3px solid $accent-cyan;
+      padding-left: 1rem;
+      margin: 1.5rem 0;
+      color: $text-secondary;
+      font-style: italic;
+    }
+
+    ul, ol {
+      margin-left: 2rem;
+      margin-bottom: 1rem;
+
+      li {
+        margin-bottom: 0.5rem;
+
+        &::marker {
+          color: $accent-green;
+        }
+      }
+    }
+  }
+}
+
+// Tags
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+
+  .tag {
+    background-color: $bg-tertiary;
+    border: 1px solid $border-color;
+    padding: 0.3rem 0.7rem;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    color: $text-secondary;
+
+    &::before {
+      content: "#";
+      color: $accent-green;
+      margin-right: 0.2rem;
+    }
+
+    &:hover {
+      background-color: $bg-secondary;
+      border-color: $accent-green;
+      color: $accent-cyan;
+    }
+  }
+}
+
+// Footer
+footer {
+  margin-top: 4rem;
+  padding: 2rem 0;
+  border-top: 2px solid $border-color;
+  background-color: $bg-secondary;
+  text-align: center;
+  color: $text-secondary;
+  font-size: 0.9rem;
+
+  &::before {
+    content: "---";
+    display: block;
+    color: $accent-green;
+    margin-bottom: 1rem;
+  }
+}
+
+// Pagination
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 3rem;
+
+  a, span {
+    padding: 0.5rem 1rem;
+    background-color: $bg-secondary;
+    border: 1px solid $border-color;
+
+    &::before {
+      content: "[";
+      color: $accent-green;
+    }
+
+    &::after {
+      content: "]";
+      color: $accent-green;
+    }
+
+    &:hover {
+      background-color: $bg-tertiary;
+      border-color: $accent-cyan;
+    }
+  }
+
+  .active {
+    border-color: $accent-cyan;
+    color: $accent-cyan;
+  }
+}
+
+// Search
+.search-container {
+  margin-bottom: 2rem;
+
+  input {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: $bg-secondary;
+    border: 1px solid $border-color;
+    border-left: 3px solid $accent-green;
+    color: $text-primary;
+    font-family: $font-mono;
+    font-size: 0.95rem;
+
+    &::placeholder {
+      color: $text-secondary;
+    }
+
+    &:focus {
+      outline: none;
+      border-left-color: $accent-cyan;
+      background-color: $bg-tertiary;
+    }
+  }
+}
+
+// Mobile Responsive
+@media (max-width: 768px) {
+  header {
+    .portrait {
+      height: 200px;
+    }
+
+    nav {
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: center;
+    }
+  }
+
+  .container {
+    padding: 1rem;
+  }
+
+  article .post-header h1 {
+    font-size: 1.5rem;
+  }
+}
