@@ -37,11 +37,11 @@
                 <div id="autocomplete" class="autocomplete"></div>
             </div>
             <nav>
-                <a href="{{ get_url(path="/") }}">home</a>
-                <a href="{{ get_url(path="/archive") }}">archive</a>
-                <a href="{{ get_url(path="/tags") }}">tags</a>
+                <a href="{{ get_url(path="/") }}" data-key="gh">home</a>
+                <a href="{{ get_url(path="/archive") }}" data-key="ga">archive</a>
+                <a href="{{ get_url(path="/tags") }}" data-key="gt">tags</a>
                 {% if config.generate_feeds %}
-                <a href="{{ get_url(path="atom.xml", trailing_slash=false) }}">rss</a>
+                <a href="{{ get_url(path="atom.xml", trailing_slash=false) }}" data-key="gr">rss</a>
                 {% endif %}
             </nav>
         </div>
