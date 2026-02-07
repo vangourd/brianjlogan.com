@@ -25,7 +25,9 @@
     <header>
         <div class="nav-container">
             <div class="site-brand">
-                <img src="{{ get_url(path="me.png") }}" alt="Portrait" class="portrait">
+                <a href="{{ get_url(path="/") }}" id="portrait-link">
+                    <img src="{{ get_url(path="me.png") }}" alt="Portrait" class="portrait" id="portrait-img">
+                </a>
                 <div class="title-container">
                     <span class="terminal-text">brian@logan:~$</span>
                     <span id="typewriter" class="typewriter-text" style="cursor: pointer;"><span class="cursor">_</span></span>
@@ -294,6 +296,34 @@
             line.textContent = text;
             shellOutput.appendChild(line);
         }
+
+        // Portrait hover effect for mobile
+        const portraitImg = document.getElementById('portrait-img');
+        const portraitLink = document.getElementById('portrait-link');
+        let isShocked = false;
+
+        // Mobile touch handling
+        portraitLink.addEventListener('touchstart', (e) => {
+            if (!isShocked) {
+                e.preventDefault();
+                portraitImg.src = portraitImg.src.replace('me.png', 'me-shocked.png');
+                isShocked = true;
+
+                setTimeout(() => {
+                    portraitImg.src = portraitImg.src.replace('me-shocked.png', 'me.png');
+                    isShocked = false;
+                }, 2000);
+            }
+        });
+
+        // Desktop hover handling
+        portraitLink.addEventListener('mouseenter', () => {
+            portraitImg.src = portraitImg.src.replace('me.png', 'me-shocked.png');
+        });
+
+        portraitLink.addEventListener('mouseleave', () => {
+            portraitImg.src = portraitImg.src.replace('me-shocked.png', 'me.png');
+        });
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
