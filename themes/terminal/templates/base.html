@@ -28,8 +28,11 @@
                 <img src="{{ get_url(path="me.png") }}" alt="Portrait" class="portrait">
                 <div class="title-container">
                     <span class="terminal-text">brian@logan:~$</span>
-                    <span id="typewriter" class="typewriter-text"><span class="cursor">_</span></span>
+                    <span id="typewriter" class="typewriter-text" style="cursor: pointer;"><span class="cursor">_</span></span>
+                    <input type="text" id="shell-input" class="shell-input" autocomplete="off" style="display: none;" />
                 </div>
+                <div id="shell-output" class="shell-output" style="display: none;"></div>
+                <div id="autocomplete" class="autocomplete"></div>
             </div>
             <nav>
                 <a href="{{ get_url(path="/") }}">home</a>
@@ -51,43 +54,255 @@
     </footer>
 
     <script>
+        // Theme definitions
+        const themes = {
+            default: {
+                bgPrimary: '#0d1117',
+                bgSecondary: '#161b22',
+                bgTertiary: '#21262d',
+                textPrimary: '#e6edf3',
+                textSecondary: '#8b949e',
+                accentGreen: '#7ee787',
+                accentCyan: '#79c0ff',
+                accentYellow: '#ffa657',
+                borderColor: '#30363d'
+            },
+            dracula: {
+                bgPrimary: '#282a36',
+                bgSecondary: '#343746',
+                bgTertiary: '#44475a',
+                textPrimary: '#f8f8f2',
+                textSecondary: '#6272a4',
+                accentGreen: '#50fa7b',
+                accentCyan: '#8be9fd',
+                accentYellow: '#f1fa8c',
+                borderColor: '#6272a4'
+            },
+            monokai: {
+                bgPrimary: '#272822',
+                bgSecondary: '#3e3d32',
+                bgTertiary: '#49483e',
+                textPrimary: '#f8f8f2',
+                textSecondary: '#75715e',
+                accentGreen: '#a6e22e',
+                accentCyan: '#66d9ef',
+                accentYellow: '#e6db74',
+                borderColor: '#75715e'
+            },
+            gruvbox: {
+                bgPrimary: '#282828',
+                bgSecondary: '#3c3836',
+                bgTertiary: '#504945',
+                textPrimary: '#ebdbb2',
+                textSecondary: '#a89984',
+                accentGreen: '#b8bb26',
+                accentCyan: '#8ec07c',
+                accentYellow: '#fabd2f',
+                borderColor: '#665c54'
+            },
+            nord: {
+                bgPrimary: '#2e3440',
+                bgSecondary: '#3b4252',
+                bgTertiary: '#434c5e',
+                textPrimary: '#eceff4',
+                textSecondary: '#d8dee9',
+                accentGreen: '#a3be8c',
+                accentCyan: '#88c0d0',
+                accentYellow: '#ebcb8b',
+                borderColor: '#4c566a'
+            },
+            solarized: {
+                bgPrimary: '#002b36',
+                bgSecondary: '#073642',
+                bgTertiary: '#586e75',
+                textPrimary: '#fdf6e3',
+                textSecondary: '#93a1a1',
+                accentGreen: '#859900',
+                accentCyan: '#2aa198',
+                accentYellow: '#b58900',
+                borderColor: '#586e75'
+            }
+        };
+
+        // Apply theme
+        function applyTheme(themeName) {
+            const theme = themes[themeName];
+            if (!theme) return false;
+
+            const root = document.documentElement;
+            root.style.setProperty('--bg-primary', theme.bgPrimary);
+            root.style.setProperty('--bg-secondary', theme.bgSecondary);
+            root.style.setProperty('--bg-tertiary', theme.bgTertiary);
+            root.style.setProperty('--text-primary', theme.textPrimary);
+            root.style.setProperty('--text-secondary', theme.textSecondary);
+            root.style.setProperty('--accent-green', theme.accentGreen);
+            root.style.setProperty('--accent-cyan', theme.accentCyan);
+            root.style.setProperty('--accent-yellow', theme.accentYellow);
+            root.style.setProperty('--border-color', theme.borderColor);
+
+            localStorage.setItem('theme', themeName);
+            return true;
+        }
+
+        // Commands
+        const commands = [
+            { name: '/theme', description: 'Change color theme', args: ['default', 'dracula', 'monokai', 'gruvbox', 'nord', 'solarized'] },
+            { name: '/help', description: 'Show available commands' },
+            { name: '/clear', description: 'Clear terminal output' }
+        ];
+
         // Terminal typewriter effect
         const words = ['dad', 'coder', 'technologist', 'designer', 'engineer', 'explorer',
                        'human', 'husband', 'mentor', 'nobody', 'philosopher', 'somebody',
                        'son', 'student', 'traveler'];
         let currentWordIndex = 0;
         let isTyping = false;
+        let shellActive = false;
 
         const typewriter = document.getElementById('typewriter');
+        const shellContainer = document.getElementById('shell-container');
+        const shellInput = document.getElementById('shell-input');
+        const shellOutput = document.getElementById('shell-output');
+        const autocomplete = document.getElementById('autocomplete');
 
         async function typeWord(word) {
-            if (isTyping) return;
+            if (isTyping || shellActive) return;
             isTyping = true;
 
-            // Type out the word
             for (let i = 0; i <= word.length; i++) {
                 typewriter.innerHTML = word.substring(0, i) + '<span class="cursor">_</span>';
                 await new Promise(resolve => setTimeout(resolve, 100));
             }
 
-            // Pause to read
             await new Promise(resolve => setTimeout(resolve, 2000));
 
-            // Delete the word
             for (let i = word.length; i >= 0; i--) {
                 typewriter.innerHTML = word.substring(0, i) + '<span class="cursor">_</span>';
                 await new Promise(resolve => setTimeout(resolve, 50));
             }
 
             isTyping = false;
-
-            // Next word
             currentWordIndex = (currentWordIndex + 1) % words.length;
             setTimeout(() => typeWord(words[currentWordIndex]), 500);
         }
 
-        // Initialize on page load
+        // Toggle shell
+        typewriter.addEventListener('click', () => {
+            shellActive = true;
+            typewriter.style.display = 'none';
+            shellInput.style.display = 'inline-block';
+            shellOutput.style.display = 'block';
+            shellInput.focus();
+        });
+
+        // Autocomplete logic
+        function updateAutocomplete(input) {
+            autocomplete.innerHTML = '';
+            if (!input) {
+                autocomplete.classList.remove('show');
+                return;
+            }
+
+            const matches = commands.filter(cmd => cmd.name.startsWith(input));
+            if (matches.length === 0) {
+                autocomplete.classList.remove('show');
+                return;
+            }
+
+            matches.forEach((cmd, index) => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item' + (index === 0 ? ' selected' : '');
+                item.innerHTML = `<span class="command">${cmd.name}</span><span class="description">${cmd.description}</span>`;
+                item.addEventListener('click', () => {
+                    shellInput.value = cmd.name + ' ';
+                    autocomplete.classList.remove('show');
+                    shellInput.focus();
+                });
+                autocomplete.appendChild(item);
+            });
+
+            autocomplete.classList.add('show');
+        }
+
+        // Handle shell input
+        shellInput.addEventListener('input', (e) => {
+            const value = e.target.value;
+            if (value.startsWith('/')) {
+                updateAutocomplete(value.split(' ')[0]);
+            } else {
+                autocomplete.classList.remove('show');
+            }
+        });
+
+        shellInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const selected = autocomplete.querySelector('.selected');
+                if (selected) {
+                    const cmdName = selected.querySelector('.command').textContent;
+                    shellInput.value = cmdName + ' ';
+                    autocomplete.classList.remove('show');
+                }
+            } else if (e.key === 'Enter') {
+                executeCommand(shellInput.value);
+                shellInput.value = '';
+                autocomplete.classList.remove('show');
+            } else if (e.key === 'Escape') {
+                shellActive = false;
+                shellInput.style.display = 'none';
+                typewriter.style.display = 'inline-block';
+                shellInput.value = '';
+                autocomplete.classList.remove('show');
+            }
+        });
+
+        // Execute command
+        function executeCommand(input) {
+            const parts = input.trim().split(' ');
+            const cmd = parts[0];
+            const args = parts.slice(1);
+
+            const outputLine = document.createElement('div');
+            outputLine.className = 'output-line';
+            outputLine.innerHTML = `<span style="color: var(--accent-green);">brian@logan:~$</span> ${input}`;
+            shellOutput.appendChild(outputLine);
+
+            if (cmd === '/theme') {
+                if (args.length === 0) {
+                    addOutput('Available themes: ' + Object.keys(themes).join(', '), 'success');
+                } else if (applyTheme(args[0])) {
+                    addOutput(`Theme changed to: ${args[0]}`, 'success');
+                } else {
+                    addOutput(`Unknown theme: ${args[0]}`, 'error');
+                }
+            } else if (cmd === '/help') {
+                commands.forEach(c => {
+                    addOutput(`${c.name} - ${c.description}`);
+                });
+            } else if (cmd === '/clear') {
+                shellOutput.innerHTML = '';
+            } else if (cmd) {
+                addOutput(`Unknown command: ${cmd}. Type /help for available commands.`, 'error');
+            }
+
+            shellOutput.scrollTop = shellOutput.scrollHeight;
+        }
+
+        function addOutput(text, type = '') {
+            const line = document.createElement('div');
+            line.className = 'output-line ' + type;
+            line.textContent = text;
+            shellOutput.appendChild(line);
+        }
+
+        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme && themes[savedTheme]) {
+                applyTheme(savedTheme);
+            }
+
             // Start typing
             setTimeout(() => typeWord(words[currentWordIndex]), 1000);
         });

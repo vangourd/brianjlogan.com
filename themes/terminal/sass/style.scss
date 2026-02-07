@@ -1,17 +1,18 @@
-// Terminal Theme - Dark Mode (WCAG Compliant)
-// Color Palette
-$bg-primary: #0d1117;
-$bg-secondary: #161b22;
-$bg-tertiary: #21262d;
-$text-primary: #e6edf3;
-$text-secondary: #8b949e;
-$accent-green: #7ee787;
-$accent-cyan: #79c0ff;
-$accent-yellow: #ffa657;
-$border-color: #30363d;
-
 // Fonts
 $font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+
+// CSS Custom Properties for dynamic theming
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --accent-green: #7ee787;
+  --accent-cyan: #79c0ff;
+  --accent-yellow: #ffa657;
+  --border-color: #30363d;
+}
 
 // Reset & Base
 * {
@@ -27,20 +28,20 @@ html {
 
 body {
   font-family: $font-mono;
-  background-color: $bg-primary;
-  color: $text-primary;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   line-height: 1.6;
   font-size: 0.95rem;
 }
 
 // Links
 a {
-  color: $accent-green;
+  color: var(--accent-green);
   text-decoration: none;
   transition: color 0.2s ease;
 
   &:hover {
-    color: $accent-cyan;
+    color: var(--accent-cyan);
     text-decoration: underline;
   }
 }
@@ -66,7 +67,7 @@ a {
 
 header {
   background-color: #1a1a1a;
-  border-bottom: 2px solid $border-color;
+  border-bottom: 2px solid var(--border-color);
   padding: 0;
   margin-bottom: 2rem;
   animation: fadeIn 1s ease-out;
@@ -112,14 +113,14 @@ header {
   }
 
   .terminal-text {
-    color: $accent-green;
+    color: var(--accent-green);
     font-size: 1.5rem;
     font-weight: 600;
     margin-right: 0.5rem;
   }
 
   .typewriter-text {
-    color: $accent-cyan;
+    color: var(--accent-cyan);
     font-size: 1.5rem;
     font-weight: 600;
     min-width: 150px;
@@ -127,7 +128,7 @@ header {
   }
 
   .cursor {
-    color: $text-primary;
+    color: var(--text-primary);
     font-size: 1.5rem;
     animation: blink 1s infinite;
   }
@@ -137,6 +138,24 @@ header {
     51%, 100% { opacity: 0; }
   }
 
+  .shell-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--accent-cyan);
+    font-family: $font-mono;
+    font-size: 1.5rem;
+    font-weight: 600;
+    padding: 0;
+    min-width: 300px;
+    caret-color: var(--text-primary);
+
+    &::selection {
+      background-color: var(--accent-cyan);
+      color: var(--bg-primary);
+    }
+  }
+
   nav {
     display: flex;
     flex-direction: column;
@@ -144,20 +163,81 @@ header {
     align-items: flex-end;
 
     a {
-      color: $text-primary;
+      color: var(--text-primary);
       font-size: 1.1rem;
       font-weight: 600;
       letter-spacing: 0.5px;
 
       &:hover {
-        color: $accent-cyan;
+        color: var(--accent-cyan);
       }
 
       &::before {
         content: ">";
         margin-right: 0.5rem;
-        color: $accent-green;
+        color: var(--accent-green);
       }
+    }
+  }
+}
+
+.shell-output {
+  margin-top: 1rem;
+  padding: 0 2rem;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  max-height: 300px;
+  overflow-y: auto;
+
+  .output-line {
+    margin-bottom: 0.25rem;
+  }
+
+  .error {
+    color: #ff6b6b;
+  }
+
+  .success {
+    color: var(--accent-green);
+  }
+}
+
+.autocomplete {
+  position: absolute;
+  margin-top: 0.5rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  max-height: 150px;
+  overflow-y: auto;
+  display: none;
+  z-index: 100;
+
+  &.show {
+    display: block;
+  }
+
+  .autocomplete-item {
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    white-space: nowrap;
+
+    &:hover, &.selected {
+      background-color: var(--bg-tertiary);
+      color: var(--accent-cyan);
+    }
+
+    .command {
+      color: var(--accent-green);
+      font-weight: 600;
+    }
+
+    .description {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-left: 1rem;
     }
   }
 }
@@ -174,28 +254,28 @@ main {
   .post-item {
     margin-bottom: 2rem;
     padding: 1.5rem;
-    background-color: $bg-secondary;
-    border: 1px solid $border-color;
-    border-left: 3px solid $accent-green;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--accent-green);
 
     &:hover {
-      border-left-color: $accent-cyan;
-      background-color: $bg-tertiary;
+      border-left-color: var(--accent-cyan);
+      background-color: var(--bg-tertiary);
     }
 
     .post-meta {
-      color: $text-secondary;
+      color: var(--text-secondary);
       font-size: 0.85rem;
       margin-bottom: 0.5rem;
 
       &::before {
         content: "[";
-        color: $accent-green;
+        color: var(--accent-green);
       }
 
       &::after {
         content: "]";
-        color: $accent-green;
+        color: var(--accent-green);
       }
     }
 
@@ -204,18 +284,18 @@ main {
       margin-bottom: 0.5rem;
 
       a {
-        color: $text-primary;
+        color: var(--text-primary);
         font-weight: 600;
 
         &::before {
           content: "> ";
-          color: $accent-cyan;
+          color: var(--accent-cyan);
         }
       }
     }
 
     .post-summary {
-      color: $text-secondary;
+      color: var(--text-secondary);
       line-height: 1.5;
     }
   }
@@ -226,47 +306,47 @@ article {
   .post-header {
     margin-bottom: 2rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid $border-color;
+    border-bottom: 1px solid var(--border-color);
 
     h1 {
       font-size: 2rem;
-      color: $accent-cyan;
+      color: var(--accent-cyan);
       margin-bottom: 0.5rem;
 
       &::before {
         content: "# ";
-        color: $accent-green;
+        color: var(--accent-green);
       }
     }
 
     .post-meta {
-      color: $text-secondary;
+      color: var(--text-secondary);
       font-size: 0.9rem;
     }
   }
 
   .post-content {
     h2 {
-      color: $accent-cyan;
+      color: var(--accent-cyan);
       margin-top: 2rem;
       margin-bottom: 1rem;
       font-size: 1.5rem;
 
       &::before {
         content: "## ";
-        color: $accent-green;
+        color: var(--accent-green);
       }
     }
 
     h3 {
-      color: $accent-green;
+      color: var(--accent-green);
       margin-top: 1.5rem;
       margin-bottom: 0.75rem;
       font-size: 1.2rem;
 
       &::before {
         content: "### ";
-        color: $text-secondary;
+        color: var(--text-secondary);
       }
     }
 
@@ -276,17 +356,17 @@ article {
     }
 
     code {
-      background-color: $bg-tertiary;
+      background-color: var(--bg-tertiary);
       padding: 0.2rem 0.4rem;
       border-radius: 3px;
       font-size: 0.9em;
-      color: $accent-yellow;
+      color: var(--accent-yellow);
     }
 
     pre {
-      background-color: $bg-secondary;
-      border: 1px solid $border-color;
-      border-left: 3px solid $accent-green;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-left: 3px solid var(--accent-green);
       padding: 1rem;
       overflow-x: auto;
       margin: 1.5rem 0;
@@ -294,15 +374,15 @@ article {
       code {
         background: none;
         padding: 0;
-        color: $text-primary;
+        color: var(--text-primary);
       }
     }
 
     blockquote {
-      border-left: 3px solid $accent-cyan;
+      border-left: 3px solid var(--accent-cyan);
       padding-left: 1rem;
       margin: 1.5rem 0;
-      color: $text-secondary;
+      color: var(--text-secondary);
       font-style: italic;
     }
 
@@ -314,7 +394,7 @@ article {
         margin-bottom: 0.5rem;
 
         &::marker {
-          color: $accent-green;
+          color: var(--accent-green);
         }
       }
     }
@@ -329,23 +409,23 @@ article {
   margin-top: 1rem;
 
   .tag {
-    background-color: $bg-tertiary;
-    border: 1px solid $border-color;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
     padding: 0.3rem 0.7rem;
     border-radius: 3px;
     font-size: 0.85rem;
-    color: $text-secondary;
+    color: var(--text-secondary);
 
     &::before {
       content: "#";
-      color: $accent-green;
+      color: var(--accent-green);
       margin-right: 0.2rem;
     }
 
     &:hover {
-      background-color: $bg-secondary;
-      border-color: $accent-green;
-      color: $accent-cyan;
+      background-color: var(--bg-secondary);
+      border-color: var(--accent-green);
+      color: var(--accent-cyan);
     }
   }
 }
@@ -354,16 +434,16 @@ article {
 footer {
   margin-top: 4rem;
   padding: 2rem 0;
-  border-top: 2px solid $border-color;
-  background-color: $bg-secondary;
+  border-top: 2px solid var(--border-color);
+  background-color: var(--bg-secondary);
   text-align: center;
-  color: $text-secondary;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 
   &::before {
     content: "---";
     display: block;
-    color: $accent-green;
+    color: var(--accent-green);
     margin-bottom: 1rem;
   }
 }
@@ -377,28 +457,28 @@ footer {
 
   a, span {
     padding: 0.5rem 1rem;
-    background-color: $bg-secondary;
-    border: 1px solid $border-color;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
 
     &::before {
       content: "[";
-      color: $accent-green;
+      color: var(--accent-green);
     }
 
     &::after {
       content: "]";
-      color: $accent-green;
+      color: var(--accent-green);
     }
 
     &:hover {
-      background-color: $bg-tertiary;
-      border-color: $accent-cyan;
+      background-color: var(--bg-tertiary);
+      border-color: var(--accent-cyan);
     }
   }
 
   .active {
-    border-color: $accent-cyan;
-    color: $accent-cyan;
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
   }
 }
 
@@ -409,21 +489,21 @@ footer {
   input {
     width: 100%;
     padding: 0.75rem;
-    background-color: $bg-secondary;
-    border: 1px solid $border-color;
-    border-left: 3px solid $accent-green;
-    color: $text-primary;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--accent-green);
+    color: var(--text-primary);
     font-family: $font-mono;
     font-size: 0.95rem;
 
     &::placeholder {
-      color: $text-secondary;
+      color: var(--text-secondary);
     }
 
     &:focus {
       outline: none;
-      border-left-color: $accent-cyan;
-      background-color: $bg-tertiary;
+      border-left-color: var(--accent-cyan);
+      background-color: var(--bg-tertiary);
     }
   }
 }
