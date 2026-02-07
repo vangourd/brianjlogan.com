@@ -21,7 +21,7 @@
 
     {% block extra_head %}{% endblock %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
     <header>
         <div class="nav-container">
             <div class="site-brand">
@@ -36,13 +36,44 @@
                 <div id="shell-output" class="shell-output" style="display: none;"></div>
                 <div id="autocomplete" class="autocomplete"></div>
             </div>
-            <nav>
-                <a href="{{ get_url(path="/") }}" data-key="gh">home</a>
-                <a href="{{ get_url(path="/archive") }}" data-key="ga">archive</a>
-                <a href="{{ get_url(path="/tags") }}" data-key="gt">tags</a>
-                {% if config.generate_feeds %}
-                <a href="{{ get_url(path="atom.xml", trailing_slash=false) }}" data-key="gr">rss</a>
-                {% endif %}
+            <nav id="quick-menu">
+                <div class="nav-header" onclick="toggleQuickMenu()">
+                    <span>Quick Menu</span>
+                    <span class="nav-toggle">▼</span>
+                </div>
+                <div class="nav-links">
+                    <a href="{{ get_url(path="/") }}" data-key="gh">home</a>
+                    <a href="{{ get_url(path="/archive") }}" data-key="ga">archive</a>
+                    <a href="{{ get_url(path="/tags") }}" data-key="gt">tags</a>
+
+                    <div class="nav-folder">
+                        <div class="nav-folder-header" onclick="toggleFolder(event, 'tech')">
+                            <span class="folder-icon">▸</span>
+                            <span>tech</span>
+                        </div>
+                        <div class="nav-submenu" id="submenu-tech">
+                            <a href="{{ get_url(path="/tags/kubernetes") }}" data-key="tk">kubernetes</a>
+                            <a href="{{ get_url(path="/tags/security") }}" data-key="ts">security</a>
+                            <a href="{{ get_url(path="/tags/devops") }}" data-key="td">devops</a>
+                        </div>
+                    </div>
+
+                    <div class="nav-folder">
+                        <div class="nav-folder-header" onclick="toggleFolder(event, 'social')">
+                            <span class="folder-icon">▸</span>
+                            <span>social</span>
+                        </div>
+                        <div class="nav-submenu" id="submenu-social">
+                            <a href="{{ get_url(path="/tags/coffee") }}" data-key="sc">coffee</a>
+                            <a href="{{ get_url(path="/tags/travel") }}" data-key="st">travel</a>
+                            <a href="{{ get_url(path="/tags/food") }}" data-key="sf">food</a>
+                        </div>
+                    </div>
+
+                    {% if config.generate_feeds %}
+                    <a href="{{ get_url(path="atom.xml", trailing_slash=false) }}" data-key="gr">rss</a>
+                    {% endif %}
+                </div>
             </nav>
         </div>
     </header>
@@ -378,12 +409,30 @@
             }
         });
 
+        // Quick Menu toggle
+        function toggleQuickMenu() {
+            const menu = document.getElementById('quick-menu');
+            menu.classList.toggle('collapsed');
+        }
+
+        // Folder toggle
+        function toggleFolder(event, folderId) {
+            event.stopPropagation();
+            const folder = event.target.closest('.nav-folder');
+            folder.classList.toggle('expanded');
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             // Load saved theme
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme && themes[savedTheme]) {
                 applyTheme(savedTheme);
+            }
+
+            // Collapse menu on non-home pages
+            if (!document.body.classList.contains('home-page')) {
+                document.getElementById('quick-menu').classList.add('collapsed');
             }
 
             // Start typing

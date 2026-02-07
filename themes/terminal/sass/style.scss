@@ -94,15 +94,16 @@ header {
   .portrait {
     display: block;
     width: 200px;
-    height: 300px;
+    height: 200px;
     object-fit: cover;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    object-position: center center;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 
     &:hover {
       transform: scale(1.05);
-      box-shadow: 0 6px 12px rgba(88, 166, 255, 0.3);
+      box-shadow: 0 4px 8px rgba(88, 166, 255, 0.3);
     }
   }
 
@@ -169,15 +170,47 @@ header {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
     position: relative;
 
-    &::before {
-      content: "Quick Menu";
-      display: block;
+    .nav-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       background-color: var(--bg-tertiary);
       color: var(--accent-cyan);
       padding: 0.4rem 0.75rem;
       font-size: 0.85rem;
       font-weight: 600;
       border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      user-select: none;
+
+      .nav-toggle {
+        color: var(--accent-green);
+        font-size: 0.7rem;
+        transition: transform 0.2s ease;
+      }
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+    }
+
+    &.collapsed .nav-toggle {
+      transform: rotate(-90deg);
+    }
+
+    .nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      transition: max-height 0.3s ease, opacity 0.2s ease;
+      overflow: hidden;
+      max-height: 500px;
+      opacity: 1;
+    }
+
+    &.collapsed .nav-links {
+      max-height: 0;
+      opacity: 0;
     }
 
     a {
@@ -224,6 +257,79 @@ header {
         color: var(--bg-primary);
       }
     }
+
+    .nav-folder {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-folder-header {
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      font-weight: 400;
+      padding: 0.5rem 0.75rem;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color 0.1s ease;
+      user-select: none;
+
+      &:hover {
+        background-color: var(--bg-tertiary);
+      }
+
+      .folder-icon {
+        color: var(--accent-green);
+        margin-right: 0.5rem;
+        font-size: 0.7rem;
+        transition: transform 0.2s ease;
+      }
+    }
+
+    .nav-folder.expanded .folder-icon {
+      transform: rotate(90deg);
+    }
+
+    .nav-submenu {
+      display: flex;
+      flex-direction: column;
+      background-color: rgba(0, 0, 0, 0.3);
+      border-left: 2px solid var(--accent-green);
+      margin-left: 1rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+
+      a {
+        padding-left: 1.5rem;
+        font-size: 0.85rem;
+        background-color: transparent;
+
+        &::before {
+          content: "";
+          width: 2px;
+        }
+
+        &:hover {
+          background-color: var(--accent-cyan);
+        }
+      }
+    }
+
+    .nav-folder.expanded .nav-submenu {
+      max-height: 300px;
+    }
+  }
+}
+
+// Home page full portrait
+.home-page header .portrait {
+  height: 300px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+
+  &:hover {
+    box-shadow: 0 6px 12px rgba(88, 166, 255, 0.3);
   }
 }
 
@@ -611,6 +717,10 @@ footer {
     }
 
     .portrait {
+      height: 100px;
+    }
+
+    .home-page & .portrait {
       height: 400px;
     }
 
