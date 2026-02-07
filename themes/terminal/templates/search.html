@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="search-container">
+    <input type="text" id="search" placeholder="search posts..." autofocus>
+</div>
+
+<div id="search-results">
+    <p class="search-status">Enter a search term to find posts.</p>
+</div>
+
+<ul class="post-list" id="results-list" style="display: none;">
+</ul>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ get_url(path='elasticlunr.min.js') }}"></script>
+<script src="{{ get_url(path='search_index.en.js') }}"></script>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('search');
+    const resultsList = document.getElementById('results-list');
+    const searchStatus = document.querySelector('.search-status');
+    const searchIndex = elasticlunr.Index.load(window.searchIndex);
+
+    // Check for query parameter on load
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryParam = urlParams.get('q');
+    if (queryParam) {
+        searchInput.value = queryParam;
+        performSearch(queryParam);
+    }
+
+    // Search on input
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+        if (query.length === 0) {
+            resultsList.style.display = 'none';
+            searchStatus.textContent = 'Enter a search term to find posts.';
+            searchStatus.style.display = 'block';
+            return;
+        }
+        performSearch(query);
+    });
+
+    function performSearch(query) {
+        const results = searchIndex.search(query, {
+            fields: {
+                title: {boost: 2},
+                body: {boost: 1}
+            },
+            bool: "OR",
+            expand: true
+        });
+
+        if (results.length === 0) {
+            resultsList.style.display = 'none';
+            searchStatus.textContent = `No results found for "${query}"`;
+            searchStatus.style.display = 'block';
+            return;
+        }
+
+        searchStatus.style.display = 'none';
+        resultsList.style.display = 'block';
+        resultsList.innerHTML = '';
+
+        results.forEach(result => {
+            // Extract URL from result.ref
+            const url = result.ref;
+            // Get document from search index document store
+            const doc = searchIndex.documentStore.getDoc(result.ref);
+            const title = doc ? doc.title : 'Untitled';
+
+            const li = document.createElement('li');
+            li.className = 'post-item';
+
+            // Build HTML with available fields
+            let html = `<h2 class="post-title"><a href="${url}">${title}</a></h2>`;
+
+            // Add body preview if available
+            if (doc && doc.body) {
+                const preview = doc.body.substring(0, 200) + '...';
+                html += `<p class="post-summary">${preview}</p>`;
+            }
+
+            li.innerHTML = html;
+            resultsList.appendChild(li);
+        });
+
+        searchStatus.textContent = `Found ${results.length} result${results.length === 1 ? '' : 's'} for "${query}"`;
+        searchStatus.style.display = 'block';
+    }
+});
+</script>
+{% endblock %}

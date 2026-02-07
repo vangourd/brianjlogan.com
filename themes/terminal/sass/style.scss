@@ -409,10 +409,31 @@ main {
     background-color: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-left: 3px solid var(--accent-green);
+    display: flex;
+    gap: 1.5rem;
 
     &:hover {
       border-left-color: var(--accent-cyan);
       background-color: var(--bg-tertiary);
+    }
+
+    .post-thumbnail {
+      flex-shrink: 0;
+      width: 200px;
+      height: 150px;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
+      }
+    }
+
+    .post-content {
+      flex: 1;
+      min-width: 0;
     }
 
     .post-meta {
@@ -751,6 +772,15 @@ footer {
 
     .typewriter-prompt {
       font-size: 1.5rem;
+    }
+  }
+
+  .post-item {
+    flex-direction: column;
+
+    .post-thumbnail {
+      width: 100%;
+      height: 200px;
     }
   }
 }

@@ -3,84 +3,108 @@
 {% block body_class %}home-page{% endblock %}
 
 {% block content %}
-<!-- Search Box -->
-{% if config.build_search_index %}
-<div class="search-container">
-    <input type="text" id="search" placeholder="search posts... (type to filter)">
-</div>
-{% endif %}
-
 <!-- Post List -->
 <ul class="post-list">
 {% for page in paginator.pages %}
-    <li class="post-item">
-        <div class="post-meta">{{ page.date | date(format="%Y-%m-%d") }}</div>
-        <h2 class="post-title">
-            <a href="{{ page.permalink }}">{{ page.title }}</a>
-        </h2>
-        {% if page.summary %}
-        <p class="post-summary">{{ page.summary }}</p>
-        {% elif page.description %}
-        <p class="post-summary">{{ page.description }}</p>
-        {% endif %}
-        {% if page.taxonomies.tags %}
-        <div class="tags">
-            {% for tag in page.taxonomies.tags %}
-            <a href="{{ get_taxonomy_url(kind="tags", name=tag) }}" class="tag">{{ tag }}</a>
-            {% endfor %}
+    <li class="post-item" data-year="{{ page.date | date(format='%Y') }}">
+        {% if page.extra.image %}
+        <div class="post-thumbnail">
+            <a href="{{ page.permalink }}">
+                <img src="{{ get_url(path=page.extra.image) }}" alt="{{ page.title }}">
+            </a>
         </div>
         {% endif %}
+        <div class="post-content">
+            <div class="post-meta">{{ page.date | date(format="%Y-%m-%d") }}</div>
+            <h2 class="post-title">
+                <a href="{{ page.permalink }}">{{ page.title }}</a>
+            </h2>
+            {% if page.summary %}
+            <p class="post-summary">{{ page.summary }}</p>
+            {% elif page.extra.summary %}
+            <p class="post-summary">{{ page.extra.summary }}</p>
+            {% elif page.description %}
+            <p class="post-summary">{{ page.description }}</p>
+            {% endif %}
+            {% if page.taxonomies.tags %}
+            <div class="tags">
+                {% for tag in page.taxonomies.tags %}
+                <a href="{{ get_taxonomy_url(kind="tags", name=tag) }}" class="tag">{{ tag }}</a>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
     </li>
 {% endfor %}
 </ul>
 
-<!-- Pagination -->
-{% if paginator.number_pagers > 1 %}
-<div class="pagination">
-    {% if paginator.previous %}
-    <a href="{{ paginator.previous }}">previous</a>
-    {% endif %}
-
-    <span class="active">{{ paginator.current_index }} / {{ paginator.number_pagers }}</span>
-
-    {% if paginator.next %}
-    <a href="{{ paginator.next }}">next</a>
-    {% endif %}
+<!-- Year Navigation -->
+<div class="pagination" id="year-nav">
+    <a href="{{ get_url(path='/') }}" class="year-link active">latest</a>
 </div>
-{% endif %}
 {% endblock %}
 
 {% block extra_js %}
-{% if config.build_search_index %}
-<script src="{{ get_url(path="search.js") }}"></script>
-<script src="{{ get_url(path="search_index.en.js") }}"></script>
 <script>
-window.addEventListener('DOMContentLoaded', (event) => {
-    const search = document.getElementById('search');
+window.addEventListener('DOMContentLoaded', () => {
     const postItems = document.querySelectorAll('.post-item');
+    const yearNav = document.getElementById('year-nav');
 
-    if (search && window.searchIndex) {
-        search.addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase();
+    // Collect unique years
+    const years = new Set();
+    postItems.forEach(item => {
+        const year = item.getAttribute('data-year');
+        if (year) years.add(year);
+    });
 
-            if (query.length === 0) {
-                postItems.forEach(item => item.style.display = 'block');
-                return;
-            }
+    // Sort years descending
+    const sortedYears = Array.from(years).sort().reverse();
 
+    // Most recent year with posts (use this for "latest")
+    const mostRecentYear = sortedYears[0];
+
+    // Add year links for older years
+    sortedYears.slice(1).forEach(year => {
+        const link = document.createElement('a');
+        link.href = 'javascript:void(0)';
+        link.className = 'year-link';
+        link.setAttribute('data-year', year);
+        link.textContent = year;
+        yearNav.appendChild(link);
+    });
+
+    // On page load, show only most recent year and newer
+    postItems.forEach(item => {
+        const itemYear = item.getAttribute('data-year');
+        if (parseInt(itemYear) >= parseInt(mostRecentYear)) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+
+    // Year filter functionality
+    const yearLinks = document.querySelectorAll('.year-link');
+    yearLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            const selectedYear = link.getAttribute('data-year');
+
+            // Update active state
+            yearLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+
+            // Filter posts
             postItems.forEach(item => {
-                const title = item.querySelector('.post-title a').textContent.toLowerCase();
-                const summary = item.querySelector('.post-summary')?.textContent.toLowerCase() || '';
-
-                if (title.includes(query) || summary.includes(query)) {
+                const itemYear = item.getAttribute('data-year');
+                if (itemYear === selectedYear) {
                     item.style.display = 'block';
                 } else {
                     item.style.display = 'none';
                 }
             });
         });
-    }
+    });
 });
 </script>
-{% endif %}
 {% endblock %}
+
