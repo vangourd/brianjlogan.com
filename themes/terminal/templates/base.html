@@ -25,8 +25,11 @@
     <header>
         <div class="nav-container">
             <div class="site-brand">
-                <img src="{{ get_url(path="me.svg") }}" alt="Portrait" class="portrait">
-                <a href="{{ get_url(path="/") }}" class="site-title">{{ config.title }}</a>
+                <img src="{{ get_url(path="me.png") }}" alt="Portrait" class="portrait">
+                <div class="title-container">
+                    <span class="terminal-text">brian@logan:~$</span>
+                    <span id="typewriter" class="typewriter-text"><span class="cursor">_</span></span>
+                </div>
             </div>
             <nav>
                 <a href="{{ get_url(path="/") }}">home</a>
@@ -46,6 +49,49 @@
     <footer>
         <p>&copy; {{ now() | date(format="%Y") }} {{ config.title }} | Built with <a href="https://www.getzola.org/">Zola</a></p>
     </footer>
+
+    <script>
+        // Terminal typewriter effect
+        const words = ['dad', 'coder', 'technologist', 'designer', 'engineer', 'explorer',
+                       'human', 'husband', 'mentor', 'nobody', 'philosopher', 'somebody',
+                       'son', 'student', 'traveler'];
+        let currentWordIndex = 0;
+        let isTyping = false;
+
+        const typewriter = document.getElementById('typewriter');
+
+        async function typeWord(word) {
+            if (isTyping) return;
+            isTyping = true;
+
+            // Type out the word
+            for (let i = 0; i <= word.length; i++) {
+                typewriter.innerHTML = word.substring(0, i) + '<span class="cursor">_</span>';
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
+            // Pause to read
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // Delete the word
+            for (let i = word.length; i >= 0; i--) {
+                typewriter.innerHTML = word.substring(0, i) + '<span class="cursor">_</span>';
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+
+            isTyping = false;
+
+            // Next word
+            currentWordIndex = (currentWordIndex + 1) % words.length;
+            setTimeout(() => typeWord(words[currentWordIndex]), 500);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Start typing
+            setTimeout(() => typeWord(words[currentWordIndex]), 1000);
+        });
+    </script>
 
     {% block extra_js %}{% endblock %}
 </body>

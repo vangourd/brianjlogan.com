@@ -1,13 +1,13 @@
-// Terminal Theme - Dark Mode
+// Terminal Theme - Dark Mode (WCAG Compliant)
 // Color Palette
 $bg-primary: #0d1117;
 $bg-secondary: #161b22;
 $bg-tertiary: #21262d;
-$text-primary: #c9d1d9;
+$text-primary: #e6edf3;
 $text-secondary: #8b949e;
-$accent-green: #58a6ff;
-$accent-cyan: #39c5cf;
-$accent-yellow: #f0883e;
+$accent-green: #7ee787;
+$accent-cyan: #79c0ff;
+$accent-yellow: #ffa657;
 $border-color: #30363d;
 
 // Fonts
@@ -65,8 +65,8 @@ a {
 }
 
 header {
-  background-color: #343434;
-  border-bottom: 2px solid #444444;
+  background-color: #1a1a1a;
+  border-bottom: 2px solid $border-color;
   padding: 0;
   margin-bottom: 2rem;
   animation: fadeIn 1s ease-out;
@@ -91,27 +91,50 @@ header {
   }
 
   .portrait {
-    height: 700px;
-    width: auto;
-    background-color: transparent;
-    filter: brightness(2) contrast(0.9);
-    transition: filter 0.3s ease, transform 0.3s ease;
+    width: 200px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 
     &:hover {
-      filter: brightness(2.2) contrast(0.9);
-      transform: scale(1.02);
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(88, 166, 255, 0.3);
     }
   }
 
-  .site-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #ffffff;
+  .title-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
 
-    &::before {
-      content: "$ ";
-      color: #e0e0e0;
-    }
+  .terminal-text {
+    color: $accent-green;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+
+  .typewriter-text {
+    color: $accent-cyan;
+    font-size: 1.5rem;
+    font-weight: 600;
+    min-width: 150px;
+    display: inline-block;
+  }
+
+  .cursor {
+    color: $text-primary;
+    font-size: 1.5rem;
+    animation: blink 1s infinite;
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
   }
 
   nav {
@@ -121,16 +144,19 @@ header {
     align-items: flex-end;
 
     a {
-      color: #e0e0e0;
+      color: $text-primary;
       font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
 
       &:hover {
-        color: #ffffff;
+        color: $accent-cyan;
       }
 
       &::before {
-        content: "--";
-        margin-right: 0.3rem;
+        content: ">";
+        margin-right: 0.5rem;
+        color: $accent-green;
       }
     }
   }
@@ -415,6 +441,10 @@ footer {
       align-items: center;
     }
 
+    .title-container {
+      justify-content: center;
+    }
+
     .portrait {
       height: 400px;
     }
@@ -431,5 +461,21 @@ footer {
 
   article .post-header h1 {
     font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  header {
+    .title-container {
+      font-size: 0.9rem;
+    }
+
+    .handwriting-svg svg {
+      height: 40px;
+    }
+
+    .typewriter-prompt {
+      font-size: 1.5rem;
+    }
   }
 }
