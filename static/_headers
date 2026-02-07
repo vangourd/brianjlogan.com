@@ -1,0 +1,9 @@
+# Serve markdown and ncl files as plain text so they display in browser
+/agents/*.md
+  Content-Type: text/plain; charset=utf-8
+
+/agents/posts/*.md
+  Content-Type: text/plain; charset=utf-8
+
+/agents/*.ncl
+  Content-Type: text/plain; charset=utf-8

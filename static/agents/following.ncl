@@ -5,12 +5,11 @@
 {
   version = "1.0",
   following = [
-    # Add sites here in the format:
-    # {
-    #   url = "https://example.com",
-    #   added = "2025-02-07",
-    #   tags = ["tech", "blog"],
-    #   notes = "Optional description"
-    # },
+    {
+      url = "https://dnova.me",
+      added = "2025-02-07",
+      tags = ["tech", "blog"],
+      notes = "First site on my following list"
+    },
   ]
 }
