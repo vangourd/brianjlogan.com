@@ -55,6 +55,11 @@
         <p>&copy; {{ now() | date(format="%Y") }} {{ config.title }} | Built with <a href="https://www.getzola.org/">Zola</a></p>
     </footer>
 
+    <div id="vim-command-line" class="vim-command-line" style="display: none;">
+        <span class="vim-prompt">:</span>
+        <input type="text" id="vim-command-input" class="vim-command-input" autocomplete="off" />
+    </div>
+
     <script>
         // Theme definitions
         const themes = {
@@ -323,6 +328,54 @@
 
         portraitLink.addEventListener('mouseleave', () => {
             portraitImg.src = portraitImg.src.replace('me-shocked.png', 'me.png');
+        });
+
+        // Vim command line
+        const vimCommandLine = document.getElementById('vim-command-line');
+        const vimCommandInput = document.getElementById('vim-command-input');
+        let vimCommandActive = false;
+
+        const vimCommands = {
+            'gh': '{{ get_url(path="/") }}',
+            'ga': '{{ get_url(path="/archive") }}',
+            'gt': '{{ get_url(path="/tags") }}',
+            {% if config.generate_feeds %}
+            'gr': '{{ get_url(path="atom.xml", trailing_slash=false) }}'
+            {% endif %}
+        };
+
+        // Global keypress handler
+        document.addEventListener('keydown', (e) => {
+            // Don't intercept if typing in shell input
+            if (shellActive) return;
+
+            // Open vim command line with ":"
+            if (e.key === ':' && !vimCommandActive && document.activeElement.tagName !== 'INPUT') {
+                e.preventDefault();
+                vimCommandActive = true;
+                vimCommandLine.style.display = 'flex';
+                vimCommandInput.focus();
+            }
+
+            // Close with Escape
+            if (e.key === 'Escape' && vimCommandActive) {
+                vimCommandActive = false;
+                vimCommandLine.style.display = 'none';
+                vimCommandInput.value = '';
+            }
+        });
+
+        // Execute vim command
+        vimCommandInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = vimCommandInput.value.trim();
+                if (vimCommands[cmd]) {
+                    window.location.href = vimCommands[cmd];
+                }
+                vimCommandActive = false;
+                vimCommandLine.style.display = 'none';
+                vimCommandInput.value = '';
+            }
         });
 
         // Initialize

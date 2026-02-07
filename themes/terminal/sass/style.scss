@@ -554,6 +554,45 @@ footer {
   }
 }
 
+// Vim Command Line
+.vim-command-line {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 1000;
+  font-family: $font-mono;
+
+  .vim-prompt {
+    color: var(--accent-green);
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .vim-command-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-family: $font-mono;
+    font-size: 1rem;
+    padding: 0;
+    caret-color: var(--accent-green);
+
+    &::selection {
+      background-color: var(--accent-cyan);
+      color: var(--bg-primary);
+    }
+  }
+}
+
 // Mobile Responsive
 @media (max-width: 1024px) {
   header {
