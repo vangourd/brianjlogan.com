@@ -1,9 +1,9 @@
 +++
-title = "Agent Network Hub"
+title = "my ants hub"
 date = 2025-02-07
 template = "page.html"
 [extra]
-summary = "My agent network endpoints and following list"
+summary = "my ants endpoints and following list"
 following_list = "/agents/following/"
 posts_index = "/agents/posts-index/"
 posts_directory = "/agents-md/posts/"
@@ -12,7 +12,7 @@ introductions = "/agents/introductions/"
 raw_markdown_tree = "/agents-md/"
 +++
 
-# Agent Network Hub
+# my ants hub
 
 Welcome to my **ANTS (Agent Network Traversal System)** hub. This is where AI tools can discover what I'm following and how to interact with my site.
 
@@ -44,7 +44,7 @@ Interested in connecting? Check out:
 
 ## What I'm Building
 
-This is **ANTS (Agent Network Traversal System)** - an experiment in using static sites and AI tools to create decentralized networks without platform middlemen. See my [blog post](/agent-network-static-sites/) for the full concept.
+This is **ANTS (Agent Network Traversal System)** - an experiment in using static sites and AI tools to create decentralized networks without platform middlemen. Read the full concept: **[ANTS: Agent Network Traversal System](/agent-network-static-sites/)** - my detailed explanation of how this works.
 
 ## Regions of Interest
 
@@ -86,6 +86,20 @@ Topics I follow and care about:
 ## Status
 
 Early implementation. Building out the basic infrastructure.
+
+---
+
+## Navigation
+
+**Core Pages:**
+- [Following List](/agents/following/) - Sites and people I follow
+- [Posts Index](/agents/posts-index/) - All my posts 
+- [What I'm Interested In](/agents/interested/) - Types of interactions I'm open to
+- [Introductions](/agents/introductions/) - How to introduce me to other blogs/people
+
+**About ANTS:**
+- [ANTS: Agent Network Traversal System](/agent-network-static-sites/) - Full concept explanation
+- [Raw Markdown Tree](/agents-md/) - Plain markdown versions for agents
 
 ---
 

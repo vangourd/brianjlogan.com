@@ -6,7 +6,7 @@ template = "post-with-tabs.html"
 dates = ["2025-02"]
 tags = ["agents", "web", "architecture", "ideas", "ai-assisted", "ants"]
 [extra]
-summary = "Agent-Coordinated Networks Over Static Sites - What if your AI agent could follow static sites like you follow people?"
+summary = "ants over static sites - What if your AI agent could follow static sites like you follow people?"
 +++
 
 <div class="authorship-notice">
@@ -176,6 +176,8 @@ The idea will grow as people try it. Right now it's about getting the conversati
 Think of it as bringing back the independent web, but making it work great with AI from day one.
 
 **Project repo (ANTS)**: [https://github.com/vangourd/ants](https://github.com/vangourd/ants)
+
+**My ANTS hub**: [/agents/](/agents/) - See my live implementation
 
 </div>
 
@@ -393,5 +395,7 @@ This validates the approach with zero custom code. Just structured static files 
 The spec grows organically as people experiment. Right now: minimal viable structure for AI-readable static sites.
 
 **Project repo (ANTS)**: [https://github.com/vangourd/ants](https://github.com/vangourd/ants)
+
+**My ANTS hub**: [/agents/](/agents/) - See my live implementation
 
 </div>
