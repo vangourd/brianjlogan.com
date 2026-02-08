@@ -3,6 +3,7 @@ title = "Why Your Application Should Handle OIDC Auth, Not Your Proxy"
 template = "page.html"
 date = 2024-08-15T16:20:00Z
 [taxonomies]
+dates = ["2024-08"]
 tags = ["security", "authentication", "oidc", "architecture"]
 [extra]
 summary = "The hidden risks of using OAuth2 Proxy as your only auth layer"

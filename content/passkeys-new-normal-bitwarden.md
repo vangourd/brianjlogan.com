@@ -3,6 +3,7 @@ title = "Passkeys Should Be the New Normal"
 template = "page.html"
 date = 2025-01-03T08:15:00Z
 [taxonomies]
+dates = ["2025-01"]
 tags = ["security", "authentication", "passkeys", "bitwarden"]
 [extra]
 summary = "How passkeys eliminate passwords and why Bitwarden makes it painless"

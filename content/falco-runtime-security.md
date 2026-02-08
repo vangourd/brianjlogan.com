@@ -3,6 +3,7 @@ title = "Falco: The Security Camera for Your Kubernetes Cluster"
 template = "page.html"
 date = 2024-07-22T13:15:00Z
 [taxonomies]
+dates = ["2024-07"]
 tags = ["kubernetes", "security", "falco", "runtime"]
 [extra]
 summary = "Detecting suspicious behavior in real-time because scanners only catch known problems"

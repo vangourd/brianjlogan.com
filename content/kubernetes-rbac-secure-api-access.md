@@ -3,6 +3,7 @@ title = "Kubernetes RBAC Without Shooting Yourself in the Foot"
 template = "page.html"
 date = 2024-02-22T14:45:00Z
 [taxonomies]
+dates = ["2024-02"]
 tags = ["kubernetes", "security", "rbac"]
 [extra]
 summary = "How to give users k8s API access without handing them the keys to everything"

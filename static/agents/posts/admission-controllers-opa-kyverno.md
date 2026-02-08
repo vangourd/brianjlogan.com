@@ -3,6 +3,7 @@ title = "Policy as Code: Stop Bad Configs Before They Hit Your Cluster"
 template = "page.html"
 date = 2024-09-12T11:00:00Z
 [taxonomies]
+dates = ["2024-09"]
 tags = ["kubernetes", "security", "opa", "kyverno", "policy"]
 [extra]
 summary = "Using OPA Gatekeeper and Kyverno to enforce security policies automatically"

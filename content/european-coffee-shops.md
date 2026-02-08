@@ -2,6 +2,7 @@
 title = "Where Are All the Coffee Shops?"
 date = 2024-06-08T11:15:00Z
 [taxonomies]
+dates = ["2024-06"]
 tags = ["travel", "coffee", "europe"]
 [extra]
 summary = "I missed American coffee culture more than I expected"

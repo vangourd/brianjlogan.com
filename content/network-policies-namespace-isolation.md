@@ -3,6 +3,7 @@ title = "Your Kubernetes Namespaces Aren't Isolated (Fix That)"
 template = "page.html"
 date = 2023-06-14T09:22:00Z
 [taxonomies]
+dates = ["2023-06"]
 tags = ["kubernetes", "security", "networking"]
 [extra]
 summary = "Why network policies are the thing standing between you and lateral movement nightmares"

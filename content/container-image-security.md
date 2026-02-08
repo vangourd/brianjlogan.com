@@ -3,6 +3,7 @@ title = "Stop Deploying Container Images You Haven't Scanned"
 template = "page.html"
 date = 2024-04-10T14:20:00Z
 [taxonomies]
+dates = ["2024-04"]
 tags = ["kubernetes", "security", "containers", "supply-chain"]
 [extra]
 summary = "Image scanning, signing, and not pulling from random Docker Hub repos"

@@ -1,8 +1,12 @@
-#!/bin/bash
-# Copy markdown files to static for AI consumption
+#!/usr/bin/env bash
+# Prepare site for build
 # This runs before zola build/serve
 
 set -e
+
+# Auto-populate date taxonomy in posts
+echo "Updating date taxonomy..."
+./add-date-taxonomy.sh
 
 # Create agents directories
 mkdir -p static/agents/posts

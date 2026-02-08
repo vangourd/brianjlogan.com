@@ -3,6 +3,7 @@ title = "Home DynamicDNS with CloudFlare Free and Python3"
 template = "page.html"
 date = 2020-05-04T18:46:46Z
 [taxonomies]
+dates = ["2020-05"]
 tags = ["python", "networking"]
 [extra]
 summary = "A novice foray into a DDNS script"

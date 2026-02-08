@@ -3,6 +3,7 @@ title = "Pod Security Standards: Stop Running Everything as Root"
 template = "page.html"
 date = 2023-08-20T10:15:00Z
 [taxonomies]
+dates = ["2023-08"]
 tags = ["kubernetes", "security", "containers"]
 [extra]
 summary = "The built-in admission controller that stops privileged containers before they start"

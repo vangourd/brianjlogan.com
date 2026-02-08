@@ -2,6 +2,7 @@
 title = "Soup Is the Best Food"
 date = 2023-12-15T19:45:00Z
 [taxonomies]
+dates = ["2023-12"]
 tags = ["food", "cooking", "opinion"]
 [extra]
 summary = "Weekly soup routine"

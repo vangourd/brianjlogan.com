@@ -3,6 +3,7 @@ title = "Reproducible Dev Environments with Nix (and Why You Should Care)"
 template = "page.html"
 date = 2024-11-12T09:30:00Z
 [taxonomies]
+dates = ["2024-11"]
 tags = ["development", "nix", "devcontainers", "tooling"]
 [extra]
 summary = "Ending 'works on my machine' forever with declarative environments"

@@ -3,6 +3,7 @@ title = "Kubernetes Secrets Aren't Secret (Here's How to Fix That)"
 template = "page.html"
 date = 2024-01-15T08:30:00Z
 [taxonomies]
+dates = ["2024-01"]
 tags = ["kubernetes", "security", "secrets"]
 [extra]
 summary = "base64 is not encryption and other uncomfortable truths about k8s secrets"

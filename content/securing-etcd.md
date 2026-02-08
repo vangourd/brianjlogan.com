@@ -3,6 +3,7 @@ title = "Securing etcd: The Most Important Thing You're Probably Ignoring"
 template = "page.html"
 date = 2023-03-18T10:45:00Z
 [taxonomies]
+dates = ["2023-03"]
 tags = ["kubernetes", "security", "etcd"]
 [extra]
 summary = "If an attacker gets to etcd, they own your entire cluster"

@@ -3,6 +3,7 @@ title = "Coffee Shop Review: KOS Coffee Maitland"
 template = "page.html"
 date = 2025-01-04T13:04:46Z
 [taxonomies]
+dates = ["2025-01"]
 tags = ["coffee", "maitland","north-orlando","favorite"]
 [extra]
 summary = "A Nordic themed third wave coffeeshop in the heart of maitland along 1792."

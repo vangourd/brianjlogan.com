@@ -3,6 +3,7 @@ title = "GitOps with ArgoCD Changed How I Think About Deployments"
 template = "page.html"
 date = 2023-09-27T10:00:00Z
 [taxonomies]
+dates = ["2023-09"]
 tags = ["kubernetes", "gitops", "argocd", "devops"]
 [extra]
 summary = "Why git as the source of truth makes Kubernetes actually manageable"

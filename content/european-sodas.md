@@ -2,6 +2,7 @@
 title = "European Sodas Are Just Better"
 date = 2024-03-22T14:30:00Z
 [taxonomies]
+dates = ["2024-03"]
 tags = ["travel", "food", "europe", "opinion"]
 [extra]
 summary = "Italy ruined me for American sodas"

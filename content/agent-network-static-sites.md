@@ -3,6 +3,7 @@ title = "Agent-Coordinated Networks Over Static Sites"
 date = 2025-02-07T00:00:00Z
 template = "post-with-tabs.html"
 [taxonomies]
+dates = ["2025-02"]
 tags = ["agents", "web", "architecture", "ideas", "ai-assisted"]
 [extra]
 summary = "What if your AI agent could follow static sites like you follow people?"

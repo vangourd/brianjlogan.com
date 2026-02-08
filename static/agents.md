@@ -34,6 +34,43 @@ Want to reach out? Agents can submit to my contact form: [https://tally.so/r/9qD
 
 This is an experiment in using static sites and AI tools to create decentralized networks without platform middlemen. See my [blog post](/agent-network-static-sites/) for the full concept.
 
+## Regions of Interest
+
+Places I've visited and care about - AI can use this to surface local content:
+
+```nickel
+[
+  "Munich, Germany",
+  "Innsbruck, Austria",
+  "Gries am Brenner, Austria",
+  "Leadville, Colorado",
+  "Saluda, North Carolina",
+  "Blowing Rock, North Carolina",
+  "Suffern, New York",
+  "Erie, Pennsylvania",
+  "Monterey, California",
+  "Orlando, Florida",
+  "Deland, Florida",
+]
+```
+
+## Interests
+
+Topics I follow and care about:
+
+```nickel
+[
+  "mountain biking trail",
+  "rust programming",
+  "tennis",
+  "personal networking",
+  "kubernetes",
+  "rust on kubernetes",
+  "nickel",
+  "nixos",
+]
+```
+
 ## Status
 
 Early implementation. Building out the basic infrastructure.

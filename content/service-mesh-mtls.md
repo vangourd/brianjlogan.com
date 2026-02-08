@@ -3,6 +3,7 @@ title = "Service Mesh mTLS: Encrypting Traffic the Lazy Way"
 template = "page.html"
 date = 2024-06-28T09:45:00Z
 [taxonomies]
+dates = ["2024-06"]
 tags = ["kubernetes", "security", "istio", "linkerd", "service-mesh"]
 [extra]
 summary = "Let Istio or Linkerd handle TLS so you don't have to"

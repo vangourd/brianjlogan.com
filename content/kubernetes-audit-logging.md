@@ -3,6 +3,7 @@ title = "Kubernetes Audit Logs: Know What Happened Before You Need To"
 template = "page.html"
 date = 2023-04-05T16:30:00Z
 [taxonomies]
+dates = ["2023-04"]
 tags = ["kubernetes", "security", "observability"]
 [extra]
 summary = "Because 'who deleted production?' shouldn't be unanswerable"

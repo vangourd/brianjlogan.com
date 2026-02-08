@@ -3,6 +3,7 @@ title = "Stop Exposing Your Kubernetes API Server to the Internet"
 template = "page.html"
 date = 2023-11-08T11:30:00Z
 [taxonomies]
+dates = ["2023-11"]
 tags = ["kubernetes", "security", "networking", "teleport", "tailscale"]
 [extra]
 summary = "How Teleport and Tailscale make cluster access actually secure"

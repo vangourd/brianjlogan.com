@@ -4,6 +4,7 @@ theme = "terminal"
 default_language = "en"
 taxonomies = [
 	{name = "tags"},
+	{name = "dates", feed = true},
 ]
 title="Brian Logan"
 description="Technologist, Dad"

@@ -3,6 +3,7 @@ title = "LLMs Are the Best Fuzzing Tool Attackers Have Ever Had"
 template = "page.html"
 date = 2024-05-19T13:45:00Z
 [taxonomies]
+dates = ["2024-05"]
 tags = ["security", "ai", "input-validation"]
 [extra]
 summary = "Why generative AI makes input sanitization critical even inside your network"
