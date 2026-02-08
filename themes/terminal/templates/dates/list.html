@@ -116,33 +116,95 @@ const y = d3.scaleLinear()
     .range([height, 0])
     .nice();
 
-// Stack the data
-const stack = d3.stack()
-    .keys([...topTags, 'other']);
+// Track visibility state
+const visibleTags = new Set([...topTags, 'other']);
 
-const stackedData = stack(chartData);
+// Function to update the chart
+function updateChart() {
+    // Get visible keys only
+    const visibleKeys = [...topTags, 'other'].filter(tag => visibleTags.has(tag));
 
-// Draw stacked bars with theme colors
-svg.selectAll("g.layer")
-    .data(stackedData)
-    .enter()
-    .append("g")
-    .attr("class", "layer")
-    .style("fill", d => `var(${tagColorVars[d.key]})`)
-    .selectAll("rect")
-    .data(d => d)
-    .enter()
-    .append("rect")
-    .attr("x", d => x(d.data.month))
-    .attr("y", d => y(d[1]))
-    .attr("height", d => y(d[0]) - y(d[1]))
-    .attr("width", x.bandwidth())
-    .append("title")
-    .text((d, i, nodes) => {
-        const key = d3.select(nodes[i].parentNode.parentNode).datum().key;
-        const count = d.data[key];
-        return `${key}: ${count}`;
+    // Stack the data with visible keys
+    const stack = d3.stack()
+        .keys(visibleKeys);
+
+    const stackedData = stack(chartData);
+
+    // Update Y scale domain based on visible data
+    const maxValue = d3.max(chartData, d => {
+        return visibleKeys.reduce((sum, key) => sum + d[key], 0);
     });
+    y.domain([0, maxValue]).nice();
+
+    // Update Y axis
+    svg.select(".y-axis")
+        .transition()
+        .duration(300)
+        .call(d3.axisLeft(y).ticks(5));
+
+    // Bind data to layers
+    const layers = svg.selectAll("g.layer")
+        .data(stackedData, d => d.key);
+
+    // Remove layers for hidden tags
+    layers.exit()
+        .transition()
+        .duration(300)
+        .style("opacity", 0)
+        .remove();
+
+    // Add new layers for newly visible tags
+    const newLayers = layers.enter()
+        .append("g")
+        .attr("class", "layer")
+        .style("fill", d => `var(${tagColorVars[d.key]})`)
+        .style("opacity", 0);
+
+    // Merge existing and new layers
+    const allLayers = newLayers.merge(layers);
+
+    allLayers.transition()
+        .duration(300)
+        .style("opacity", 1);
+
+    // Update rectangles in each layer
+    allLayers.each(function(layerData) {
+        const rects = d3.select(this).selectAll("rect")
+            .data(layerData, (d, i) => i);
+
+        // Remove old rects
+        rects.exit().remove();
+
+        // Add new rects
+        const newRects = rects.enter()
+            .append("rect")
+            .attr("x", d => x(d.data.month))
+            .attr("y", y(0))
+            .attr("height", 0)
+            .attr("width", x.bandwidth());
+
+        newRects.append("title");
+
+        // Update all rects
+        newRects.merge(rects)
+            .transition()
+            .duration(300)
+            .attr("x", d => x(d.data.month))
+            .attr("y", d => y(d[1]))
+            .attr("height", d => y(d[0]) - y(d[1]))
+            .attr("width", x.bandwidth());
+
+        newRects.merge(rects).select("title")
+            .text(d => {
+                const key = d3.select(d3.select(this).node().parentNode).datum().key;
+                const count = d.data[key];
+                return `${key}: ${count}`;
+            });
+    });
+}
+
+// Initial chart render
+updateChart();
 
 // Add X axis
 svg.append("g")
@@ -165,7 +227,10 @@ svg.append("g")
 svg.selectAll(".domain, .tick line")
     .style("stroke", "#30363d");
 
-// Add legend
+// Track visibility state
+const visibleTags = new Set([...topTags, 'other']);
+
+// Add legend with click handlers
 const legend = d3.select("#legend")
     .append("div")
     .style("display", "flex")
@@ -178,7 +243,24 @@ const legend = d3.select("#legend")
     const item = legend.append("div")
         .style("display", "flex")
         .style("align-items", "center")
-        .style("gap", "0.5rem");
+        .style("gap", "0.5rem")
+        .style("cursor", "pointer")
+        .style("opacity", "1")
+        .attr("data-tag", tag)
+        .on("click", function() {
+            // Toggle visibility
+            if (visibleTags.has(tag)) {
+                visibleTags.delete(tag);
+                d3.select(this).style("opacity", "0.3");
+            } else {
+                visibleTags.add(tag);
+                d3.select(this).style("opacity", "1");
+            }
+
+            // Update chart
+            svg.selectAll("g.layer")
+                .style("opacity", d => visibleTags.has(d.key) ? 1 : 0);
+        });
 
     item.append("div")
         .style("width", "16px")
