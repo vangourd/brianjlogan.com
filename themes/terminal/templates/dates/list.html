@@ -3,10 +3,11 @@
 {% block title %}Archive by Date | {{ config.title }}{% endblock %}
 
 {% block content %}
-<h1 style="color: var(--accent-cyan); margin-bottom: 2rem;"># Archive by Date</h1>
+<h1 style="color: var(--accent-cyan); margin-bottom: 2rem;"># Posts by Date</h1>
 
 <!-- Histogram -->
-<div id="histogram" style="margin-bottom: 3rem;"></div>
+<div id="histogram" style="margin-bottom: 1rem;"></div>
+<div id="legend" style="margin-bottom: 3rem;"></div>
 
 <!-- Date links -->
 <div class="tags">
@@ -17,16 +18,9 @@
 {% endfor %}
 </div>
 
-<style>
-.tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-</style>
-
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
 // Get all date terms data
 const dateTerms = [
 {% for term in terms | sort(attribute="name") | reverse %}
@@ -44,19 +38,18 @@ const dateTerms = [
 {% endfor %}
 ];
 
-// Define tag colors (using terminal theme colors)
-const tagColors = {
-    'tech': '#7ee787',
-    'kubernetes': '#79c0ff',
-    'security': '#ffa657',
-    'nix': '#a3be8c',
-    'programming': '#7ee787',
-    'food': '#ebcb8b',
-    'other': '#8b949e'
-};
-
 // Count posts by tag for each month
 const topTags = ['tech', 'kubernetes', 'security', 'nix', 'programming'];
+
+// Map tags to CSS variables
+const tagColorVars = {
+    'tech': '--accent-green',
+    'kubernetes': '--accent-cyan',
+    'security': '--accent-yellow',
+    'nix': '--accent-green',
+    'programming': '--accent-cyan',
+    'other': '--text-secondary'
+};
 
 // Process data for D3
 const chartData = dateTerms.map(term => {
@@ -90,13 +83,22 @@ const chartData = dateTerms.map(term => {
     };
 });
 
+// Reverse data so oldest is on left
+chartData.reverse();
+
 // Set up dimensions
-const margin = {top: 20, right: 30, bottom: 40, left: 60};
-const width = 800 - margin.left - margin.right;
-const height = chartData.length * 30;
+const margin = {top: 20, right: 30, bottom: 60, left: 50};
+const containerWidth = document.getElementById('histogram').offsetWidth;
+const width = Math.min(containerWidth - margin.left - margin.right, chartData.length * 50);
+const height = 300;
+
+// Create container with scroll if needed
+const container = d3.select("#histogram")
+    .style("overflow-x", "auto")
+    .style("max-width", "100%");
 
 // Create SVG
-const svg = d3.select("#histogram")
+const svg = container
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -104,14 +106,15 @@ const svg = d3.select("#histogram")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
 // Create scales
-const x = d3.scaleLinear()
-    .domain([0, d3.max(chartData, d => d.total)])
-    .range([0, width]);
-
-const y = d3.scaleBand()
+const x = d3.scaleBand()
     .domain(chartData.map(d => d.month))
-    .range([0, height])
+    .range([0, width])
     .padding(0.2);
+
+const y = d3.scaleLinear()
+    .domain([0, d3.max(chartData, d => d.total)])
+    .range([height, 0])
+    .nice();
 
 // Stack the data
 const stack = d3.stack()
@@ -119,21 +122,21 @@ const stack = d3.stack()
 
 const stackedData = stack(chartData);
 
-// Draw bars
+// Draw stacked bars with theme colors
 svg.selectAll("g.layer")
     .data(stackedData)
     .enter()
     .append("g")
     .attr("class", "layer")
-    .attr("fill", d => tagColors[d.key])
+    .style("fill", d => `var(${tagColorVars[d.key]})`)
     .selectAll("rect")
     .data(d => d)
     .enter()
     .append("rect")
-    .attr("y", d => y(d.data.month))
-    .attr("x", d => x(d[0]))
-    .attr("width", d => x(d[1]) - x(d[0]))
-    .attr("height", y.bandwidth())
+    .attr("x", d => x(d.data.month))
+    .attr("y", d => y(d[1]))
+    .attr("height", d => y(d[0]) - y(d[1]))
+    .attr("width", x.bandwidth())
     .append("title")
     .text((d, i, nodes) => {
         const key = d3.select(nodes[i].parentNode.parentNode).datum().key;
@@ -141,17 +144,19 @@ svg.selectAll("g.layer")
         return `${key}: ${count}`;
     });
 
-// Add Y axis
-svg.append("g")
-    .call(d3.axisLeft(y))
-    .style("color", "#8b949e")
-    .selectAll("text")
-    .style("fill", "#8b949e");
-
 // Add X axis
 svg.append("g")
     .attr("transform", `translate(0,${height})`)
-    .call(d3.axisBottom(x).ticks(5))
+    .call(d3.axisBottom(x))
+    .style("color", "#8b949e")
+    .selectAll("text")
+    .style("fill", "#8b949e")
+    .attr("transform", "rotate(-45)")
+    .style("text-anchor", "end");
+
+// Add Y axis
+svg.append("g")
+    .call(d3.axisLeft(y).ticks(5))
     .style("color", "#8b949e")
     .selectAll("text")
     .style("fill", "#8b949e");
@@ -159,5 +164,32 @@ svg.append("g")
 // Style axis lines
 svg.selectAll(".domain, .tick line")
     .style("stroke", "#30363d");
+
+// Add legend
+const legend = d3.select("#legend")
+    .append("div")
+    .style("display", "flex")
+    .style("flex-wrap", "wrap")
+    .style("gap", "1rem")
+    .style("justify-content", "center")
+    .style("font-size", "0.9rem");
+
+[...topTags, 'other'].forEach(tag => {
+    const item = legend.append("div")
+        .style("display", "flex")
+        .style("align-items", "center")
+        .style("gap", "0.5rem");
+
+    item.append("div")
+        .style("width", "16px")
+        .style("height", "16px")
+        .style("background-color", `var(${tagColorVars[tag]})`)
+        .style("border", "1px solid #30363d");
+
+    item.append("span")
+        .style("color", "#8b949e")
+        .text(tag);
+});
+}); // End DOMContentLoaded
 </script>
 {% endblock %}
