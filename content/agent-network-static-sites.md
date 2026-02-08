@@ -1,12 +1,12 @@
 +++
-title = "Agent-Coordinated Networks Over Static Sites"
+title = "ANTS: Agent Network Traversal System"
 date = 2025-02-07T00:00:00Z
 template = "post-with-tabs.html"
 [taxonomies]
 dates = ["2025-02"]
-tags = ["agents", "web", "architecture", "ideas", "ai-assisted"]
+tags = ["agents", "web", "architecture", "ideas", "ai-assisted", "ants"]
 [extra]
-summary = "What if your AI agent could follow static sites like you follow people?"
+summary = "Agent-Coordinated Networks Over Static Sites - What if your AI agent could follow static sites like you follow people?"
 +++
 
 <div class="authorship-notice">
@@ -26,7 +26,7 @@ summary = "What if your AI agent could follow static sites like you follow peopl
 
 ## The Big Idea
 
-Use some simple techniques to publish and subscribe to other people's content online without any reliance on middlemen like Facebook or Instagram. Revive the web.
+**ANTS (Agent Network Traversal System)** - Use simple techniques to publish and subscribe to other people's content online without any reliance on middlemen like Facebook or Instagram. Revive the web.
 
 Here's the basic idea: Use AI to read other people's websites, helping you summarize and explore their content without having to read everyone verbatim. What does that mean? It means you can have AI read multiple websites at once.
 
@@ -97,7 +97,7 @@ Put this in an `/agents/` folder on your site. That's the standard place AI look
 
 Whether you're using ChatGPT manually or running something automatic, the AI handles the boring stuff:
 
-**Reading your files** - AI reads your `following.yaml` file to know which sites to check. Just a simple text file with a list.
+**Reading your files** - AI reads your following list (embedded in your `/agents/following/` page) to know which sites to check.
 
 **Fetching updates** - Manual way: "ChatGPT, check these sites for updates." Automatic way: a program runs on a schedule. Either way, AI grabs the new content.
 
@@ -175,7 +175,7 @@ The idea will grow as people try it. Right now it's about getting the conversati
 
 Think of it as bringing back the independent web, but making it work great with AI from day one.
 
-**Project repo**: [https://github.com/vangourd/ourspace](https://github.com/vangourd/ourspace)
+**Project repo (ANTS)**: [https://github.com/vangourd/ants](https://github.com/vangourd/ants)
 
 </div>
 
@@ -183,9 +183,7 @@ Think of it as bringing back the independent web, but making it work great with 
 
 ## The Big Idea
 
-Use some simple techniques to publish and subscribe to other people's content online without any reliance on middlemen like Facebook or Instagram. Revive the web.
-
-AI-readable static sites for decentralized networking. Add structured endpoints to static sites so AI tools (ChatGPT, Claude, Grok, or custom agents) can help users follow and interact with them.
+**ANTS (Agent Network Traversal System)** - AI-readable static sites for decentralized networking. Add structured endpoints to static sites so AI tools (ChatGPT, Claude, Grok, or custom agents) can help users follow and interact with them.
 
 No APIs, no databases, no real-time connections. Just static files at predictable paths with clear schemas. Compatible with existing AI chatbots today, extensible to autonomous agents tomorrow.
 
@@ -262,20 +260,27 @@ Example inline following list:
 
 Or link to separate file:
 ```markdown
-Following list: [/agents/following.yaml](/agents/following.yaml)
+Following list: [/agents/following/](/agents/following/) (also available as [raw markdown](/agents-md/following.md))
 ```
 
-**Following schema** - Embedded or separate, format-agnostic:
+**Following schema** - Embedded in Nickel code blocks on HTML pages:
 
-```yaml
-version: "1.0"
-following:
-  - url: https://example.com
-    added: 2025-02-07T00:00:00Z
-    tags: [tech, security]
+```nickel
+{
+  version = "1.0",
+  following = [
+    {
+      url = "https://example.com",
+      added = "2025-02-07",
+      tags = ["tech", "security"],
+    }
+  ]
+}
 ```
 
-Schema-first: format (YAML/JSON/TOML/markdown) is implementation detail.
+Two access patterns:
+- **HTML pages** at `/agents/` - Human-readable with machine-readable Nickel in code blocks
+- **Raw markdown** at `/agents-md/` - For agents that prefer plaintext
 
 **Usage pattern**:
 1. User: "AI, read MY site at https://mysite.com/agents/index.md"
@@ -294,7 +299,7 @@ Schema-first: format (YAML/JSON/TOML/markdown) is implementation detail.
 **Manual workflow (ChatGPT, Claude, etc.)**:
 - User: "Read https://site.com/agents/ and summarize what's new from sites they follow"
 - AI fetches `/agents/index.md`, discovers endpoints
-- AI reads `/agents/following.yaml`, gets site list
+- AI reads `/agents/following/` page, extracts site list from Nickel code block
 - AI crawls those sites (RSS, HTML scraping)
 - AI interprets content semantically, summarizes
 - User reviews, decides what to read/respond to
@@ -365,7 +370,8 @@ Trust decision is explicit: adding a domain to your following list means trustin
 **Minimal bootstrap (dogfooding)**:
 1. Create `/agents/index.md` documenting endpoints and use cases
 2. Implement structured endpoints:
-   - `/agents/following.yaml`
+   - `/agents/following/` (HTML page with embedded Nickel data)
+   - `/agents-md/following.md` (raw markdown for agents that prefer plaintext)
    - `/agents/bookmarks/`
    - `/agents/links/`
    - `/agents/letters/`
@@ -386,6 +392,6 @@ This validates the approach with zero custom code. Just structured static files 
 
 The spec grows organically as people experiment. Right now: minimal viable structure for AI-readable static sites.
 
-**Project repo**: [https://github.com/vangourd/ourspace](https://github.com/vangourd/ourspace)
+**Project repo (ANTS)**: [https://github.com/vangourd/ants](https://github.com/vangourd/ants)
 
 </div>

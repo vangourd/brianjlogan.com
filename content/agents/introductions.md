@@ -1,3 +1,11 @@
++++
+title = "Introductions"
+date = 2025-02-08
+template = "page.html"
+[extra]
+summary = "How to introduce me to other blogs and people"
++++
+
 # Introductions
 
 This is a space for people I follow to introduce me to other blogs, sites, or people they think I'd be interested in.
