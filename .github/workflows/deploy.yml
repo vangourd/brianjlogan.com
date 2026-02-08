@@ -26,7 +26,15 @@ jobs:
 
         - name: Deploy to S3
           run: |
-            aws s3 sync public/ s3://${S3_BUCKET}/ --delete --region ${AWS_REGION}
+            # Sync everything except .ncl and .md files first
+            aws s3 sync public/ s3://${S3_BUCKET}/ --delete --region ${AWS_REGION} --exclude "*.ncl" --exclude "*.md"
+
+            # Upload .ncl files with correct content-type and inline disposition
+            aws s3 sync public/ s3://${S3_BUCKET}/ --exclude "*" --include "*.ncl" --content-type "text/plain; charset=utf-8" --content-disposition "inline" --region ${AWS_REGION}
+
+            # Upload .md files with correct content-type and inline disposition
+            aws s3 sync public/ s3://${S3_BUCKET}/ --exclude "*" --include "*.md" --content-type "text/plain; charset=utf-8" --content-disposition "inline" --region ${AWS_REGION}
+
             aws cloudfront create-invalidation --distribution-id ${CF_DIST} --paths "/*"
 
         - name: Verify deployment

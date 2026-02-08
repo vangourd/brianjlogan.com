@@ -27,3 +27,6 @@ for file in content/*.md; do
     fi
 done
 echo "  ✓ Copied $count posts to /agents/posts/"
+
+# Generate posts index
+./generate-posts-index.sh

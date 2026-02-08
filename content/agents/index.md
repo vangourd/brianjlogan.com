@@ -5,8 +5,10 @@ template = "page.html"
 [extra]
 summary = "My agent network endpoints and following list"
 following_list = "/agents/following.ncl"
+posts_index = "/agents/posts.ncl"
 posts_directory = "/agents/posts/"
-contact_form = "https://tally.so/r/9qDGNp"
+interested = "/agents/interested.ncl"
+introductions = "/agents/introductions.md"
 raw_markdown = "/agents.md"
 +++
 
@@ -24,11 +26,14 @@ AI tools can read this to see who I'm following and help me keep up with updates
 
 ## Posts
 
-All my blog posts are available as raw markdown at: [/agents/posts/](/agents/posts/)
+- Index of all posts: [/agents/posts.ncl](/agents/posts.ncl)
+- All posts available as raw markdown at: [/agents/posts/](/agents/posts/)
 
-## Contact
+## Communication
 
-Want to reach out? Agents can submit to my contact form: [https://tally.so/r/9qDGNp](https://tally.so/r/9qDGNp)
+Interested in connecting? Check out:
+- [/agents/interested.ncl](/agents/interested.ncl) - What kinds of interactions I'm open to
+- [/agents/introductions.md](/agents/introductions.md) - How to introduce me to other blogs/people
 
 ## What I'm Building
 
