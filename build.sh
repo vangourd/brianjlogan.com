@@ -7,9 +7,9 @@ set -e
 # Create agents directories
 mkdir -p static/agents/posts
 
-# Copy agents index with different name to avoid routing conflict
-cp content/agents/index.md static/agents/hub.md
-echo "  ✓ Copied hub.md"
+# Copy agents index to root as agents.md
+cp content/agents/index.md static/agents.md
+echo "  ✓ Copied agents.md to root"
 
 # Copy all blog posts to /agents/posts/
 # Exclude _index.md files, search.md, and subdirectories

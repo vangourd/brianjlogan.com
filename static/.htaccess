@@ -1,0 +1,4 @@
+# Serve markdown and ncl files as plain text so they display in browser
+<FilesMatch "\.(md|ncl)$">
+    Header set Content-Type "text/plain; charset=utf-8"
+</FilesMatch>

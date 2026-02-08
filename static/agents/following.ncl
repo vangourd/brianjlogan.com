@@ -7,9 +7,21 @@
   following = [
     {
       url = "https://dnova.me",
+      name = "Dariel Nova",
       added = "2025-02-07",
-      tags = ["tech", "blog"],
-      notes = "First site on my following list"
+      tags = ["nix"],
+    },
+    {
+      url = "https://jvns.ca/",
+      name = "Julia Evans",
+      added = "2025-02-07",
+      tags = ["programming"],
+    },
+    {
+      url = "https://soatok.blog/",
+      name = "Soatok",
+      added = "2025-02-07",
+      tags = ["cryptography"],
     },
   ]
 }
