@@ -44,7 +44,6 @@
                 <div class="nav-links">
                     <a href="{{ get_url(path="/") }}" data-key="gh">home</a>
                     <a href="{{ get_url(path="/search") }}" data-key="/">search</a>
-                    <a href="{{ get_url(path="/archive") }}" data-key="ga">archive</a>
                     <a href="{{ get_url(path="/tags") }}" data-key="gt">tags</a>
 
                     <div class="nav-folder">
@@ -369,7 +368,6 @@
 
         const vimCommands = {
             'gh': '{{ get_url(path="/") }}',
-            'ga': '{{ get_url(path="/archive") }}',
             'gt': '{{ get_url(path="/tags") }}',
             {% if config.generate_feeds %}
             'gr': '{{ get_url(path="atom.xml", trailing_slash=false) }}'
