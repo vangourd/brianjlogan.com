@@ -563,6 +563,12 @@ article {
   }
 
   .post-content {
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
     h2 {
       color: var(--accent-cyan);
       margin-top: 2rem;
