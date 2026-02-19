@@ -2,6 +2,17 @@
 
 {% block body_class %}home-page{% endblock %}
 
+{% block before_quick_menu %}
+<div class="ai-chat-badge">
+    <span class="ai-chat-label"># talk to ai about me</span>
+    <div class="ai-chat-buttons">
+        <a href="https://chatgpt.com/?q=Take%20a%20look%20at%20brianjlogan.com%2Fagents.md%20and%20politely%20ask%20the%20question%20%22How%20can%20I%20help%20you%20in%20regards%20to%20Brian%3F%22%20providing%20a%20warm%2C%20succinct%2C%20professional%20voice%20for%20the%20content%20on%20Brian%27s%20site." class="ai-btn ai-btn--openai" target="_blank" rel="noopener">ChatGPT</a>
+        <a href="https://claude.ai/new?q=Take%20a%20look%20at%20brianjlogan.com%2Fagents.md%20and%20politely%20ask%20the%20question%20%22How%20can%20I%20help%20you%20in%20regards%20to%20Brian%3F%22%20providing%20a%20warm%2C%20succinct%2C%20professional%20voice%20for%20the%20content%20on%20Brian%27s%20site." class="ai-btn ai-btn--claude" target="_blank" rel="noopener">Claude</a>
+        <a href="https://www.perplexity.ai/?q=Take%20a%20look%20at%20brianjlogan.com%2Fagents.md%20and%20politely%20ask%20the%20question%20%22How%20can%20I%20help%20you%20in%20regards%20to%20Brian%3F%22%20providing%20a%20warm%2C%20succinct%2C%20professional%20voice%20for%20the%20content%20on%20Brian%27s%20site." class="ai-btn ai-btn--perplexity" target="_blank" rel="noopener">Perplexity</a>
+    </div>
+</div>
+{% endblock %}
+
 {% block content %}
 <!-- Post List -->
 <ul class="post-list">

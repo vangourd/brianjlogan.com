@@ -36,6 +36,8 @@
                 <div id="shell-output" class="shell-output" style="display: none;"></div>
                 <div id="autocomplete" class="autocomplete"></div>
             </div>
+            <div class="nav-right">
+            {% block before_quick_menu %}{% endblock %}
             <nav id="quick-menu">
                 <div class="nav-header" onclick="toggleQuickMenu()">
                     <span>Quick Menu</span>
@@ -75,6 +77,7 @@
                     {% endif %}
                 </div>
             </nav>
+            </div>
         </div>
     </header>
 
