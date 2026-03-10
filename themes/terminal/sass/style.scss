@@ -751,6 +751,102 @@ footer {
   }
 }
 
+// CRT Shutdown Effect
+.crt-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  pointer-events: none;
+  background: #000;
+  opacity: 0;
+
+  &.active {
+    display: block;
+    pointer-events: all;
+    animation: crt-blackout 0.3s ease-in forwards;
+
+    // Bright horizontal line that collapses to a dot
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #fff;
+      transform: translateY(-50%);
+      box-shadow: 0 0 15px 4px rgba(255, 255, 255, 0.6);
+      animation: crt-line-shrink 0.6s 0.3s ease-in forwards;
+    }
+
+    // White center dot
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 8px;
+      height: 8px;
+      background: #fff;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      box-shadow: 0 0 20px 8px rgba(255, 255, 255, 0.8),
+                  0 0 40px 16px rgba(255, 255, 255, 0.4);
+      animation: crt-dot-fade 1.8s 0.6s ease-out forwards;
+    }
+  }
+}
+
+@keyframes crt-blackout {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes crt-line-shrink {
+  0% {
+    left: 0;
+    right: 0;
+    height: 2px;
+    opacity: 1;
+    box-shadow: 0 0 15px 4px rgba(255, 255, 255, 0.6);
+  }
+  80% {
+    left: 48%;
+    right: 48%;
+    height: 2px;
+    opacity: 1;
+    box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.4);
+  }
+  100% {
+    left: 50%;
+    right: 50%;
+    height: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes crt-dot-fade {
+  0% {
+    opacity: 1;
+    box-shadow: 0 0 20px 8px rgba(255, 255, 255, 0.8),
+                0 0 40px 16px rgba(255, 255, 255, 0.4);
+  }
+  40% {
+    opacity: 0.7;
+    box-shadow: 0 0 12px 5px rgba(255, 255, 255, 0.5),
+                0 0 25px 10px rgba(255, 255, 255, 0.2);
+  }
+  100% {
+    opacity: 0;
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
 // Vim Command Line
 .vim-command-line {
   position: fixed;

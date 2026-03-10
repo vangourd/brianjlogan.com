@@ -89,6 +89,8 @@
         <p>&copy; {{ now() | date(format="%Y") }} {{ config.title }} | Built with <a href="https://www.getzola.org/">Zola</a></p>
     </footer>
 
+    <div id="crt-overlay" class="crt-overlay"></div>
+
     <div id="vim-command-line" class="vim-command-line" style="display: none;">
         <span class="vim-prompt">:</span>
         <input type="text" id="vim-command-input" class="vim-command-input" autocomplete="off" />
@@ -189,7 +191,8 @@
         const commands = [
             { name: '/theme', description: 'Change color theme', args: ['default', 'dracula', 'monokai', 'gruvbox', 'nord', 'solarized'] },
             { name: '/help', description: 'Show available commands' },
-            { name: '/clear', description: 'Clear terminal output' }
+            { name: '/clear', description: 'Clear terminal output' },
+            { name: 'rm', description: 'You wouldn\'t...' }
         ];
 
         // Terminal typewriter effect
@@ -322,11 +325,24 @@
                 });
             } else if (cmd === '/clear') {
                 shellOutput.innerHTML = '';
+            } else if (input.trim().match(/^rm\s+(-\w+\s+)*-?\/?(\*|\/)+/) || input.trim() === 'rm -rf /') {
+                addOutput('☠️', 'error');
+                setTimeout(crtShutdown, 300);
             } else if (cmd) {
                 addOutput(`Unknown command: ${cmd}. Type /help for available commands.`, 'error');
             }
 
             shellOutput.scrollTop = shellOutput.scrollHeight;
+        }
+
+        function crtShutdown() {
+            const overlay = document.getElementById('crt-overlay');
+            overlay.classList.add('active');
+            // dot-fade is the last animation (1.8s delay 0.6s = ends at 2.4s)
+            // Hold black screen then reset
+            setTimeout(() => {
+                overlay.classList.remove('active');
+            }, 4500);
         }
 
         function addOutput(text, type = '') {
