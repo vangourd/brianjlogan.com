@@ -6,10 +6,10 @@ set -e
 
 echo "Adding date taxonomy to posts..."
 
-for file in content/*.md; do
-    # Skip _index.md and search.md
+for file in content/posts/*.md; do
+    # Skip _index.md
     filename=$(basename "$file")
-    if [[ "$filename" == "_index"* || "$filename" == "search.md" ]]; then
+    if [[ "$filename" == "_index"* ]]; then
         continue
     fi
 

@@ -21,10 +21,10 @@ echo "  ✓ Copied agent pages to /agents-md/"
 
 # Copy all blog posts to /agents-md/posts/
 count=0
-for file in content/*.md; do
+for file in content/posts/*.md; do
     filename=$(basename "$file")
-    # Skip special files
-    if [[ "$filename" != "_index"* && "$filename" != "search.md" ]]; then
+    # Skip _index.md
+    if [[ "$filename" != "_index"* ]]; then
         cp "$file" "static/agents-md/posts/$filename"
         ((count++))
     fi
