@@ -8,6 +8,10 @@ set -e
 echo "Updating date taxonomy..."
 ./add-date-taxonomy.sh
 
+# Regenerate the agent-readable posts index from posts on disk
+echo "Regenerating posts index..."
+./generate-posts-index.sh
+
 # Create raw markdown tree for agents that prefer plaintext
 mkdir -p static/agents-md/posts
 
