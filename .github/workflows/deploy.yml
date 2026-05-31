@@ -26,8 +26,12 @@ jobs:
 
         - name: Deploy to S3
           run: |
+            # Binary asset prefixes are managed out-of-band (see tools/upload-asset.sh);
+            # they must be excluded from --delete so CI doesn't wipe them.
+            BIN_EXCLUDES=(--exclude "images/*" --exclude "handwriting/*" --exclude "encrypted-resumes/*" --exclude "me.png" --exclude "me-shocked.png")
+
             # Sync everything except .ncl and .md files first
-            aws s3 sync public/ s3://${S3_BUCKET}/ --delete --region ${AWS_REGION} --exclude "*.ncl" --exclude "*.md"
+            aws s3 sync public/ s3://${S3_BUCKET}/ --delete --region ${AWS_REGION} --exclude "*.ncl" --exclude "*.md" "${BIN_EXCLUDES[@]}"
 
             # Upload .ncl files with correct content-type and inline disposition
             aws s3 sync public/ s3://${S3_BUCKET}/ --exclude "*" --include "*.ncl" --content-type "text/plain; charset=utf-8" --content-disposition "inline" --region ${AWS_REGION}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}{{ section.title }} | {{ config.title }}{% endblock %}
+
+{% block extra_head %}
+<meta name="robots" content="noindex, nofollow">
+{% endblock %}
+
+{% block content %}
+<h1 style="color: var(--accent-cyan); margin-bottom: 2rem;">$ resume</h1>
+
+<div class="post-content" id="resume-default">
+    <p>Thanks for your interest in my work.</p>
+    <p>I don't post my resume publicly. If you'd like a copy, drop a note via the
+       <a href="{{ get_url(path='/contact') }}">contact form</a> and I'll send you a
+       link with a one-time passcode.</p>
+
+    <hr style="margin: 2rem 0; border-color: var(--border-color);">
+
+    <h2 style="color: var(--accent-yellow); margin-bottom: 1rem;">$ unlock</h2>
+    <p>Already received an ID and passcode? Enter them below.</p>
+    <form id="unlock-form" style="display: flex; flex-direction: column; gap: 0.75rem; max-width: 28rem; margin-top: 1rem;">
+        <label style="display: flex; flex-direction: column; gap: 0.25rem;">
+            <span style="color: var(--text-secondary);">id</span>
+            <input type="text" id="resume-id" autocomplete="off" required
+                   style="padding: 0.5rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); font-family: inherit; font-size: inherit;">
+        </label>
+        <label style="display: flex; flex-direction: column; gap: 0.25rem;">
+            <span style="color: var(--text-secondary);">passcode</span>
+            <input type="password" id="resume-key" autocomplete="off" required
+                   style="padding: 0.5rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); font-family: inherit; font-size: inherit;">
+        </label>
+        <button type="submit"
+                style="padding: 0.5rem 1rem; background: var(--bg-tertiary); color: var(--accent-green); border: 1px solid var(--border-color); cursor: pointer; font-family: inherit; font-size: inherit; align-self: flex-start;">
+            $ decrypt
+        </button>
+    </form>
+    <p id="resume-status" style="margin-top: 1rem; min-height: 1.2em;"></p>
+
+    <hr style="margin: 2rem 0; border-color: var(--border-color);">
+
+    <h2 style="color: var(--accent-yellow); margin-bottom: 1rem;">$ how this works</h2>
+    <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+        <li>
+            <span style="color: var(--accent-cyan);">→ passcode lives in the url fragment.</span>
+            the share link uses <code>#id.passcode</code>, not <code>?id=...&amp;passcode=...</code>. browsers never send the part after <code>#</code> to the server, so it stays out of s3 access logs and isn't leaked via the <code>referer</code> header when you click an outbound link from the decrypted page. the page also strips the fragment from your address bar after load so it doesn't end up in screenshots or browser history previews.
+        </li>
+        <li>
+            <span style="color: var(--accent-cyan);">→ aes-gcm with a per-file random salt and iv.</span>
+            the encrypted blob carries a fresh 16-byte salt and 12-byte iv. gcm is authenticated, so a wrong passcode fails loudly (the browser throws) rather than handing back garbage that pretends to be a pdf.
+        </li>
+        <li>
+            <span style="color: var(--accent-cyan);">→ unguessable id + robots.txt is the anti-crawler layer.</span>
+            the encrypted file sits at <code>/encrypted-resumes/&lt;id&gt;.bin</code> with a random id, and <code>robots.txt</code> disallows that path. that's enough to keep well-behaved crawlers and casual url-guessers out. the passcode is the actual lock.
+        </li>
+        <li>
+            <span style="color: var(--accent-cyan);">→ pbkdf2-sha256, 250k iterations.</span>
+            the passcode is stretched into the aes key with pbkdf2 so each guess costs real cpu time. that's enough friction to make a long random passcode infeasible to brute-force, but a 4-character one is still cheap — let the encrypt tool generate the 12-character default.
+        </li>
+        <li>
+            <span style="color: var(--accent-cyan);">→ filename and mime type are inside the encrypted payload.</span>
+            the original filename and content-type are stored as part of the ciphertext, not as separate metadata. on decrypt, the download link restores both, so <code>.pdf</code>, <code>.docx</code>, or anything else round-trips correctly. only pdf-ish files preview inline in the iframe; everything else is download-only.
+        </li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ get_url(path='js/resume-decrypt.js') }}"></script>
+{% endblock %}

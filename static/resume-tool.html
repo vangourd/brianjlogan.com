@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Resume Encrypt Tool</title>
+<style>
+    :root {
+        --bg-primary: #0d1117;
+        --bg-secondary: #161b22;
+        --bg-tertiary: #21262d;
+        --text-primary: #e6edf3;
+        --text-secondary: #8b949e;
+        --accent-green: #7ee787;
+        --accent-cyan: #79c0ff;
+        --accent-yellow: #ffa657;
+        --accent-red: #ff7b72;
+        --border-color: #30363d;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+        background: var(--bg-primary); color: var(--text-primary);
+        padding: 2rem; line-height: 1.5; font-size: 0.95rem;
+    }
+    main { max-width: 48rem; margin: 0 auto; }
+    h1 { color: var(--accent-cyan); margin-bottom: 1.5rem; }
+    h2 { color: var(--accent-yellow); margin-top: 2rem; margin-bottom: 0.75rem; font-size: 1.1rem; }
+    p { color: var(--text-secondary); margin-bottom: 1rem; }
+    label { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 1rem; }
+    label > span { color: var(--text-secondary); }
+    input, button {
+        padding: 0.5rem; background: var(--bg-secondary); color: var(--text-primary);
+        border: 1px solid var(--border-color); font-family: inherit; font-size: inherit;
+    }
+    button {
+        background: var(--bg-tertiary); color: var(--accent-green); cursor: pointer;
+        align-self: flex-start; padding: 0.5rem 1rem;
+    }
+    button:hover { background: var(--border-color); }
+    .row { display: flex; gap: 0.5rem; align-items: center; }
+    .row input { flex: 1; }
+    #output {
+        margin-top: 1.5rem; padding: 1rem; background: var(--bg-secondary);
+        border: 1px solid var(--border-color); display: none;
+    }
+    #output a { color: var(--accent-cyan); word-break: break-all; }
+    .err { color: var(--accent-red); }
+    .ok  { color: var(--accent-green); }
+    code {
+        background: var(--bg-tertiary); padding: 0.1rem 0.4rem;
+        border: 1px solid var(--border-color); font-size: 0.85rem;
+    }
+    .field { margin-bottom: 0.75rem; }
+    .field strong { color: var(--accent-yellow); display: block; margin-bottom: 0.25rem; }
+</style>
+</head>
+<body>
+<main>
+    <h1>$ resume-encrypt</h1>
+    <p>Encrypts a file with AES-GCM (PBKDF2-SHA256, 250k iters) so it can be served from
+       <code>/encrypted-resumes/&lt;id&gt;.bin</code> and unlocked by the /resume page.</p>
+
+    <h2>1. Pick file</h2>
+    <label>
+        <span>file</span>
+        <input type="file" id="file">
+    </label>
+
+    <h2>2. Passcode</h2>
+    <label>
+        <span>passcode (leave blank to generate a random 12-char one)</span>
+        <div class="row">
+            <input type="text" id="passcode" autocomplete="off" placeholder="(auto-generated)">
+            <button type="button" id="gen-pass">↻ regen</button>
+        </div>
+    </label>
+
+    <h2>3. ID</h2>
+    <label>
+        <span>id (used as the filename on S3; auto-generated if blank)</span>
+        <div class="row">
+            <input type="text" id="id" autocomplete="off" placeholder="(auto-generated)">
+            <button type="button" id="gen-id">↻ regen</button>
+        </div>
+    </label>
+
+    <h2>4. Encrypt</h2>
+    <button type="button" id="encrypt">$ encrypt</button>
+    <p id="status" style="margin-top: 0.75rem; min-height: 1.2em;"></p>
+
+    <div id="output">
+        <div class="field">
+            <strong>encrypted file</strong>
+            <a id="dl-link" download>↓ download &lt;id&gt;.bin</a>
+            <p style="margin: 0.25rem 0 0;">Place at <code>static/encrypted-resumes/&lt;id&gt;.bin</code> in the Zola repo (or upload directly to <code>s3://brianjlogan/encrypted-resumes/&lt;id&gt;.bin</code>).</p>
+        </div>
+        <div class="field">
+            <strong>share URL</strong>
+            <div class="row">
+                <input id="share-url" readonly>
+                <button type="button" id="copy-url">copy</button>
+            </div>
+        </div>
+        <div class="field">
+            <strong>or send id + passcode separately</strong>
+            <p style="margin: 0;">id: <code id="show-id"></code></p>
+            <p style="margin: 0;">passcode: <code id="show-pass"></code></p>
+        </div>
+    </div>
+</main>
+
+<script>
+const PBKDF2_ITERS = 250000;
+const MAGIC = 'BRZ1';
+
+function status(msg, kind) {
+    const el = document.getElementById('status');
+    el.textContent = msg;
+    el.className = kind || '';
+}
+
+function randString(len, alphabet) {
+    alphabet = alphabet || 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+    const buf = new Uint8Array(len);
+    crypto.getRandomValues(buf);
+    let s = '';
+    for (let i = 0; i < len; i++) s += alphabet[buf[i] % alphabet.length];
+    return s;
+}
+
+function regenPass() { document.getElementById('passcode').value = randString(12); }
+function regenId()   { document.getElementById('id').value       = randString(10); }
+
+document.getElementById('gen-pass').addEventListener('click', regenPass);
+document.getElementById('gen-id').addEventListener('click', regenId);
+
+async function deriveKey(passcode, salt) {
+    const material = await crypto.subtle.importKey(
+        'raw', new TextEncoder().encode(passcode),
+        'PBKDF2', false, ['deriveKey']
+    );
+    return crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt, iterations: PBKDF2_ITERS, hash: 'SHA-256' },
+        material,
+        { name: 'AES-GCM', length: 256 },
+        false, ['encrypt']
+    );
+}
+
+function buildPlaintext(filename, mime, fileBytes) {
+    const enc = new TextEncoder();
+    const fnBytes = enc.encode(filename.slice(0, 255));
+    const mimeBytes = enc.encode((mime || 'application/octet-stream').slice(0, 255));
+    const out = new Uint8Array(1 + mimeBytes.length + 1 + fnBytes.length + fileBytes.length);
+    let off = 0;
+    out[off++] = mimeBytes.length;
+    out.set(mimeBytes, off); off += mimeBytes.length;
+    out[off++] = fnBytes.length;
+    out.set(fnBytes, off);   off += fnBytes.length;
+    out.set(fileBytes, off);
+    return out;
+}
+
+document.getElementById('encrypt').addEventListener('click', async () => {
+    const fileInput = document.getElementById('file');
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) { status('Pick a file first.', 'err'); return; }
+
+    if (!document.getElementById('passcode').value) regenPass();
+    if (!document.getElementById('id').value)       regenId();
+    const passcode = document.getElementById('passcode').value;
+    const id       = document.getElementById('id').value.trim();
+
+    if (!/^[A-Za-z0-9_-]+$/.test(id)) {
+        status('ID must be URL-safe (letters, digits, _ or -).', 'err'); return;
+    }
+
+    status('Reading file…');
+    const fileBytes = new Uint8Array(await file.arrayBuffer());
+
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const iv   = crypto.getRandomValues(new Uint8Array(12));
+
+    status('Deriving key…');
+    const key = await deriveKey(passcode, salt);
+
+    status('Encrypting…');
+    const plain = buildPlaintext(file.name, file.type, fileBytes);
+    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plain));
+
+    const magicBytes = new TextEncoder().encode(MAGIC);
+    const out = new Uint8Array(magicBytes.length + salt.length + iv.length + ct.length);
+    out.set(magicBytes, 0);
+    out.set(salt, magicBytes.length);
+    out.set(iv, magicBytes.length + salt.length);
+    out.set(ct, magicBytes.length + salt.length + iv.length);
+
+    const blob = new Blob([out], { type: 'application/octet-stream' });
+    const url  = URL.createObjectURL(blob);
+
+    const dl = document.getElementById('dl-link');
+    dl.href = url;
+    dl.download = id + '.bin';
+    dl.textContent = '↓ download ' + id + '.bin';
+
+    const origin = window.location.origin && window.location.origin !== 'null'
+        ? window.location.origin
+        : 'https://brianjlogan.com';
+    const shareUrl = `${origin}/resume/#${encodeURIComponent(id)}.${encodeURIComponent(passcode)}`;
+    document.getElementById('share-url').value = shareUrl;
+    document.getElementById('show-id').textContent   = id;
+    document.getElementById('show-pass').textContent = passcode;
+    document.getElementById('output').style.display  = 'block';
+
+    status('Done.', 'ok');
+});
+
+document.getElementById('copy-url').addEventListener('click', async () => {
+    const input = document.getElementById('share-url');
+    await navigator.clipboard.writeText(input.value);
+    status('Copied share URL to clipboard.', 'ok');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /encrypted-resumes/
+Disallow: /resume-tool.html

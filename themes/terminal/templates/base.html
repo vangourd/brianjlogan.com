@@ -47,6 +47,7 @@
                     <a href="{{ get_url(path="/") }}" data-key="gh">home</a>
                     <a href="{{ get_url(path="/search") }}" data-key="/">search</a>
                     <a href="{{ get_url(path="/tags") }}" data-key="gt">tags</a>
+                    <a href="{{ get_url(path="/resume") }}" data-key="gz">resume</a>
 
                     <div class="nav-folder">
                         <div class="nav-folder-header" onclick="toggleFolder(event, 'tech')">
@@ -388,6 +389,7 @@
         const vimCommands = {
             'gh': '{{ get_url(path="/") }}',
             'gt': '{{ get_url(path="/tags") }}',
+            'gz': '{{ get_url(path="/resume") }}',
             {% if config.generate_feeds %}
             'gr': '{{ get_url(path="atom.xml", trailing_slash=false) }}'
             {% endif %}
