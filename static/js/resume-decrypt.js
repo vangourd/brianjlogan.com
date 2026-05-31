@@ -1,14 +1,22 @@
 // Decrypts a resume blob fetched from /encrypted-resumes/<id>.bin.
 //
-// Encrypted file layout (must match resume-tool.html):
-//   [magic:4 = "BRZ1"][salt:16][iv:12][AES-GCM ciphertext]
-// Decrypted plaintext layout:
-//   [mimeLen:1][mime:utf-8 mimeLen bytes][fnLen:1][filename:utf-8 fnLen bytes][file bytes]
+// Encrypted file layout (must match resume-tool.html, BRZ2 envelope):
+//   [magic:4 = "BRZ2"][salt:16][iv:12][AES-GCM ciphertext]
+//
+// Decrypted plaintext layout (multi-file bundle):
+//   [count:1]
+//   for each file:
+//     [mime_len:1][mime:utf-8][fn_len:1][fn:utf-8][size:4 BE][bytes:size]
+//
+// Routing by MIME after decrypt:
+//   text/html         → injected inline into #resume-default via innerHTML
+//   application/pdf   → download link + "open in new tab" link
+//   anything else     → download link only
 
 (function () {
     const ENCRYPTED_PATH = '/encrypted-resumes';
     const PBKDF2_ITERS = 250000;
-    const MAGIC = 'BRZ1';
+    const MAGIC = 'BRZ2';
 
     const statusEl = () => document.getElementById('resume-status');
     function status(msg, kind) {
@@ -33,14 +41,55 @@
         );
     }
 
-    function parsePlaintext(bytes) {
-        let off = 0;
-        const mimeLen = bytes[off]; off += 1;
-        const mime = new TextDecoder().decode(bytes.slice(off, off + mimeLen)); off += mimeLen;
-        const fnLen = bytes[off]; off += 1;
-        const filename = new TextDecoder().decode(bytes.slice(off, off + fnLen)); off += fnLen;
-        const file = bytes.slice(off);
-        return { mime, filename, file };
+    function parseBundle(bytes) {
+        const decoder = new TextDecoder();
+        const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+        const count = bytes[0];
+        let off = 1;
+        const files = [];
+        for (let i = 0; i < count; i++) {
+            const mimeLen = bytes[off]; off += 1;
+            const mime = decoder.decode(bytes.slice(off, off + mimeLen)); off += mimeLen;
+            const fnLen = bytes[off]; off += 1;
+            const filename = decoder.decode(bytes.slice(off, off + fnLen)); off += fnLen;
+            const size = dv.getUint32(off, false); off += 4;
+            const fileBytes = bytes.slice(off, off + size); off += size;
+            files.push({ mime, filename, bytes: fileBytes });
+        }
+        return files;
+    }
+
+    function renderBundle(files) {
+        const container = document.getElementById('resume-default');
+        const html = files.find(f => f.mime === 'text/html');
+        const pdf  = files.find(f => f.mime === 'application/pdf');
+        const others = files.filter(f => f !== html && f !== pdf);
+
+        // Toolbar at the top with download / open-in-tab actions for the PDF, plus
+        // any other (non-html, non-pdf) attachments as download links.
+        const links = [];
+        if (pdf) {
+            const pdfUrl = URL.createObjectURL(new Blob([pdf.bytes], { type: 'application/pdf' }));
+            links.push(
+                `<a href="${pdfUrl}" download="${pdf.filename}" style="color: var(--accent-cyan);">↓ download pdf</a>`,
+                `<a href="${pdfUrl}" target="_blank" rel="noopener" style="color: var(--accent-cyan);">↗ open pdf in new tab</a>`
+            );
+        }
+        for (const f of others) {
+            const url = URL.createObjectURL(new Blob([f.bytes], { type: f.mime || 'application/octet-stream' }));
+            links.push(`<a href="${url}" download="${f.filename}" style="color: var(--accent-cyan);">↓ download ${f.filename}</a>`);
+        }
+
+        const htmlFragment = html
+            ? new TextDecoder().decode(html.bytes)
+            : '<p style="color: var(--accent-yellow);">(no inline HTML in bundle)</p>';
+
+        container.innerHTML = `
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
+                ${links.join('')}
+            </div>
+            ${htmlFragment}
+        `;
     }
 
     async function unlock(id, passcode) {
@@ -53,12 +102,12 @@
             return;
         }
         if (!resp.ok) {
-            status(`No resume found for that id.`, 'error');
+            status('No resume found for that id.', 'error');
             return;
         }
         const buf = new Uint8Array(await resp.arrayBuffer());
         if (buf.length < 32 || new TextDecoder().decode(buf.slice(0, 4)) !== MAGIC) {
-            status('File format not recognized.', 'error');
+            status('File format not recognized (expected BRZ2 bundle).', 'error');
             return;
         }
         const salt = buf.slice(4, 20);
@@ -77,20 +126,15 @@
             return;
         }
 
-        const { mime, filename, file } = parsePlaintext(new Uint8Array(plainBuf));
-        const blob = new Blob([file], { type: mime || 'application/octet-stream' });
-        const url  = URL.createObjectURL(blob);
+        let files;
+        try {
+            files = parseBundle(new Uint8Array(plainBuf));
+        } catch (e) {
+            status('Decrypted bundle is malformed.', 'error');
+            return;
+        }
 
-        const container = document.getElementById('resume-default');
-        container.innerHTML = `
-            <p style="color: var(--accent-green);">$ decrypted — ${filename}</p>
-            <p><a id="resume-download" download style="color: var(--accent-cyan);">↓ download</a></p>
-            <iframe id="resume-preview" src="${url}"
-                    style="width: 100%; height: 80vh; border: 1px solid var(--border-color); margin-top: 1rem; background: white;"></iframe>
-        `;
-        const dl = document.getElementById('resume-download');
-        dl.href = url;
-        dl.download = filename;
+        renderBundle(files);
         status('', 'ok');
     }
 

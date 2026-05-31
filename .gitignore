@@ -9,9 +9,13 @@
 /static/handwriting/
 /static/me.png
 /static/me-shocked.png
-/static/encrypted-resumes/*.bin
+*.bin
+
+# Local resume draft — contains plaintext PII; never deploy
+/static/resume-draft.html
 
 # Plaintext resumes — never commit; encrypted versions go to S3 instead
 /Brianjlogan.docx
 *.docx
 *.pdf
+/brianjlogan_*.html
