@@ -2,3 +2,16 @@
 /dist
 /tmp-aws
 /public
+
+# Binary assets — managed out-of-band via tools/upload-asset.sh
+# Hydrate locally with tools/fetch-assets.sh
+/static/images/
+/static/handwriting/
+/static/me.png
+/static/me-shocked.png
+/static/encrypted-resumes/*.bin
+
+# Plaintext resumes — never commit; encrypted versions go to S3 instead
+/Brianjlogan.docx
+*.docx
+*.pdf
