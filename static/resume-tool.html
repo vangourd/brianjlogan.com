@@ -59,16 +59,24 @@
 <body>
 <main>
     <h1>$ resume-encrypt</h1>
-    <p>Encrypts a file with AES-GCM (PBKDF2-SHA256, 250k iters) so it can be served from
-       <code>/encrypted-resumes/&lt;id&gt;.bin</code> and unlocked by the /resume page.</p>
+    <p>Bundles an HTML fragment + a PDF into one AES-256-GCM blob (PBKDF2-SHA256, 250k iters),
+       <code>BRZ2</code> envelope, ready to upload to
+       <code>/encrypted-resumes/&lt;id&gt;.bin</code>. The /resume page injects the HTML inline
+       and offers the PDF as a download.</p>
 
-    <h2>1. Pick file</h2>
+    <h2>1. HTML fragment (inline render)</h2>
     <label>
-        <span>file</span>
-        <input type="file" id="file">
+        <span>html file &mdash; just the inner content, no &lt;html&gt;/&lt;body&gt; wrappers</span>
+        <input type="file" id="html-file" accept=".html,.htm,text/html">
     </label>
 
-    <h2>2. Passcode</h2>
+    <h2>2. PDF (download link)</h2>
+    <label>
+        <span>pdf file &mdash; what recipients download for offline / print</span>
+        <input type="file" id="pdf-file" accept=".pdf,application/pdf">
+    </label>
+
+    <h2>3. Passcode</h2>
     <label>
         <span>passcode (leave blank to generate a random 12-char one)</span>
         <div class="row">
@@ -77,7 +85,7 @@
         </div>
     </label>
 
-    <h2>3. ID</h2>
+    <h2>4. ID</h2>
     <label>
         <span>id (used as the filename on S3; auto-generated if blank)</span>
         <div class="row">
@@ -86,15 +94,15 @@
         </div>
     </label>
 
-    <h2>4. Encrypt</h2>
+    <h2>5. Encrypt</h2>
     <button type="button" id="encrypt">$ encrypt</button>
     <p id="status" style="margin-top: 0.75rem; min-height: 1.2em;"></p>
 
     <div id="output">
         <div class="field">
-            <strong>encrypted file</strong>
+            <strong>encrypted bundle</strong>
             <a id="dl-link" download>↓ download &lt;id&gt;.bin</a>
-            <p style="margin: 0.25rem 0 0;">Place at <code>static/encrypted-resumes/&lt;id&gt;.bin</code> in the Zola repo (or upload directly to <code>s3://brianjlogan/encrypted-resumes/&lt;id&gt;.bin</code>).</p>
+            <p style="margin: 0.25rem 0 0;">Upload to <code>s3://brianjlogan/encrypted-resumes/&lt;id&gt;.bin</code> via <code>tools/upload-asset.sh &lt;path&gt; encrypted-resumes/&lt;id&gt;.bin --no-cache</code>.</p>
         </div>
         <div class="field">
             <strong>share URL</strong>
@@ -112,8 +120,14 @@
 </main>
 
 <script>
+// BRZ2 encrypted-file layout:
+//   [magic:4 "BRZ2"][salt:16][iv:12][AES-GCM ciphertext]
+// Decrypted plaintext layout (multi-file):
+//   [count:1]
+//   for each file:
+//     [mime_len:1][mime:utf-8][fn_len:1][fn:utf-8][size:4 BE][bytes:size]
 const PBKDF2_ITERS = 250000;
-const MAGIC = 'BRZ1';
+const MAGIC = 'BRZ2';
 
 function status(msg, kind) {
     const el = document.getElementById('status');
@@ -136,6 +150,14 @@ function regenId()   { document.getElementById('id').value       = randString(10
 document.getElementById('gen-pass').addEventListener('click', regenPass);
 document.getElementById('gen-id').addEventListener('click', regenId);
 
+function fileMime(file) {
+    if (file.type) return file.type;
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (ext === 'html' || ext === 'htm') return 'text/html';
+    if (ext === 'pdf')                   return 'application/pdf';
+    return 'application/octet-stream';
+}
+
 async function deriveKey(passcode, salt) {
     const material = await crypto.subtle.importKey(
         'raw', new TextEncoder().encode(passcode),
@@ -149,24 +171,39 @@ async function deriveKey(passcode, salt) {
     );
 }
 
-function buildPlaintext(filename, mime, fileBytes) {
+// Build the BRZ2 plaintext envelope from an array of {filename, mime, bytes}.
+function buildBundle(files) {
     const enc = new TextEncoder();
-    const fnBytes = enc.encode(filename.slice(0, 255));
-    const mimeBytes = enc.encode((mime || 'application/octet-stream').slice(0, 255));
-    const out = new Uint8Array(1 + mimeBytes.length + 1 + fnBytes.length + fileBytes.length);
-    let off = 0;
-    out[off++] = mimeBytes.length;
-    out.set(mimeBytes, off); off += mimeBytes.length;
-    out[off++] = fnBytes.length;
-    out.set(fnBytes, off);   off += fnBytes.length;
-    out.set(fileBytes, off);
+    const parts = files.map(f => {
+        const fnBytes   = enc.encode(f.filename.slice(0, 255));
+        const mimeBytes = enc.encode((f.mime || 'application/octet-stream').slice(0, 255));
+        const size = f.bytes.length;
+        const buf = new Uint8Array(1 + mimeBytes.length + 1 + fnBytes.length + 4 + size);
+        let off = 0;
+        buf[off++] = mimeBytes.length;
+        buf.set(mimeBytes, off); off += mimeBytes.length;
+        buf[off++] = fnBytes.length;
+        buf.set(fnBytes, off);   off += fnBytes.length;
+        new DataView(buf.buffer, buf.byteOffset + off, 4).setUint32(0, size, false); off += 4;
+        buf.set(f.bytes, off);
+        return buf;
+    });
+    const total = 1 + parts.reduce((s, p) => s + p.length, 0);
+    const out = new Uint8Array(total);
+    out[0] = files.length;
+    let off = 1;
+    for (const p of parts) { out.set(p, off); off += p.length; }
     return out;
 }
 
 document.getElementById('encrypt').addEventListener('click', async () => {
-    const fileInput = document.getElementById('file');
-    const file = fileInput.files && fileInput.files[0];
-    if (!file) { status('Pick a file first.', 'err'); return; }
+    const htmlInput = document.getElementById('html-file');
+    const pdfInput  = document.getElementById('pdf-file');
+    const htmlFile  = htmlInput.files && htmlInput.files[0];
+    const pdfFile   = pdfInput.files  && pdfInput.files[0];
+
+    if (!htmlFile) { status('Pick an HTML file (step 1).', 'err'); return; }
+    if (!pdfFile)  { status('Pick a PDF file (step 2).',  'err'); return; }
 
     if (!document.getElementById('passcode').value) regenPass();
     if (!document.getElementById('id').value)       regenId();
@@ -177,8 +214,14 @@ document.getElementById('encrypt').addEventListener('click', async () => {
         status('ID must be URL-safe (letters, digits, _ or -).', 'err'); return;
     }
 
-    status('Reading file…');
-    const fileBytes = new Uint8Array(await file.arrayBuffer());
+    status('Reading files…');
+    const htmlBytes = new Uint8Array(await htmlFile.arrayBuffer());
+    const pdfBytes  = new Uint8Array(await pdfFile.arrayBuffer());
+
+    const files = [
+        { filename: htmlFile.name, mime: fileMime(htmlFile), bytes: htmlBytes },
+        { filename: pdfFile.name,  mime: fileMime(pdfFile),  bytes: pdfBytes  },
+    ];
 
     const salt = crypto.getRandomValues(new Uint8Array(16));
     const iv   = crypto.getRandomValues(new Uint8Array(12));
@@ -186,8 +229,8 @@ document.getElementById('encrypt').addEventListener('click', async () => {
     status('Deriving key…');
     const key = await deriveKey(passcode, salt);
 
-    status('Encrypting…');
-    const plain = buildPlaintext(file.name, file.type, fileBytes);
+    status('Encrypting bundle…');
+    const plain = buildBundle(files);
     const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plain));
 
     const magicBytes = new TextEncoder().encode(MAGIC);
@@ -214,7 +257,7 @@ document.getElementById('encrypt').addEventListener('click', async () => {
     document.getElementById('show-pass').textContent = passcode;
     document.getElementById('output').style.display  = 'block';
 
-    status('Done.', 'ok');
+    status(`Done. Bundled ${files.length} files into ${out.length.toLocaleString()} bytes.`, 'ok');
 });
 
 document.getElementById('copy-url').addEventListener('click', async () => {
