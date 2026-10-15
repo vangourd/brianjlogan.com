@@ -61,7 +61,7 @@
     <h1>$ newsletter-encrypt</h1>
     <p>Encrypts an HTML article and an optional PDF attachment into an AES-256-GCM bundle
        (PBKDF2-SHA256, 250k iterations) using the <code>BRZ2</code> format. Upload the
-       bundle to <code>/encrypted-newsletters/&lt;id&gt;.bin</code>; the share link opens
+       bundle to <code>/encrypted-newsletters/&lt;slug&gt;.bin</code>; the share link opens
        the article reader at <code>/newsletter/</code>.</p>
 
     <h2>1. HTML article</h2>
@@ -78,19 +78,19 @@
 
     <h2>3. Key</h2>
     <label>
-        <span>key (leave blank to generate a random 12-character one)</span>
+        <span>key (leave blank to generate a random 11-word passphrase)</span>
         <div class="row">
             <input type="text" id="passcode" autocomplete="off" placeholder="(auto-generated)">
-            <button type="button" id="gen-pass">↻ regen</button>
+            <button type="button" id="gen-pass">↻ new passphrase</button>
         </div>
     </label>
 
-    <h2>4. ID</h2>
+    <h2>4. Slug</h2>
     <label>
-        <span>id (used as the filename on S3; auto-generated if blank)</span>
+        <span>slug (from the HTML filename by default; use a unique value for each article)</span>
         <div class="row">
-            <input type="text" id="id" autocomplete="off" placeholder="(auto-generated)">
-            <button type="button" id="gen-id">↻ regen</button>
+            <input type="text" id="slug" autocomplete="off" placeholder="(from article filename)" maxlength="80">
+            <button type="button" id="gen-slug">↻ from filename</button>
         </div>
     </label>
 
@@ -101,8 +101,8 @@
     <div id="output">
         <div class="field">
             <strong>encrypted article</strong>
-            <a id="dl-link" download>↓ download &lt;id&gt;.bin</a>
-            <p style="margin: 0.25rem 0 0;">Upload to <code>s3://brianjlogan/encrypted-newsletters/&lt;id&gt;.bin</code> via <code>tools/upload-asset.sh &lt;path&gt; encrypted-newsletters/&lt;id&gt;.bin --no-cache</code>.</p>
+            <a id="dl-link" download>↓ download &lt;slug&gt;.bin</a>
+            <p style="margin: 0.25rem 0 0;">Upload to <code>s3://brianjlogan/encrypted-newsletters/&lt;slug&gt;.bin</code> via <code>tools/upload-asset.sh &lt;path&gt; encrypted-newsletters/&lt;slug&gt;.bin --no-cache</code>.</p>
         </div>
         <div class="field">
             <strong>share URL (includes the key after #)</strong>
@@ -112,8 +112,8 @@
             </div>
         </div>
         <div class="field">
-            <strong>or send article ID + key separately</strong>
-            <p style="margin: 0;">id: <code id="show-id"></code></p>
+            <strong>or send article slug + key separately</strong>
+            <p style="margin: 0;">slug: <code id="show-slug"></code></p>
             <p style="margin: 0;">key: <code id="show-pass"></code></p>
         </div>
     </div>
@@ -135,20 +135,48 @@ function status(msg, kind) {
     el.className = kind || '';
 }
 
-function randString(len, alphabet) {
-    alphabet = alphabet || 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
-    const buf = new Uint8Array(len);
-    crypto.getRandomValues(buf);
-    let s = '';
-    for (let i = 0; i < len; i++) s += alphabet[buf[i] % alphabet.length];
-    return s;
+const PASSPHRASE_WORDS = `
+amber apple arrow atlas autumn bamboo beacon berry birch breeze brook bubble cactus candle canyon cedar cherry cloud clover cocoa comet coral crystal daisy delta denim desert dolphin dragon dream dune eagle echo ember falcon fern field finch flame flower forest frost galaxy garden ginger glade glacier grape harbor hazel heron honey island ivory juniper kiwi lagoon lemon lilac lotus maple meadow melon meteor midnight mint mist moon moss mountain muffin nebula nickel noodle oak ocean olive orchid otter panda peach pebble pepper phoenix piano pine planet plum pollen pond prairie puzzle quartz rabbit raven reef river robin rocket rose saffron sage salmon savanna scarlet shadow silver snow sparrow spruce star stone summit sunrise sunset thunder tiger timber tulip turtle velvet violet walnut willow winter wren yarrow zephyr
+`.trim().split(/\s+/);
+const KEY_WORD_COUNT = 11;
+if (PASSPHRASE_WORDS.length !== 128) throw new Error('Passphrase word list must contain 128 words.');
+
+function regenPass() {
+    // 11 uniform selections from 128 words provide 77 bits of key entropy.
+    const random = crypto.getRandomValues(new Uint8Array(KEY_WORD_COUNT));
+    document.getElementById('passcode').value = Array.from(
+        random, byte => PASSPHRASE_WORDS[byte & 0x7f]
+    ).join('-');
 }
 
-function regenPass() { document.getElementById('passcode').value = randString(12); }
-function regenId()   { document.getElementById('id').value       = randString(10); }
+const articleInput = document.getElementById('html-file');
+const slugInput = document.getElementById('slug');
+
+function slugifyFilename(filename) {
+    return filename
+        .replace(/\.[^.]+$/, '')
+        .normalize('NFKD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 80)
+        .replace(/-+$/g, '');
+}
+
+function regenSlug() {
+    const file = articleInput.files && articleInput.files[0];
+    const slug = file ? slugifyFilename(file.name) : '';
+    slugInput.value = slug;
+    slugInput.dataset.generated = slug ? 'true' : 'false';
+}
 
 document.getElementById('gen-pass').addEventListener('click', regenPass);
-document.getElementById('gen-id').addEventListener('click', regenId);
+document.getElementById('gen-slug').addEventListener('click', regenSlug);
+articleInput.addEventListener('change', () => {
+    if (!slugInput.value.trim() || slugInput.dataset.generated === 'true') regenSlug();
+});
+slugInput.addEventListener('input', () => { slugInput.dataset.generated = 'false'; });
 
 function fileMime(file) {
     if (file.type) return file.type;
@@ -205,12 +233,12 @@ document.getElementById('encrypt').addEventListener('click', async () => {
     if (!htmlFile) { status('Pick an HTML article (step 1).', 'err'); return; }
 
     if (!document.getElementById('passcode').value) regenPass();
-    if (!document.getElementById('id').value)       regenId();
+    if (!slugInput.value.trim()) regenSlug();
     const passcode = document.getElementById('passcode').value;
-    const id       = document.getElementById('id').value.trim();
+    const slug = slugInput.value.trim();
 
-    if (!/^[A-Za-z0-9_-]+$/.test(id)) {
-        status('ID must be URL-safe (letters, digits, _ or -).', 'err'); return;
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 80) {
+        status('Use a lowercase slug with letters, numbers, and single hyphens.', 'err'); return;
     }
 
     status('Reading files…');
@@ -243,15 +271,15 @@ document.getElementById('encrypt').addEventListener('click', async () => {
 
     const dl = document.getElementById('dl-link');
     dl.href = url;
-    dl.download = id + '.bin';
-    dl.textContent = '↓ download ' + id + '.bin';
+    dl.download = slug + '.bin';
+    dl.textContent = '↓ download ' + slug + '.bin';
 
     const origin = window.location.origin && window.location.origin !== 'null'
         ? window.location.origin
         : 'https://brianjlogan.com';
-    const shareUrl = `${origin}/newsletter/#${encodeURIComponent(id)}.${encodeURIComponent(passcode)}`;
+    const shareUrl = `${origin}/newsletter/#${encodeURIComponent(slug)}.${encodeURIComponent(passcode)}`;
     document.getElementById('share-url').value = shareUrl;
-    document.getElementById('show-id').textContent   = id;
+    document.getElementById('show-slug').textContent = slug;
     document.getElementById('show-pass').textContent = passcode;
     document.getElementById('output').style.display  = 'block';
 

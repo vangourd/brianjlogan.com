@@ -1,4 +1,4 @@
-// Decrypts a newsletter bundle fetched from /encrypted-newsletters/<id>.bin.
+// Decrypts a newsletter bundle fetched from /encrypted-newsletters/<slug>.bin.
 //
 // Encrypted file layout (must match newsletter-encrypt.html, BRZ2 envelope):
 //   [magic:4 = "BRZ2"][salt:16][iv:12][AES-GCM ciphertext]
@@ -124,17 +124,17 @@
         }
     }
 
-    async function unlock(id, passcode) {
+    async function unlock(slug, passcode) {
         status('Fetching encrypted article…');
         let resp;
         try {
-            resp = await fetch(`${ENCRYPTED_PATH}/${encodeURIComponent(id)}.bin`, { cache: 'no-store' });
+            resp = await fetch(`${ENCRYPTED_PATH}/${encodeURIComponent(slug)}.bin`, { cache: 'no-store' });
         } catch (e) {
             status('Network error fetching the article.', 'error');
             return;
         }
         if (!resp.ok) {
-            status('No article found for that ID.', 'error');
+            status('No article found for that slug.', 'error');
             return;
         }
 
@@ -176,31 +176,31 @@
         if (form) {
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const id = document.getElementById('content-id').value.trim();
+                const slug = document.getElementById('content-slug').value.trim();
                 const key = document.getElementById('content-key').value;
-                if (id && key) unlock(id, key);
+                if (slug && key) unlock(slug, key);
             });
         }
 
-        // Auto-unlock from URL fragment: #<id>.<key>
+        // Auto-unlock from URL fragment: #<slug>.<key>
         const hash = window.location.hash.slice(1);
         const dot = hash.indexOf('.');
         if (dot <= 0) return;
 
-        let id;
+        let slug;
         let key;
         try {
-            id = decodeURIComponent(hash.slice(0, dot));
+            slug = decodeURIComponent(hash.slice(0, dot));
             key = decodeURIComponent(hash.slice(dot + 1));
         } catch (e) {
             status('The article link is malformed.', 'error');
             return;
         }
-        if (!id || !key) return;
+        if (!slug || !key) return;
 
         // Strip the key from the address bar before fetching or rendering content.
         history.replaceState(null, '', window.location.pathname + window.location.search);
-        unlock(id, key);
+        unlock(slug, key);
     }
 
     if (document.readyState === 'loading') {

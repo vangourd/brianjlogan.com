@@ -10,15 +10,15 @@
 <div class="post-content" id="encrypted-content-default">
     <h1 style="color: var(--accent-cyan); margin-bottom: 2rem;">$ newsletter</h1>
     <p>This is the full-article reader for my newsletter. The preview is in your email; open its personalized link to unlock the complete article automatically.</p>
-    <p>If the link doesn't work, enter the article ID and key from the email below.</p>
+    <p>If the link doesn't work, enter the article slug and key from the email below.</p>
 
     <hr style="margin: 2rem 0; border-color: var(--border-color);">
 
     <h2 style="color: var(--accent-yellow); margin-bottom: 1rem;">$ unlock</h2>
     <form id="unlock-form" style="display: flex; flex-direction: column; gap: 0.75rem; max-width: 28rem; margin-top: 1rem;">
         <label style="display: flex; flex-direction: column; gap: 0.25rem;">
-            <span style="color: var(--text-secondary);">article id</span>
-            <input type="text" id="content-id" autocomplete="off" required
+            <span style="color: var(--text-secondary);">article slug</span>
+            <input type="text" id="content-slug" autocomplete="off" required
                    style="padding: 0.5rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); font-family: inherit; font-size: inherit;">
         </label>
         <label style="display: flex; flex-direction: column; gap: 0.25rem;">
@@ -39,15 +39,15 @@
     <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.75rem;">
         <li>
             <span style="color: var(--accent-cyan);">→ the key stays in the URL fragment.</span>
-            The link uses <code>#id.key</code>, not a query parameter. Browsers don't send the fragment to the server, and the page removes it from the address bar after loading.
+            The link uses <code>#slug.key</code>, not a query parameter. Browsers don't send the fragment to the server, and the page removes it from the address bar after loading.
         </li>
         <li>
             <span style="color: var(--accent-cyan);">→ the article is decrypted in your browser.</span>
             Each encrypted file uses AES-GCM with a random salt and IV. A wrong key fails authentication instead of producing unreadable content.
         </li>
         <li>
-            <span style="color: var(--accent-cyan);">→ the article ID isn't the secret.</span>
-            Encrypted files live at <code>/encrypted-newsletters/&lt;id&gt;.bin</code>; the key is what protects the contents. Use a long, randomly generated key.
+            <span style="color: var(--accent-cyan);">→ the slug isn't the secret.</span>
+            Encrypted files live at <code>/encrypted-newsletters/&lt;slug&gt;.bin</code>; the key is what protects the contents. Use a long, randomly generated key.
         </li>
     </ul>
 </div>
