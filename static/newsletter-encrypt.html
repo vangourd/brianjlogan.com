@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Resume Encrypt Tool</title>
+<title>Newsletter Encrypt Tool</title>
 <style>
     :root {
         --bg-primary: #0d1117;
@@ -58,27 +58,27 @@
 </head>
 <body>
 <main>
-    <h1>$ resume-encrypt</h1>
-    <p>Bundles an HTML fragment + a PDF into one AES-256-GCM blob (PBKDF2-SHA256, 250k iters),
-       <code>BRZ2</code> envelope, ready to upload to
-       <code>/encrypted-resumes/&lt;id&gt;.bin</code>. The /resume page injects the HTML inline
-       and offers the PDF as a download.</p>
+    <h1>$ newsletter-encrypt</h1>
+    <p>Encrypts an HTML article and an optional PDF attachment into an AES-256-GCM bundle
+       (PBKDF2-SHA256, 250k iterations) using the <code>BRZ2</code> format. Upload the
+       bundle to <code>/encrypted-newsletters/&lt;id&gt;.bin</code>; the share link opens
+       the article reader at <code>/newsletter/</code>.</p>
 
-    <h2>1. HTML fragment (inline render)</h2>
+    <h2>1. HTML article</h2>
     <label>
-        <span>html file &mdash; just the inner content, no &lt;html&gt;/&lt;body&gt; wrappers</span>
+        <span>html file &mdash; the article body, without &lt;html&gt;/&lt;body&gt; wrappers</span>
         <input type="file" id="html-file" accept=".html,.htm,text/html">
     </label>
 
-    <h2>2. PDF (download link)</h2>
+    <h2>2. Optional PDF attachment</h2>
     <label>
-        <span>pdf file &mdash; what recipients download for offline / print</span>
+        <span>pdf file &mdash; an optional download for offline reading or printing</span>
         <input type="file" id="pdf-file" accept=".pdf,application/pdf">
     </label>
 
-    <h2>3. Passcode</h2>
+    <h2>3. Key</h2>
     <label>
-        <span>passcode (leave blank to generate a random 12-char one)</span>
+        <span>key (leave blank to generate a random 12-character one)</span>
         <div class="row">
             <input type="text" id="passcode" autocomplete="off" placeholder="(auto-generated)">
             <button type="button" id="gen-pass">↻ regen</button>
@@ -100,21 +100,21 @@
 
     <div id="output">
         <div class="field">
-            <strong>encrypted bundle</strong>
+            <strong>encrypted article</strong>
             <a id="dl-link" download>↓ download &lt;id&gt;.bin</a>
-            <p style="margin: 0.25rem 0 0;">Upload to <code>s3://brianjlogan/encrypted-resumes/&lt;id&gt;.bin</code> via <code>tools/upload-asset.sh &lt;path&gt; encrypted-resumes/&lt;id&gt;.bin --no-cache</code>.</p>
+            <p style="margin: 0.25rem 0 0;">Upload to <code>s3://brianjlogan/encrypted-newsletters/&lt;id&gt;.bin</code> via <code>tools/upload-asset.sh &lt;path&gt; encrypted-newsletters/&lt;id&gt;.bin --no-cache</code>.</p>
         </div>
         <div class="field">
-            <strong>share URL</strong>
+            <strong>share URL (includes the key after #)</strong>
             <div class="row">
                 <input id="share-url" readonly>
                 <button type="button" id="copy-url">copy</button>
             </div>
         </div>
         <div class="field">
-            <strong>or send id + passcode separately</strong>
+            <strong>or send article ID + key separately</strong>
             <p style="margin: 0;">id: <code id="show-id"></code></p>
-            <p style="margin: 0;">passcode: <code id="show-pass"></code></p>
+            <p style="margin: 0;">key: <code id="show-pass"></code></p>
         </div>
     </div>
 </main>
@@ -202,8 +202,7 @@ document.getElementById('encrypt').addEventListener('click', async () => {
     const htmlFile  = htmlInput.files && htmlInput.files[0];
     const pdfFile   = pdfInput.files  && pdfInput.files[0];
 
-    if (!htmlFile) { status('Pick an HTML file (step 1).', 'err'); return; }
-    if (!pdfFile)  { status('Pick a PDF file (step 2).',  'err'); return; }
+    if (!htmlFile) { status('Pick an HTML article (step 1).', 'err'); return; }
 
     if (!document.getElementById('passcode').value) regenPass();
     if (!document.getElementById('id').value)       regenId();
@@ -216,12 +215,11 @@ document.getElementById('encrypt').addEventListener('click', async () => {
 
     status('Reading files…');
     const htmlBytes = new Uint8Array(await htmlFile.arrayBuffer());
-    const pdfBytes  = new Uint8Array(await pdfFile.arrayBuffer());
-
-    const files = [
-        { filename: htmlFile.name, mime: fileMime(htmlFile), bytes: htmlBytes },
-        { filename: pdfFile.name,  mime: fileMime(pdfFile),  bytes: pdfBytes  },
-    ];
+    const files = [{ filename: htmlFile.name, mime: fileMime(htmlFile), bytes: htmlBytes }];
+    if (pdfFile) {
+        const pdfBytes = new Uint8Array(await pdfFile.arrayBuffer());
+        files.push({ filename: pdfFile.name, mime: fileMime(pdfFile), bytes: pdfBytes });
+    }
 
     const salt = crypto.getRandomValues(new Uint8Array(16));
     const iv   = crypto.getRandomValues(new Uint8Array(12));
@@ -251,7 +249,7 @@ document.getElementById('encrypt').addEventListener('click', async () => {
     const origin = window.location.origin && window.location.origin !== 'null'
         ? window.location.origin
         : 'https://brianjlogan.com';
-    const shareUrl = `${origin}/resume/#${encodeURIComponent(id)}.${encodeURIComponent(passcode)}`;
+    const shareUrl = `${origin}/newsletter/#${encodeURIComponent(id)}.${encodeURIComponent(passcode)}`;
     document.getElementById('share-url').value = shareUrl;
     document.getElementById('show-id').textContent   = id;
     document.getElementById('show-pass').textContent = passcode;

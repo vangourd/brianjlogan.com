@@ -1,3 +1,4 @@
 User-agent: *
+Disallow: /encrypted-newsletters/
 Disallow: /encrypted-resumes/
-Disallow: /resume-tool.html
+Disallow: /newsletter-encrypt.html

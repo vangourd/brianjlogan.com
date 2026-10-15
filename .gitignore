@@ -11,10 +11,10 @@
 /static/me-shocked.png
 *.bin
 
-# Local resume draft — contains plaintext PII; never deploy
-/static/resume-draft.html
+# Local resume draft — contains plaintext PII; keep it out of static/ and version control
+/private/resume-draft.html
 
-# Plaintext resumes — never commit; encrypted versions go to S3 instead
+# Private documents — never commit plaintext files
 /Brianjlogan.docx
 *.docx
 *.pdf

@@ -1,11 +1,13 @@
 #!/bin/bash
 
 # Binary asset prefixes are managed out-of-band (see tools/upload-asset.sh).
-# We must exclude them from --delete sweeps or CI would wipe them on every run.
+# Exclude them from --delete sweeps; the old encrypted-resumes prefix is retained
+# for legacy blobs, while new articles use encrypted-newsletters.
 BIN_EXCLUDES=(
     --exclude "images/*"
     --exclude "handwriting/*"
     --exclude "encrypted-resumes/*"
+    --exclude "encrypted-newsletters/*"
     --exclude "me.png"
     --exclude "me-shocked.png"
 )

@@ -7,13 +7,13 @@
 #   - Refuses to overwrite an existing key (bucket versioning still keeps prior
 #     versions on overwrite, but we want explicit consent).
 #   - Detects Content-Type from extension.
-#   - Cache-Control: max-age=600 (use --no-cache for resume .bin uploads).
+#   - Cache-Control: max-age=600 (use --no-cache for encrypted .bin uploads).
 #   - On success, also copies the file into the local static/ mirror so
 #     `zola serve` reflects what's deployed.
 #
 # Examples:
 #   upload-asset.sh ~/Pictures/coffee.jpg images/coffee.jpg
-#   upload-asset.sh tmp-aws/abc123.bin encrypted-resumes/abc123.bin --no-cache
+#   upload-asset.sh tmp-aws/abc123.bin encrypted-newsletters/abc123.bin --no-cache
 #   upload-asset.sh ~/Downloads/new-portrait.png me.png --force
 
 set -euo pipefail

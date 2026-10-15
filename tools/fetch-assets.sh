@@ -10,7 +10,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 cd "$ROOT"
 
-mkdir -p static/images static/handwriting static/encrypted-resumes
+mkdir -p static/images static/handwriting static/encrypted-newsletters
 
 echo "→ images/"
 aws s3 sync "s3://${BUCKET}/images"            static/images            --size-only
@@ -18,8 +18,8 @@ aws s3 sync "s3://${BUCKET}/images"            static/images            --size-o
 echo "→ handwriting/"
 aws s3 sync "s3://${BUCKET}/handwriting"       static/handwriting       --size-only
 
-echo "→ encrypted-resumes/"
-aws s3 sync "s3://${BUCKET}/encrypted-resumes" static/encrypted-resumes --size-only
+echo "→ encrypted-newsletters/"
+aws s3 sync "s3://${BUCKET}/encrypted-newsletters" static/encrypted-newsletters --size-only
 
 echo "→ portraits"
 for f in me.png me-shocked.png; do
