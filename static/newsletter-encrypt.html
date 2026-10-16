@@ -78,10 +78,10 @@
 
     <h2>3. Key</h2>
     <label>
-        <span>key (leave blank to generate a random 11-word passphrase)</span>
+        <span>key (blank generates a random 16-character key with lowercase, uppercase, digits, and symbols)</span>
         <div class="row">
             <input type="text" id="passcode" autocomplete="off" placeholder="(auto-generated)">
-            <button type="button" id="gen-pass">↻ new passphrase</button>
+            <button type="button" id="gen-pass">↻ new key</button>
         </div>
     </label>
 
@@ -135,18 +135,40 @@ function status(msg, kind) {
     el.className = kind || '';
 }
 
-const PASSPHRASE_WORDS = `
-amber apple arrow atlas autumn bamboo beacon berry birch breeze brook bubble cactus candle canyon cedar cherry cloud clover cocoa comet coral crystal daisy delta denim desert dolphin dragon dream dune eagle echo ember falcon fern field finch flame flower forest frost galaxy garden ginger glade glacier grape harbor hazel heron honey island ivory juniper kiwi lagoon lemon lilac lotus maple meadow melon meteor midnight mint mist moon moss mountain muffin nebula nickel noodle oak ocean olive orchid otter panda peach pebble pepper phoenix piano pine planet plum pollen pond prairie puzzle quartz rabbit raven reef river robin rocket rose saffron sage salmon savanna scarlet shadow silver snow sparrow spruce star stone summit sunrise sunset thunder tiger timber tulip turtle velvet violet walnut willow winter wren yarrow zephyr
-`.trim().split(/\s+/);
-const KEY_WORD_COUNT = 11;
-if (PASSPHRASE_WORDS.length !== 128) throw new Error('Passphrase word list must contain 128 words.');
+const KEY_CHARSETS = {
+    lowercase: 'abcdefghijklmnopqrstuvwxyz',
+    uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    digits: '0123456789',
+    symbols: '!@#$%^&*()-_=+[]{};:,.?'
+};
+const KEY_ALPHABET = Object.values(KEY_CHARSETS).join('');
+const KEY_LENGTH = 16;
+
+function randomIndex(limit) {
+    // Rejection sampling avoids modulo bias when choosing from the alphabet.
+    const cutoff = Math.floor(256 / limit) * limit;
+    let byte;
+    do {
+        byte = crypto.getRandomValues(new Uint8Array(1))[0];
+    } while (byte >= cutoff);
+    return byte % limit;
+}
+
+function generateKey() {
+    while (true) {
+        const characters = Array.from(
+            { length: KEY_LENGTH },
+            () => KEY_ALPHABET[randomIndex(KEY_ALPHABET.length)]
+        );
+        const includesEveryCharacterClass = Object.values(KEY_CHARSETS).every(charset =>
+            characters.some(character => charset.includes(character))
+        );
+        if (includesEveryCharacterClass) return characters.join('');
+    }
+}
 
 function regenPass() {
-    // 11 uniform selections from 128 words provide 77 bits of key entropy.
-    const random = crypto.getRandomValues(new Uint8Array(KEY_WORD_COUNT));
-    document.getElementById('passcode').value = Array.from(
-        random, byte => PASSPHRASE_WORDS[byte & 0x7f]
-    ).join('-');
+    document.getElementById('passcode').value = generateKey();
 }
 
 const articleInput = document.getElementById('html-file');
