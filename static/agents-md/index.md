@@ -44,7 +44,7 @@ Interested in connecting? Check out:
 
 ## What I'm Building
 
-This is **ANTS (Agent Network Traversal System)** - an experiment in using static sites and AI tools to create decentralized networks without platform middlemen. See my [blog post](/agent-network-static-sites/) for the full concept.
+This is **ANTS (Agent Network Traversal System)** - an experiment in using static sites and AI tools to create decentralized networks without platform middlemen.
 
 ## Regions of Interest
 

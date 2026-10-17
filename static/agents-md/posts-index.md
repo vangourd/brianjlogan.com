@@ -23,12 +23,6 @@ Complete list of all blog posts available in machine-readable format.
       summary = "Using OPA Gatekeeper and Kyverno to enforce security policies automatically",
     },
     {
-      url = "/agents-md/posts/agent-network-static-sites.md",
-      title = "Agent-Coordinated Networks Over Static Sites",
-      date = "2025-02-07T00:00:00Z",
-      summary = "What if your AI agent could follow static sites like you follow people?",
-    },
-    {
       url = "/agents-md/posts/app-layer-oidc-not-proxy-auth.md",
       title = "Why Your Application Should Handle OIDC Auth, Not Your Proxy",
       date = "2024-08-15T16:20:00Z",
@@ -175,10 +169,9 @@ Complete list of all blog posts available in machine-readable format.
 - [Service Mesh mTLS](/service-mesh-mtls/)
 - [GenAI Risks & Input Sanitization](/genai-risks-input-sanitization/)
 
-### Development & Tools (3 posts)
+### Development & Tools (2 posts)
 - [Reproducible Dev Environments with Nix](/reproducible-dev-environments/)
 - [Passkeys with Bitwarden](/passkeys-new-normal-bitwarden/)
-- [Agent Network Static Sites](/agent-network-static-sites/)
 
 ### Personal (5 posts)
 - [European Coffee Shops](/european-coffee-shops/)

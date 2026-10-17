@@ -20,12 +20,6 @@ the file.
   version = "1.0",
   posts = [
     {
-      url = "/agents-md/posts/agent-network-static-sites.md",
-      title = "ANTS: Agent Network Traversal System",
-      date = "2025-02-07T00:00:00Z",
-      summary = "What if your AI agent could follow static sites the way you follow people - no Facebook, no Google, no middlemen?",
-    },
-    {
       url = "/agents-md/posts/kos-coffee-maitland.md",
       title = "Coffee Shop Review: KOS Coffee Maitland",
       date = "2025-01-04T13:04:46Z",
@@ -36,6 +30,12 @@ the file.
       title = "Coffee Shop Review: Quigley Coffee Co",
       date = "2024-03-09T16:03:46Z",
       summary = "A brief review of the coffeeshop Quigley",
+    },
+    {
+      url = "/agents-md/posts/internet-communities.md",
+      title = "It's hard to communicate on the internet",
+      date = "2024-03-09T16:03:46Z",
+      summary = "Some of my thoughts around how we communicate on the internet and what my model of our communication needs are.",
     },
     {
       url = "/agents-md/posts/home-dynamicdns-cloudflare-python.md",
@@ -55,9 +55,9 @@ the file.
 
 ## All Posts
 
-- [ANTS: Agent Network Traversal System](/posts/agent-network-static-sites/)
 - [Coffee Shop Review: KOS Coffee Maitland](/posts/kos-coffee-maitland/)
 - [Coffee Shop Review: Quigley Coffee Co](/posts/quigley-coffee-co/)
+- [It's hard to communicate on the internet](/posts/internet-communities/)
 - [Home DynamicDNS with CloudFlare Free and Python3](/posts/home-dynamicdns-cloudflare-python/)
 - [AI Coding still requires craft](/posts/ai-coding-still-requires-craft/)
 
