@@ -32,22 +32,10 @@ the file.
       summary = "A brief review of the coffeeshop Quigley",
     },
     {
-      url = "/agents-md/posts/internet-communities.md",
-      title = "It's hard to communicate on the internet",
-      date = "2024-03-09T16:03:46Z",
-      summary = "Some of my thoughts around how we communicate on the internet and what my model of our communication needs are.",
-    },
-    {
       url = "/agents-md/posts/home-dynamicdns-cloudflare-python.md",
       title = "Home DynamicDNS with CloudFlare Free and Python3",
       date = "2020-05-04T18:46:46Z",
       summary = "A novice foray into a DDNS script",
-    },
-    {
-      url = "/agents-md/posts/ai-coding-still-requires-craft.md",
-      title = "AI Coding still requires craft",
-      date = "2020-05-04T18:46:46Z",
-      summary = "AI Coding still requires craft",
     },
   ]
 }
@@ -57,9 +45,7 @@ the file.
 
 - [Coffee Shop Review: KOS Coffee Maitland](/posts/kos-coffee-maitland/)
 - [Coffee Shop Review: Quigley Coffee Co](/posts/quigley-coffee-co/)
-- [It's hard to communicate on the internet](/posts/internet-communities/)
 - [Home DynamicDNS with CloudFlare Free and Python3](/posts/home-dynamicdns-cloudflare-python/)
-- [AI Coding still requires craft](/posts/ai-coding-still-requires-craft/)
 
 ---
 

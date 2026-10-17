@@ -28,10 +28,15 @@ count=0
 for file in content/posts/*.md; do
     filename=$(basename "$file")
     # Skip _index.md
-    if [[ "$filename" != "_index"* ]]; then
-        cp "$file" "static/agents-md/posts/$filename"
-        ((count++))
+    if [[ "$filename" == "_index"* ]]; then
+        continue
     fi
+    if grep -Eq '^draft[[:space:]]*=[[:space:]]*true([[:space:]]*(#.*)?)?$' "$file"; then
+        rm -f "static/agents-md/posts/$filename"
+        continue
+    fi
+    cp "$file" "static/agents-md/posts/$filename"
+    ((count++))
 done
 echo "  ✓ Copied $count posts to /agents-md/posts/"
 

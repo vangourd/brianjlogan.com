@@ -1,6 +1,7 @@
 +++
 title = "It's hard to communicate on the internet"
 template = "page.html"
+draft = true
 date = 2024-03-09T16:03:46Z
 [taxonomies]
 dates = ["2026-08"]

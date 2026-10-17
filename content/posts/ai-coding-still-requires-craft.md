@@ -1,6 +1,7 @@
 +++
 title = "AI Coding still requires craft"
 template = "page.html"
+draft = true
 date = 2020-05-04T18:46:46Z
 [taxonomies]
 dates = ["2026-04"]

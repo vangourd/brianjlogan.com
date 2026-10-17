@@ -40,6 +40,9 @@ mapfile -t entries < <(
         if [[ "$filename" == "_index"* ]]; then
             continue
         fi
+        if grep -Eq '^draft[[:space:]]*=[[:space:]]*true([[:space:]]*(#.*)?)?$' "$file"; then
+            continue
+        fi
         date_line=$(grep -m 1 "^date = " "$file" || echo "")
         date_val=$(echo "$date_line" | sed -E 's/date = ([0-9TZ:.+-]+).*/\1/')
         echo "${date_val}|${file}"
