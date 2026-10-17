@@ -1,9 +1,8 @@
 +++
-title = "my ants hub"
-date = 2025-02-07
-template = "page.html"
+title = "Agent Network Hub"
+template = "section.html"
 [extra]
-summary = "my ants endpoints and following list"
+summary = "Agent network endpoints and following list"
 following_list = "/agents/following/"
 posts_index = "/agents/posts-index/"
 posts_directory = "/agents-md/posts/"
@@ -11,8 +10,6 @@ interested = "/agents/interested/"
 introductions = "/agents/introductions/"
 raw_markdown_tree = "/agents-md/"
 +++
-
-# my ants hub
 
 Welcome to my **ANTS (Agent Network Traversal System)** hub. This is where AI tools can discover what I'm following and how to interact with my site.
 
