@@ -53,11 +53,11 @@
                     {% endif %}
                 </div>
             </nav>
-            <button type="button" id="paper-mode-toggle" class="paper-mode-toggle"
-                    aria-label="Paper theme" aria-pressed="false" title="Toggle paper theme">
-                <span class="paper-mode-icon" aria-hidden="true">Aa</span>
-                <span>paper</span>
-            </button>
+            <div id="theme-switcher" class="theme-switcher" role="group" aria-label="Theme selector">
+                <button type="button" id="theme-previous" class="theme-arrow" aria-label="Previous theme" title="Previous theme" hidden>←</button>
+                <span id="current-theme-name" class="theme-name" aria-live="polite">default</span>
+                <button type="button" id="theme-next" class="theme-arrow" aria-label="Next theme" title="Next theme">→</button>
+            </div>
             </div>
         </div>
     </header>
@@ -159,6 +159,9 @@
             }
         };
 
+        const themeNames = Object.keys(themes);
+        let currentThemeName = 'default';
+
         // Apply theme
         function applyTheme(themeName) {
             const theme = themes[themeName];
@@ -177,27 +180,24 @@
 
             const isPaperTheme = themeName === 'paper';
             document.body.classList.toggle('paper-mode', isPaperTheme);
-            document.getElementById('paper-mode-toggle').setAttribute('aria-pressed', String(isPaperTheme));
+            currentThemeName = themeName;
+            document.getElementById('current-theme-name').textContent = themeName;
 
-            if (!isPaperTheme) {
-                localStorage.setItem('lastNonPaperTheme', themeName);
-            }
             localStorage.setItem('theme', themeName);
             return true;
         }
 
-        function togglePaperTheme() {
-            if (localStorage.getItem('theme') === 'paper') {
-                const previousTheme = localStorage.getItem('lastNonPaperTheme');
-                applyTheme(themes[previousTheme] && previousTheme !== 'paper' ? previousTheme : 'default');
-            } else {
-                applyTheme('paper');
-            }
+        function cycleTheme(direction) {
+            const currentIndex = themeNames.indexOf(currentThemeName);
+            const nextIndex = (currentIndex + direction + themeNames.length) % themeNames.length;
+
+            document.getElementById('theme-previous').hidden = false;
+            applyTheme(themeNames[nextIndex]);
         }
 
         // Commands
         const commands = [
-            { name: '/theme', description: 'Change color theme', args: ['default', 'dracula', 'monokai', 'gruvbox', 'nord', 'solarized', 'paper'] },
+            { name: '/theme', description: 'Change color theme', args: themeNames },
             { name: '/help', description: 'Show available commands' },
             { name: '/clear', description: 'Clear terminal output' },
             { name: 'rm', description: 'You wouldn\'t...' }
@@ -448,19 +448,15 @@
             // Restore the selected theme, migrating the earlier paper-mode preference if present
             const savedTheme = localStorage.getItem('theme');
             const legacyPaperMode = localStorage.getItem('paperMode') === 'true';
-            let themeToApply = savedTheme && themes[savedTheme] ? savedTheme : 'default';
+            const themeToApply = legacyPaperMode
+                ? 'paper'
+                : (savedTheme && themes[savedTheme] ? savedTheme : 'default');
 
-            if (legacyPaperMode && themeToApply !== 'paper') {
-                localStorage.setItem('lastNonPaperTheme', themeToApply);
-                themeToApply = 'paper';
-            }
-            const previousTheme = localStorage.getItem('lastNonPaperTheme');
-            if (themeToApply === 'paper' && (!themes[previousTheme] || previousTheme === 'paper')) {
-                localStorage.setItem('lastNonPaperTheme', 'default');
-            }
             localStorage.removeItem('paperMode');
+            localStorage.removeItem('lastNonPaperTheme');
             applyTheme(themeToApply);
-            document.getElementById('paper-mode-toggle').addEventListener('click', togglePaperTheme);
+            document.getElementById('theme-previous').addEventListener('click', () => cycleTheme(-1));
+            document.getElementById('theme-next').addEventListener('click', () => cycleTheme(1));
 
             // Collapse menu on non-home pages
             if (!document.body.classList.contains('home-page')) {

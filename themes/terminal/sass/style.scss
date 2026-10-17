@@ -53,7 +53,7 @@ body.paper-mode {
     }
   }
 
-  .paper-mode-toggle {
+  .theme-switcher {
     box-shadow: 0 2px 8px rgba(65, 48, 25, 0.14);
   }
 
@@ -61,7 +61,7 @@ body.paper-mode {
   pre,
   .title-container,
   #quick-menu,
-  .paper-mode-toggle,
+  .theme-switcher,
   .shell-input,
   .shell-output,
   .autocomplete,
@@ -336,42 +336,58 @@ header {
   gap: 0.75rem;
 }
 
-.paper-mode-toggle {
+.theme-switcher {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
+  gap: 0.1rem;
   min-height: 36px;
-  padding: 0.4rem 0.7rem;
+  padding: 0.2rem 0.3rem;
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-  color: var(--text-primary);
   font-family: $font-mono;
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 
-  &:hover {
-    background-color: var(--bg-tertiary);
-    border-color: var(--accent-cyan);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--accent-cyan);
-    outline-offset: 2px;
-  }
-
-  &[aria-pressed="true"] {
-    border-color: var(--accent-green);
+  .theme-name {
+    min-width: 9ch;
+    padding: 0 0.25rem;
     color: var(--accent-green);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
   }
 
-  .paper-mode-icon {
+  .theme-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    min-height: 28px;
+    padding: 0.1rem 0.3rem;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-primary);
+    font-family: $font-mono;
     font-size: 1rem;
     line-height: 1;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      background-color: var(--bg-tertiary);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--accent-cyan);
+      outline-offset: 2px;
+    }
+
+    &[hidden] {
+      display: none;
+    }
   }
 }
 
@@ -1009,8 +1025,9 @@ footer {
     .nav-right {
       align-items: center;
       justify-content: center;
+      flex-wrap: wrap;
       width: 100%;
-      max-width: 300px;
+      max-width: 360px;
     }
   }
 
