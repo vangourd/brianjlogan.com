@@ -77,6 +77,11 @@
                     {% endif %}
                 </div>
             </nav>
+            <button type="button" id="paper-mode-toggle" class="paper-mode-toggle"
+                    aria-label="Paper theme" aria-pressed="false" title="Toggle paper theme">
+                <span class="paper-mode-icon" aria-hidden="true">Aa</span>
+                <span>paper</span>
+            </button>
             </div>
         </div>
     </header>
@@ -164,6 +169,17 @@
                 accentCyan: '#2aa198',
                 accentYellow: '#b58900',
                 borderColor: '#586e75'
+            },
+            paper: {
+                bgPrimary: '#f5f0e2',
+                bgSecondary: '#ece4d1',
+                bgTertiary: '#e3d8be',
+                textPrimary: '#2b241b',
+                textSecondary: '#5f5342',
+                accentGreen: '#4d633a',
+                accentCyan: '#3e5f73',
+                accentYellow: '#865120',
+                borderColor: '#c7b895'
             }
         };
 
@@ -183,13 +199,29 @@
             root.style.setProperty('--accent-yellow', theme.accentYellow);
             root.style.setProperty('--border-color', theme.borderColor);
 
+            const isPaperTheme = themeName === 'paper';
+            document.body.classList.toggle('paper-mode', isPaperTheme);
+            document.getElementById('paper-mode-toggle').setAttribute('aria-pressed', String(isPaperTheme));
+
+            if (!isPaperTheme) {
+                localStorage.setItem('lastNonPaperTheme', themeName);
+            }
             localStorage.setItem('theme', themeName);
             return true;
         }
 
+        function togglePaperTheme() {
+            if (localStorage.getItem('theme') === 'paper') {
+                const previousTheme = localStorage.getItem('lastNonPaperTheme');
+                applyTheme(themes[previousTheme] && previousTheme !== 'paper' ? previousTheme : 'default');
+            } else {
+                applyTheme('paper');
+            }
+        }
+
         // Commands
         const commands = [
-            { name: '/theme', description: 'Change color theme', args: ['default', 'dracula', 'monokai', 'gruvbox', 'nord', 'solarized'] },
+            { name: '/theme', description: 'Change color theme', args: ['default', 'dracula', 'monokai', 'gruvbox', 'nord', 'solarized', 'paper'] },
             { name: '/help', description: 'Show available commands' },
             { name: '/clear', description: 'Clear terminal output' },
             { name: 'rm', description: 'You wouldn\'t...' }
@@ -444,11 +476,22 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            // Load saved theme
+            // Restore the selected theme, migrating the earlier paper-mode preference if present
             const savedTheme = localStorage.getItem('theme');
-            if (savedTheme && themes[savedTheme]) {
-                applyTheme(savedTheme);
+            const legacyPaperMode = localStorage.getItem('paperMode') === 'true';
+            let themeToApply = savedTheme && themes[savedTheme] ? savedTheme : 'default';
+
+            if (legacyPaperMode && themeToApply !== 'paper') {
+                localStorage.setItem('lastNonPaperTheme', themeToApply);
+                themeToApply = 'paper';
             }
+            const previousTheme = localStorage.getItem('lastNonPaperTheme');
+            if (themeToApply === 'paper' && (!themes[previousTheme] || previousTheme === 'paper')) {
+                localStorage.setItem('lastNonPaperTheme', 'default');
+            }
+            localStorage.removeItem('paperMode');
+            applyTheme(themeToApply);
+            document.getElementById('paper-mode-toggle').addEventListener('click', togglePaperTheme);
 
             // Collapse menu on non-home pages
             if (!document.body.classList.contains('home-page')) {
